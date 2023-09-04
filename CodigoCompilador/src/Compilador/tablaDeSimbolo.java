@@ -4,7 +4,7 @@ import java.util.Hashtable;
 
 public class tablaDeSimbolo {
 
-		private static int identificador = 280;
+		private static int identificador = 200;
 		private static Hashtable<Integer, simbolo> tabla = new Hashtable<>();
 		
 		public static void agregarSimbolo (String lexema) {
