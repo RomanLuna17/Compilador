@@ -13,6 +13,12 @@ public class simbolo {
 		this.id = id;
 	}
 
+	public simbolo(String lexema) {
+		super();
+		this.lexema = lexema;
+	}
+
+
 	public String getLexema() {
 		return lexema;
 	}
