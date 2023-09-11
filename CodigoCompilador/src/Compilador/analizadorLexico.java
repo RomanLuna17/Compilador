@@ -7,18 +7,20 @@ import AccionesSemanticas.AccionSemantica;
 
 public class analizadorLexico {
 	
-	private int lineaActual = 1;
+	//HICE LineaActual Y getLineaActual Y setLineaActual ESTATICAS!!
+	
+	private static int lineaActual = 1;
 	public static final StringBuilder tokenActual = new StringBuilder();
 	public static int estadoActual = 0;
 	private static AccionSemantica [][] accionesSemanticas = lectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
 	private static int [][] transicionDeEstados = lectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
 	
-	public int getLineaActual() {
+	public static int getLineaActual() {
 		return lineaActual;
 	}
 
-	public void setLineaActual(int lineaActual) {
-		this.lineaActual = lineaActual;
+	public static void setLineaActual(int lineaActual1) {
+		lineaActual = lineaActual1;//this.lineaActual = lineaActual; TUVE QUE SACAR EL THIS PORQUE AHORA ES ESTATICA
 	}
 	
 	private static char obtenerTipoCar (char caracter){
@@ -26,8 +28,9 @@ public class analizadorLexico {
             return Constantes.DIGITO;
         } else if (Character.isLowerCase(caracter)){
             return Constantes.MINISCULA;
-        }else if (caracter != 'E' && caracter != 'e' && caracter != 'l' && caracter != 'u' && Character.isUpperCase(caracter)){
-            return Constantes.MAYUSCULA;
+        }else if (caracter != 'E' && caracter != 'e' && caracter != 'l' && caracter != 'u' && caracter != 'i' && Character.isUpperCase(caracter)){
+            //FALTO AGREGAR LA i EN EL IF DE ARRIBA
+        	return Constantes.MAYUSCULA;
         } else {
             return caracter;
         }
@@ -127,5 +130,6 @@ public class analizadorLexico {
         estadoActual = transicionDeEstados[estadoActual][carActual];
         //System.out.println("Debug AL178: as: " + accion_semantica + " car: " + car + " ea: " + estado_actual + " id: " + id_token);
         return idToken;
-    }
+       
+	}
 }
