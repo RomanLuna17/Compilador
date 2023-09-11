@@ -9,7 +9,7 @@ public class AS8 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
-		return token_act.charAt(0);
+		return token_act.charAt(0);//NOSE SI ESTA BIEN ESTO
 	}
 
 }

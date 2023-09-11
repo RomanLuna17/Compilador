@@ -27,16 +27,15 @@ public class AS5 implements AccionSemantica{
 			short valor = Short.parseShort(simbolo.substring(0, simbolo.length() - 3)); //obtengo el valor numerico. Elimino el sufijo
 			if(valor > Short.MAX_VALUE) {
 				//me fui de rango
-				//Nose que tengo que hacer, retornar error, warning y enviar el MAX_VALUE o nose
+				//MENSAJE WARNING Y RETORNO EL MAX_VALUE			}
 			}
-			
 		}else if((simbolo.substring(simbolo.length() - 2)).equals("_l")) {
 			//es un numero entero largo
 			int valor = Integer.parseInt(simbolo.substring(0, simbolo.length() - 2)); //obtengo el valor numerico
 			if(valor > Integer.MAX_VALUE+1) {//le sumo uno porque en esta etapa nose si es positivo o negativo
 											 //y el rango de los enteros negativos tiene 1 mas que los positivos
 				//Me fui de rango
-				//Nose que tengo que hacer, retornar error, warning y enviar el MAX_VALUE o nose
+				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
 			}
 		}
 		} catch (NumberFormatException excepcion) {

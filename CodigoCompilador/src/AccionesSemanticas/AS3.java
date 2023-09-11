@@ -25,9 +25,9 @@ public class AS3 implements AccionSemantica{
 		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
 																 //o retornar el simbolo si ya existe
 		
-        return simbol.getId(); //ESTA BIEN ESTO???
+        return simbol.getId(); 
         
-        //TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
+ 
 		
 	}
 

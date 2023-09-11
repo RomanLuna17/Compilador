@@ -1,18 +1,18 @@
 
 
 
-_numero1 = 10_l
-_numero2 = 20_l
+_numero1 = 10_l;
+_numero2 = 20_l;
 
 IF(_numero1 >= _numero2) THEN
-PRINT(%el numero1 es mayor que numero2%)
+PRINT(%el numero1 es mayor que numero2%);
 ELSE
-PRINT( %el numero2 es mayor que numero1%)
+PRINT( %el numero2 es mayor que numero1%);
 
-flotante1=1.2
-flotante2=.8
-flotante3=1.
-_suma3=flotante1 + flotante2+flotante3
+flotante1=1.2;
+flotante2=.8;
+flotante3=1.;
+_suma3=flotante1 + flotante2+flotante3;
 
 *{ este es un
 	comentario multininea
