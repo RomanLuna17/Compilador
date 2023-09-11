@@ -1,5 +1,8 @@
 package Compilador;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -36,95 +39,102 @@ public class analizadorLexico {
         }
     }
 	
+	public static Reader lector;
+
+    public static void setLector(String archivo_a_leer) throws FileNotFoundException {
+        lector = new BufferedReader(new FileReader(archivo_a_leer));
+    }
+	
 	public static int proximoEstado(Reader lector, char caracter) throws IOException {
         int carActual;
         switch (obtenerTipoCar(caracter)){
             case Constantes.BLANCO:
-                carActual = 19;
-                break;
-            case Constantes.TAB:
-                carActual = 20;
-                break;
-            case Constantes.SALTO_DE_LINEA:
-                carActual = 23;
-                break;
-            case Constantes.MINISCULA:
-                carActual = 4;
-                break;
-            case Constantes.MAYUSCULA:
-                carActual = 5;
-                break;
-            case Constantes.DIGITO:
-                carActual = 1;
-                break;
-            case '.':
                 carActual = 0;
                 break;
-            case '+':
-                carActual = 6;
+            case Constantes.TAB:
+                carActual = 1;
                 break;
-            case '-':
-                carActual = 7;
-                break;
-            case '/':
-                carActual = 9;
-                break;
-            case '(':
-                carActual = 10;
-                break;
-            case ')':
-                carActual = 11;
-                break;
-            case '{':
-                carActual = 12;
-                break;
-            case '}':
-                carActual = 13;
-                break;
-            case ',':
-                carActual = 14;
-                break;
-            case ';':
-                carActual = 15;
-                break;
-            case '=':
-                carActual = 3;
-                break;
-            case '>':
+            case Constantes.SALTO_DE_LINEA:
                 carActual = 2;
                 break;
-            case '<':
-                carActual = 21;
+            case Constantes.MINISCULA:
+                carActual = 3;
                 break;
-            case '!':
-                carActual = 17;
+            case Constantes.MAYUSCULA:
+                carActual = 19;
                 break;
-            case '\'':
+            case Constantes.DIGITO:
+                carActual = 5;
+                break;
+            case '.':
                 carActual = 16;
                 break;
-            case '*':
+            case '+':
                 carActual = 8;
                 break;
-            case 'E':
-            case 'e':	
-                carActual = 16;
+            case '-':
+                carActual = 9;
                 break;
-            case 'u':	
+            case '/':
+                carActual = 11;
+                break;
+            case '(':
                 carActual = 23;
                 break;
-            case 'i':	
+            case ')':
                 carActual = 24;
+                break;
+            case '{':
+                carActual = 20;
+                break;
+            case '}':
+                carActual = 21;
+                break;
+            case ',':
+                carActual = 19;
+                break;
+            case ';':
+                carActual = 18;
+                break;
+            case '=':
+                carActual = 12;
+                break;
+            case '>':
+                carActual = 15;
+                break;
+            case '<':
+                carActual = 14;
+                break;
+            case '!':
+                carActual = 13;
+                break;
+            case '*':
+                carActual = 10;
+                break;
+            case 'E':
+            	carActual = 7;
+                break;
+            case 'e':	
+                carActual = 6;
+                break;
+            case 'u':	
+                carActual = 26;
+                break;
+            case 'i':	
+                carActual = 27;
                 break;
             case 'l':	
                 carActual = 25;
                 break;
             case '_':
-                carActual = 26;
+                carActual = 4;
                 break;
             default: 
-                carActual = 27; //Si es un caracter no reconocido, lo manda a ASE
+                carActual = 28; //Si es un caracter no reconocido, lo manda a ASE
                 break;
         }
+        System.out.println("ESTADO ACTUAL: " + estadoActual);
+        System.out.println("CARACTER ACTUAL: " + carActual);
         AccionSemantica accSemantica = accionesSemanticas[estadoActual][carActual];
         int idToken = accSemantica.run(lector, tokenActual);
         estadoActual = transicionDeEstados[estadoActual][carActual];

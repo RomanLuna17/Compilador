@@ -9,8 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
-import AccionesSemanticas.AccionSemantica;
-
+import AccionesSemanticas.*;
 public class LectorArchivo {
 
 // Este metodo se encarga de leer un txt y aparterir de las cantidad de filas y columnas dadas genera la matriz
@@ -113,7 +112,7 @@ public class LectorArchivo {
 	    
 	    private static AccionSemantica crearAccion(String action_name) {
 	        switch (action_name) {
-	           /* case "AS0":
+	            case "AS0":
 	                return new AS0();
 	            case "AS1":
 	                return new AS1();
@@ -135,8 +134,6 @@ public class LectorArchivo {
 	                return new AS8();
 	            case "AS9":
 	                return new AS9();
-	            case "ASa":
-	                return new ASa();*/
 	            default:
 	                return null;
 	        }

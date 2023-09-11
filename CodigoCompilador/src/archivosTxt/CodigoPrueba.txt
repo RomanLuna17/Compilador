@@ -1,6 +1,3 @@
-
-
-
 _numero1 = 10_l;
 _numero2 = 20_l;
 
