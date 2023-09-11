@@ -1,19 +1,19 @@
 package Compilador;
 
-public class simbolo {
+public class Simbolo {
 	
 	private String lexema;
 	private int id;
 	private String tipo = "";
 	private String ambito = "";
 	
-	public simbolo(String lexema, int id) {
+	public Simbolo(String lexema, int id) {
 		super();
 		this.lexema = lexema;
 		this.id = id;
 	}
 
-	public simbolo(String lexema) {
+	public Simbolo(String lexema) {
 		super();
 		this.lexema = lexema;
 	}

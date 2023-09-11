@@ -12,8 +12,8 @@ public class analizadorLexico {
 	private static int lineaActual = 1;
 	public static final StringBuilder tokenActual = new StringBuilder();
 	public static int estadoActual = 0;
-	private static AccionSemantica [][] accionesSemanticas = lectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
-	private static int [][] transicionDeEstados = lectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	private static AccionSemantica [][] accionesSemanticas = LectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	private static int [][] transicionDeEstados = LectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
 	
 	public static int getLineaActual() {
 		return lineaActual;

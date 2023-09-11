@@ -3,7 +3,9 @@ package AccionesSemanticas;
 import java.io.IOException;
 import java.io.Reader;
 
-import Compilador.Constantes;
+
+import Compilador.Simbolo;
+import Compilador.TablaDeSimbolo;
 
 //Agregar el valor constante a la tabla de simbolos en caso de no estar y devuelve el ID del Token. 
 //Verifica que tipo de entero es(Long o unsigned), Tambien verifica si los rangos son correctos
@@ -42,6 +44,14 @@ public class AS5 implements AccionSemantica{
         }
 		
 		
+		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
+		 //o retornar el simbolo si ya existe
+
+		return simbol.getId(); //ESTA BIEN ESTO???
+
+		//TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
+		
+		
 		/* DESCOMENTAR CUANDO CREE LA TABLA DE SIMBOLOS
 		if (TablaSimbolos.obtenerSimbolo(simbolo) == TablaSimbolos.NO_ENCONTRADO) {
             TablaSimbolos.agregarSimbolo(simbolo); //Agrego el simbolo
@@ -52,8 +62,6 @@ public class AS5 implements AccionSemantica{
         
         TENGO QUE RETORNAR EL ID del TOKEN ME PARECE
 		*/
-		
-		return 0;
 	}
 
 }

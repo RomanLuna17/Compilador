@@ -11,7 +11,7 @@ import java.util.Scanner;
 
 import AccionesSemanticas.AccionSemantica;
 
-public class lectorArchivo {
+public class LectorArchivo {
 
 // Este metodo se encarga de leer un txt y aparterir de las cantidad de filas y columnas dadas genera la matriz
 	 public static int[][] readIntMatrixFile(String path, int rows, int columns) {

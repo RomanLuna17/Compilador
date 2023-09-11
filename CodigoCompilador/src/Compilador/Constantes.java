@@ -1,9 +1,9 @@
 package Compilador;
 
 public class Constantes {
-	public final static simbolo SIMBOLO_NO_ENCONTRADO = new simbolo("Simbolo no encotrado", -1);
+	public final static Simbolo SIMBOLO_NO_ENCONTRADO = new Simbolo("Simbolo no encotrado", -1);
 	public final static String ARCHIVO_MATRIZ_ESTADO = "";
-	public final static String ARCHIVO_MATRIZ_ACCIONES = "";
+	public final static String ARCHIVO_MATRIZ_ACCIONES = "\\Compilador\\CodigoCompilador\\src\\archivosTxt";
 	public final static int CANT_ESTADOS = 20;
 	public final static int CANT_CARACTERES = 20;
 	
