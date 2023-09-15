@@ -29,9 +29,9 @@ public class analizadorLexico {
 	private static char obtenerTipoCar (char caracter){
         if (Character.isDigit(caracter)){
             return Constantes.DIGITO;
-        } else if (Character.isLowerCase(caracter)){
+        } else if ((Character.isLowerCase(caracter)) && (caracter != 'e') && (caracter != 'l') && (caracter != 'u') && (caracter != 'i')){
             return Constantes.MINISCULA;
-        }else if (caracter != 'E' && caracter != 'e' && caracter != 'l' && caracter != 'u' && caracter != 'i' && Character.isUpperCase(caracter)){
+        }else if ((caracter != 'E') && (Character.isUpperCase(caracter))){
             //FALTO AGREGAR LA i EN EL IF DE ARRIBA
         	return Constantes.MAYUSCULA;
         } else {
@@ -78,6 +78,9 @@ public class analizadorLexico {
             case '/':
                 carActual = 11;
                 break;
+            case '%':
+            	carActual = 22;
+            	break;
             case '(':
                 carActual = 23;
                 break;
@@ -133,13 +136,16 @@ public class analizadorLexico {
                 carActual = 28; //Si es un caracter no reconocido, lo manda a ASE
                 break;
         }
-        System.out.println("ESTADO ACTUAL: " + estadoActual);
-        System.out.println("CARACTER ACTUAL: " + carActual);
+        //System.out.println("ESTADO ACTUAL: " + estadoActual);
+        //System.out.println("CARACTER ACTUAL: " + carActual);
+        //System.out.println("VALOR CARACTER: " + caracter);
         AccionSemantica accSemantica = accionesSemanticas[estadoActual][carActual];
         int idToken = accSemantica.run(lector, tokenActual);
+        //System.out.println("ID TOKEN: " + idToken);
+        
+        
         estadoActual = transicionDeEstados[estadoActual][carActual];
         //System.out.println("Debug AL178: as: " + accion_semantica + " car: " + car + " ea: " + estado_actual + " id: " + id_token);
         return idToken;
-       
 	}
 }

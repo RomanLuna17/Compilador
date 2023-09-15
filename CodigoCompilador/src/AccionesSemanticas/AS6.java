@@ -12,15 +12,16 @@ public class AS6 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
-		String simbolo = token_act.toString();
+		//System.out.println("ACCION SEMANTICA 6");
+		String lexemaSimbolo = token_act.toString();
 		
 		try {
-			float valor = Float.parseFloat(simbolo+'f'); //tengo que concatenar el f al final porque sino float no toma el valor
+			float valor = Float.parseFloat(lexemaSimbolo+'f'); //tengo que concatenar el f al final porque sino float no toma el valor
 			
 			
 			if(valor > Float.MAX_VALUE) {
 				//me fui de rango
-				//Nose que tengo que hacer, retornar error, warning y enviar el MAX_VALUE o nose
+				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
 				
 			}
 			
@@ -29,23 +30,19 @@ public class AS6 implements AccionSemantica{
         }
 		
 		
-		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
-		 //o retornar el simbolo si ya existe
+		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+		 														//o retornar el simbolo si ya existe
 
-		return simbol.getId(); //ESTA BIEN ESTO???
-
-		//TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
+		token_act.delete(0, token_act.length()); //elimino todos los caracteres //NOSE SI TENGO QUE DEJAR EL ULTIMO O NO
 		
-		/* DESCOMENTAR CUANDO CREE LA TABLA DE SIMBOLOS
-		if (TablaSimbolos.obtenerSimbolo(simbolo) == TablaSimbolos.NO_ENCONTRADO) {
-            TablaSimbolos.agregarSimbolo(simbolo); //Agrego el simbolo
-            
-            int ptr_id = TablaSimbolos.obtenerSimbolo(simbolo); //obtengo el puntero(ID)
-            TablaSimbolos.agregarAtributo(ptr_id, "tipo", TablaTipos.ULONG_TYPE); // NOSE QUE ES ESTO!!
-        }
-        
-        TENGO QUE RETORNAR EL TOKEN ME PARECE
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
 		*/
+		
+		return simbolo.getId(); //SEGUIMOS CON LA MISMA DUDA
+		
+		
 		
 
 	}

@@ -13,20 +13,27 @@ public class AS3 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
-		String simbolo = token_act.toString();
+		//System.out.println("ACCION SEMANTICA 3");
+		String lexemaSimbolo = token_act.substring(0, token_act.length());
 		
-		if(simbolo.length() > Constantes.CANT_CARACTERES) {
-			simbolo = token_act.substring(0, Constantes.CANT_CARACTERES); //Recorto el String
-			//CUANDO TENGA EL PARCER INFORMO EL WARNING. POR AHORA CREO QUE LO TENGO QUE AGREGAR A UN ARCHIVO O MOSTRAR POR PANTALLA
+		if(lexemaSimbolo.length() > Constantes.CANT_CARACTERES) {
+			lexemaSimbolo = token_act.substring(0, Constantes.CANT_CARACTERES); //Recorto el String
+			//TENGO QUE INFORMAR WARNING. NOSE SI MOSTRAR POR PANTALLA O DE ESTO SE ENCARGA EL PARSER
+			System.err.println("WARNING: EL NOMBRE DEL IDENTIFICADOR SUPERA EL LARGO " );
 		}
 		
 		
 		
-		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
-																 //o retornar el simbolo si ya existe
-		
-        return simbol.getId(); 
+		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+																 //o retornar el simbolo si ya existe		
         
+		token_act.delete(0, token_act.length()); //elimino todos los caracteres
+
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
+		*/
+		return simbolo.getId();
  
 		
 	}

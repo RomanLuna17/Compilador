@@ -14,6 +14,7 @@ public class AS7 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
+		//System.out.println("ACCION SEMANTICA 7");
 		try {
             char caracter = (char) lector.read(); //Leo el caracter
             
@@ -26,16 +27,19 @@ public class AS7 implements AccionSemantica{
             excepcion.printStackTrace();
         }
 		
-		//TENGO QUE DEVOLVER EL TOKEN O EL IDENTIFICADOR DEL TOKEN, NOSE BIEN
-		//ESPERO A CREAR LA ESTRUCTURA DE LA TABLA DE SIMBOLOS PARA HACER ESTO
+		String lexemaSimbolo = token_act.toString();
+		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+		 														//o retornar el simbolo si ya existe
 		
-		String simbolo = token_act.toString();
-		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
-		 //o retornar el simbolo si ya existe
+		token_act.delete(0, token_act.length()); //elimino todos los caracteres
+		
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
+		*/
+		
+		return simbolo.getId(); //TODAS LAS ACCIONES SEMANTICAS TIENEN ESTA DUDA :)
 
-		return simbol.getId(); //ESTA BIEN ESTO???
-
-		//TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
 
 	}
 

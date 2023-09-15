@@ -12,17 +12,24 @@ public class AS4 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
-		token_act.deleteCharAt(token_act.length()); //Elimino el ultimo caracter del token actual. ¿nose si lo tengo que guardar?
+		//System.out.println("ACCION SEMANTICA 4");
+	
+		//###################################################################################################################
 		
-		String simbolo = token_act.toString();
+		//forma2
+		String lexemaSimbolo = token_act.toString().substring(0, token_act.length()); //saco el ultimo caracter del token
+		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+		 														//o retornar el simbolo si ya existe
 		
-		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
-		 //o retornar el simbolo si ya existe
-
-		return simbol.getId(); //ESTA BIEN ESTO???
-
-		//TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
-		//Retorno el token de la tabla de simbolos. Si no esta lo tengo que agregar me parece y retornarlo
+		
+		token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
+		
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
+		*/
+		
+		return simbolo.getId(); //Lo mismo, nose si tengo que retornar esto
 	}
 
 }

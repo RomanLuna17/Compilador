@@ -11,6 +11,7 @@ public class AS0 implements AccionSemantica {
 	
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
+		//System.out.println("ACCION SEMANTICA 0");
 		try {
             char caracter = (char) lector.read(); // Lee el siguiente caracter
 
@@ -20,8 +21,12 @@ public class AS0 implements AccionSemantica {
         } catch (IOException excepcion) {
             excepcion.printStackTrace();
         }
-
-        return Constantes.SEGUIR_LEYENDO; //sigue leyendo porque el token todavia no esta completo
+		
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
+		*/
+        return Constantes.SEGUIR_LEYENDO; //sigue leyendo
 	}
 
 }

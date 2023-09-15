@@ -3,7 +3,7 @@ package AccionesSemanticas;
 import java.io.IOException;
 import java.io.Reader;
 
-
+import Compilador.Constantes;
 import Compilador.Simbolo;
 import Compilador.TablaDeSimbolo;
 
@@ -14,28 +14,32 @@ public class AS5 implements AccionSemantica{
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
 		
-		//DEBATIR SI ESTA BIEN ESTA PARTE
+		//System.out.println("ACCIONS SEMANTICA 5");
+		
+		
 		char caracter = (char) lector.read();
 		token_act.append(caracter);  //En este caso creo que agrego la i o la u. pero no estoy seguro
 		
-		String simbolo = token_act.toString(); //Obtengo el numero
+		String lexemaSimbolo = token_act.toString(); //Obtengo el numero
 		
 		try {
 		//verifico de que tipo de entero se trata, si un entero largo, con o sin signo y si su rango es correcto
-		if((simbolo.substring(simbolo.length() - 3)).equals("_ui")){
+		if((lexemaSimbolo.substring(lexemaSimbolo.length() - 3)).equals("_ui")){
 			//Es un entero sin signo.
-			short valor = Short.parseShort(simbolo.substring(0, simbolo.length() - 3)); //obtengo el valor numerico. Elimino el sufijo
-			if(valor > Short.MAX_VALUE) {
+			short valor = Short.parseShort(lexemaSimbolo.substring(0, lexemaSimbolo.length() - 3)); //obtengo el valor numerico. Elimino el sufijo
+			if(valor > Constantes.MAXIMO_VALOR_INT_SIN_SIGNO) {
 				//me fui de rango
-				//MENSAJE WARNING Y RETORNO EL MAX_VALUE			}
+				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
+				System.err.println("ERROR EN NUMERO ENTERO");
 			}
-		}else if((simbolo.substring(simbolo.length() - 2)).equals("_l")) {
+		}else if((lexemaSimbolo.substring(lexemaSimbolo.length() - 2)).equals("_l")) {
 			//es un numero entero largo
-			int valor = Integer.parseInt(simbolo.substring(0, simbolo.length() - 2)); //obtengo el valor numerico
-			if(valor > Integer.MAX_VALUE+1) {//le sumo uno porque en esta etapa nose si es positivo o negativo
+			int valor = Integer.parseInt(lexemaSimbolo.substring(0, lexemaSimbolo.length() - 2)); //obtengo el valor numerico
+			if(valor > Constantes.MAXIMO_VALOR_INT_LARGO) {//le sumo uno porque en esta etapa nose si es positivo o negativo
 											 //y el rango de los enteros negativos tiene 1 mas que los positivos
 				//Me fui de rango
 				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
+				System.err.println("ERROR EN NUMERO ENTERO");
 			}
 		}
 		} catch (NumberFormatException excepcion) {
@@ -43,24 +47,17 @@ public class AS5 implements AccionSemantica{
         }
 		
 		
-		Simbolo simbol = TablaDeSimbolo.obtenerSimbolo(simbolo); //Se encarga de agregar el simbolo en casod e no existir
-		 //o retornar el simbolo si ya existe
+		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+		 														//o retornar el simbolo si ya existe
 
-		return simbol.getId(); //ESTA BIEN ESTO???
-
-		//TENGO QUE RETORNAR EL ID del TOKEN ME PARECE?
+		token_act.delete(0, token_act.length()); //elimino todos los caracteres //-1??
 		
-		
-		/* DESCOMENTAR CUANDO CREE LA TABLA DE SIMBOLOS
-		if (TablaSimbolos.obtenerSimbolo(simbolo) == TablaSimbolos.NO_ENCONTRADO) {
-            TablaSimbolos.agregarSimbolo(simbolo); //Agrego el simbolo
-            
-            int ptr_id = TablaSimbolos.obtenerSimbolo(simbolo); //obtengo el puntero(ID)
-            TablaSimbolos.agregarAtributo(ptr_id, "tipo", TablaTipos.ULONG_TYPE); // NOSE QUE ES ESTO!!
-        }
-        
-        TENGO QUE RETORNAR EL ID del TOKEN ME PARECE
+		/*
+        System.out.println("TOKEN ACTUAL: " + token_act.toString());
+        System.out.println("###########################################");
 		*/
+		
+		return simbolo.getId(); //MISMO CASO QUE ANTERIORES
 	}
 
 }
