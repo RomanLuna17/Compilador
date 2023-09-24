@@ -16,14 +16,14 @@ public class Main {
 		analizadorLexico analizador = new analizadorLexico();
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		
-		//analizador.setLector("C:\\Users\\usuario\\Desktop\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt");
+		//analizador.setLector("src\\archivosTxt\\CodigoPrueba.txt");
 		
 		
 		
 		
 		Reader lector = null;
         try {
-            lector = new BufferedReader(new FileReader("C:\\Users\\usuario\\Desktop\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt"));
+            lector = new BufferedReader(new FileReader("src/archivosTxt/CodigoPrueba.txt"));
             /*int caracter;
             while ((lector.read()) != -1) {
             	char caracter = (char) lector.read();
