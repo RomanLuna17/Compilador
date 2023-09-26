@@ -1,0 +1,182 @@
+/*NOTA: estas son las tareas asignadas:6 7 10 13 18 19 21 26 29 33 35
+
+Lo que hice fue tomar la gramatica de los chicos y sacar los errores y dejar lo que creo que vamos a usar pero estoy bastante seguro que tiene errores.
+Dentro de la gramatica de los chicos (simon, labo y valen) yo llegue hasta la linea 332
+*/
+       //declaracion de tokens a recibir del Analizador Lexico
+%token ID CTE CADENA IF ELSE END_IF PRINT FUNC RETURN WHILE DO
+ LONG ASSIGN COMP_MAYOR_IGUAL COMP_MENOR_IGUAL COMP_IGUAL COMP_DISTINTO
+ LOGIC_AND LOGIC_OR VOID IGUAL_DOS_PUNTOS
+
+%left '+' '-'
+%left '*' '/'
+
+%start program
+
+%%
+
+//gramatica del lenguaje
+
+program: programa
+       ;
+
+programa: nombre_programa '{' bloque_sentencias_programa '}'
+        ;
+
+nombre_programa: ID 
+	       ;
+
+bloque_sentencias_programa: bloque_sentencias_programa sentencia_programa
+        		  | sentencia_programa
+        		  ;
+
+sentencia_programa: sentencias_declarativas
+        	  | sentencias_ejecutables
+		  ;
+
+sentencias_declarativas:  declaracion_variables ';'
+        	       | declaracion_funciones
+                       | sentencia_declarativa_con_asignacion ';' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a una variable " +  $1.sval);}
+		       ;
+
+sentencia_declarativa_con_asignacion: tipo ID igual_dos_puntos valor_asignacion
+				    ;
+
+sentencias_ejecutables: sentencia_asignacion ';'
+		      | sentencia_seleccion ';'
+		      | sentencia_out ';'
+		      | sentencia_control ';'
+		      | sentencia_discard ';'
+		      ;
+
+declaracion_variables: tipo list_var
+		     ;
+
+tipo: I16 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el tipo I16");
+	   $$.sval = "i16";
+	   aux = "i16";}
+    | F32 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el tipo F32");
+    	   $$.sval = "f32";
+    	   aux = "f32";}
+    | CADENA {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una cadena");
+    	      aux = "CADENA";}
+    ;
+
+list_var: list_var ',' ID {//TablaDeSimbolos.agregarSimbolo($2.sval, ambito.toString());
+          System.out.println("G86: se le va a asignar tipo: " + aux + " a la variable " + $3.sval + ambito);
+          TablaDeSimbolos.obtenerSimbolo($3.sval, ambito.toString()).setTipo(aux);
+          TablaDeSimbolos.obtenerSimbolo($3.sval, ambito.toString()).setUso("variable");}
+        | ID {//TablaDeSimbolos.agregarSimbolo($1.sval, ambito.toString());
+          System.out.println("G90: se le va a asignar tipo: " + aux + " a la variable " + $1.sval + ambito);
+          TablaDeSimbolos.obtenerSimbolo($1.sval, ambito.toString()).setTipo(aux);
+          TablaDeSimbolos.obtenerSimbolo($1.sval, ambito.toString()).setUso("variable");}
+	;
+
+declaracion_funciones: header_funcion '(' parametro ')' tipo_funcion '{' cuerpo_funcion '}' 
+        	     | header_funcion '(' parametro ',' parametro ')' tipo_funcion '{' cuerpo_funcion '}' 
+        	     | header_funcion '(' ')' tipo_funcion '{' cuerpo_funcion '}'
+		     ;
+
+tipo_funcion: ':' tipo {TablaDeSimbolos.obtenerSimbolo(ambito.substring(ambito.lastIndexOf(".")+1) + ambito.substring(0, ambito.lastIndexOf("."))).setTipo($2.sval);
+			$$.sval = $2.sval;}
+	    ;
+
+header_funcion: FUN ID {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la declaracion de la funcion " + $2.sval);
+                        cambiarAmbito($2.sval);
+                        pila.push(polaca.size());
+                        polaca.agregarAPolaca("");
+                        polaca.agregarAPolaca("#BI");
+                        TablaDeSimbolos.agregarSimbolo("LABEL" + polaca.size());
+                        polaca.agregarAPolaca("LABEL" + polaca.size());
+                        polaca.agregarAPolaca($2.sval);
+                        polaca.agregarAPolaca("#INICIO");
+                        TablaDeSimbolos.obtenerSimbolo($2.sval, ambito.substring(0, ambito.lastIndexOf("."))).setUso("nombre funcion");
+                        }
+	      ;
+
+parametro: tipo ID {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el parametro " + $2.sval);
+		     //TablaDeSimbolos.agregarSimbolo($2.sval, ambito.toString());
+		     System.out.println("G182 obtener simbolo con: "+$2.sval+ ambito.toString());
+		     TablaDeSimbolos.obtenerSimbolo($2.sval, ambito.toString()).setTipo(aux);
+		     TablaDeSimbolos.obtenerSimbolo($2.sval, ambito.toString()).setUso("parametro declaracion");}
+	 ;
+
+cuerpo_funcion: bloque_sentencias_ejecutables_return
+	      ;
+
+bloque_sentencias_ejecutables_return: bloque_sentencias_ejecutables_return sentencia_ejecutable_return
+				    | bloque_sentencias_ejecutables_return sentencias_declarativas
+				    | sentencia_ejecutable_return
+				    | sentencias_declarativas
+				    ;
+
+sentencia_ejecutable_return: sentencia_asignacion ';'
+			   | sentencia_seleccion_return ';'
+			   | sentencia_out ';'
+			   | sentencia_control_return ';'
+			   | sentencia_retorno ';'
+			   ;
+
+sentencia_retorno: RETURN '(' expr_aritmetic ')' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una sentencia de retorno");
+						  String lexema = TablaDeSimbolos.obtenerSimbolo($3.sval, ambito.toString()).getLexema();
+              					  polaca.agregarAPolaca("#RETURN");
+              					  pilaReturn.push(polaca.size());
+              					  tipoReturn.push(lexema);
+						  polaca.agregarAPolaca("");
+						  polaca.agregarAPolaca("#BI");
+              TablaDeSimbolos.agregarSimbolo("LABEL" + polaca.size());
+              polaca.agregarAPolaca("LABEL" + polaca.size());
+						  //if(!chequeoTipo(ambito.substring(ambito.lastIndexOf(".")+1),$3.sval)) Lo realizo al reconocer funcion
+                                                  	//{ agregarError(ConstantesCompilador.ERROR, ConstantesCompilador.SINTACTICO, "tipo de return incompatible");}
+						  }
+		 | RETURN '(' invocacion_funcion ')' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una sentencia de retorno");
+		 				      String lexema = TablaDeSimbolos.obtenerSimbolo($2.sval, ambito.toString()).getLexema();
+                                                      polaca.agregarAPolaca("#RETURN");
+                                                      pilaReturn.push(polaca.size());
+                                                      tipoReturn.push(lexema);
+		 				      polaca.agregarAPolaca("");
+                                                      polaca.agregarAPolaca("#BI");
+                                                      TablaDeSimbolos.agregarSimbolo("LABEL" + polaca.size());
+                                                      polaca.agregarAPolaca("LABEL" + polaca.size());
+                                                      }
+		 ;
+
+sentencia_asignacion: ID igual_dos_puntos valor_asignacion {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a la variable " + $1.sval);
+							    chequeoAmbito($1.sval, ambito.toString());
+							    polaca.agregarAPolaca($1.sval);
+							    if((! tipoBreak.isEmpty()) && (asignacionDo)){
+							    	while(! tipoBreak.isEmpty()){
+                                                                   String tbreak = tipoBreak.pop();
+                                                                   if(!chequeoTipo($1.sval , tbreak)){
+                                                                   	agregarError(ConstantesCompilador.ERROR, ConstantesCompilador.SINTACTICO, "Error en asignacion, tipos incompatibles en el break");
+                                                                   }
+                                                                }
+                                                                asignacionDo = false;
+                                                                polaca.agregarAPolaca("#DOEX");
+                                                            ;} else {
+								if(!chequeoTipo($1.sval , $3.sval)){
+									agregarError(ConstantesCompilador.ERROR, ConstantesCompilador.SINTACTICO, "Error en asignacion, tipos incompatibles");
+								}
+							    };
+							    polaca.agregarAPolaca($2.sval);}
+		    ;
+
+igual_dos_puntos: IGUAL_DOS_PUNTOS {ultimaAsignacion = polaca.size();}
+		;
+
+valor_asignacion: expr_aritmetic
+		| invocacion_funcion
+		| sentencia_control {asignacionDo = true;}
+		;
+
+sentencia_seleccion: IF '(' condicion ')' '{' bloque_ejecutable '}'  end_if 
+		   | IF '(' condicion ')' '{' bloque_ejecutable '}'  else '{' bloque_ejecutable '}' end_if
+                   ;
+
+
+
+else: ELSE 
+;
+
+end_if: END_IF 
+;
