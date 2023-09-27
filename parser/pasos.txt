@@ -1,0 +1,12 @@
+1) Para generar el parser es necesario primero hacer la gramatica(NOSE SI ES NECESARIO GENERAR TODA LA GRAMATICA PARA PODER PORBAR)
+
+2) Cambiar la extencion de .txt a .y
+
+3) Tener la gramatica y el programa yacc.exe en la misma carpeta
+
+4) Abrir una consola CMD y usar el comando cd para pararse en la carpeta donde este el yacc.exe
+	cd /User/Escritorio.....
+
+5) Despues ejecutar este comando "yacc –J gramatica.y"
+
+Con esto generaas el parser
