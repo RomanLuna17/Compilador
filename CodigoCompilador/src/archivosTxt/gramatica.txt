@@ -180,3 +180,115 @@ else: ELSE
 
 end_if: END_IF 
 ;
+
+
+//SIGO DESDE ACA
+condicion: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por mayor");
+					      polaca.agregarAPolaca($2.sval);
+					      pila.push(polaca.size());
+					      polaca.agregarAPolaca("");
+                                              polaca.agregarAPolaca("#BF");
+                                              }
+         | expr_aritmetic '<' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por menor");
+         				      polaca.agregarAPolaca($2.sval);
+         				      pila.push(polaca.size());
+         				      polaca.agregarAPolaca("");
+                                              polaca.agregarAPolaca("#BF");
+                                              }
+		·······························
+         | expr_aritmetic '==' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por igualdad");
+                  			      polaca.agregarAPolaca($2.sval);
+                  			      pila.push(polaca.size());
+                  			      polaca.agregarAPolaca("");
+                                              polaca.agregarAPolaca("#BF");
+                                              }
+         | expr_aritmetic MAYOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por mayor o igual");
+                  			              polaca.agregarAPolaca($2.sval);
+                  			              pila.push(polaca.size());
+                  			              polaca.agregarAPolaca("");
+                                                      polaca.agregarAPolaca("#BF");
+                                                	}      
+			························
+         | expr_aritmetic  MENOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por menor o igual");
+                  			      	       polaca.agregarAPolaca($2.sval);
+                  			      	       pila.push(polaca.size());
+                  			      	       polaca.agregarAPolaca("");
+                                                       polaca.agregarAPolaca("#BF");
+                                                       }
+	 | expr_aritmetic (VER)EXCLAMACION_EXCLAMACION expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la condicion de comparacion por distinto");
+                  			      		    polaca.agregarAPolaca($2.sval);
+                  			      		    pila.push(polaca.size());
+                  			      		    polaca.agregarAPolaca("");
+                                                            polaca.agregarAPolaca("#BF");}     
+	 ;
+
+bloque_ejecutable:  bloque_ejecutable sentencias_ejecutables
+		 | bloque_ejecutable sentencias_declarativas
+                 | sentencias_ejecutables
+                 | sentencias_declarativas
+                 ;
+
+sentencia_out: OUT '(' CADENA ')' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la impresion de una cadena: "+$3.sval);
+				   polaca.agregarAPolaca($3.sval);
+				   polaca.agregarAPolaca($1.sval);}
+             ;
+
+
+
+
+
+FIN DE GRAMATICA. COMIENZO DE FUNCIONES
+%%
+public static void ConstanteNegativa(String lexema){
+  	Simbolo s = TablaDeSimbolos.obtenerSimbolo(lexema);
+        String tipo = s.getTipo();
+        TablaDeSimbolos.agregarSimbolo('-'+lexema, ConstantesCompilador.CONSTANTE);
+        TablaDeSimbolos.obtenerSimbolo('-'+lexema).setUso("constante");
+        TablaDeSimbolos.obtenerSimbolo('-'+lexema).setTipo(tipo);
+   }
+
+      public static void ConstantePositiva(String lexema){
+        if (! lexema.contains(".")) {
+          if (Integer.parseInt(lexema) > ConstantesCompilador.MAX_INT_POSITIVO) {
+            Parser.agregarError(ConstantesCompilador.WARNING, ConstantesCompilador.LEXICO, "El numero es demasiado grande. Se lo ha reemplazado por el mas cercano posible: " + ConstantesCompilador.MAX_INT_POSITIVO);
+            lexema = String.valueOf(ConstantesCompilador.MAX_INT_POSITIVO);
+          }
+        }
+        TablaDeSimbolos.obtenerSimbolo(lexema).setUso("constante");
+      }
+
+      public static boolean sentencia_control = false;
+      public static List<String> errores = new ArrayList<>();
+      public static  List<String> warnings = new ArrayList<>();
+
+      int yylex() throws IOException {
+
+        int identificador_token = 0;
+        Reader lector = compilador.AnalizadorLexico.lector;
+        compilador.AnalizadorLexico.estado_actual = 0;
+        while (! EOF(lector)) {
+          char caracter = nextChar(lector);
+          identificador_token = AnalizadorLexico.proximoEstado(lector, caracter);
+          if (identificador_token != ConstantesCompilador.EN_LECTURA) {
+            yylval = new ParserVal(AnalizadorLexico.getTokenActual());
+            AnalizadorLexico.token_actual.delete(0, AnalizadorLexico.token_actual.length());
+            return identificador_token;
+          }
+        }
+        return identificador_token;
+      }
+
+      public static char nextChar(Reader reader) throws IOException {
+        reader.mark(1);
+        char next_char = (char) reader.read();
+        reader.reset();
+        return next_char;
+      }
+
+      
+      private boolean EOF(Reader lector) throws IOException {
+        lector.mark(1);
+        int value = lector.read();
+        lector.reset();
+        return value == -1;
+      }
