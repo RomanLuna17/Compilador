@@ -27,27 +27,28 @@ nombre_programa: ID
 	       ;
 
 bloque_sentencias_programa: bloque_sentencias_programa sentencia_programa
-        		  | sentencia_programa
-        		  ;
+        		              | sentencia_programa
+        		              ;
 
 sentencia_programa: sentencias_declarativas
-        	  | sentencias_ejecutables
-		  ;
+        	        | sentencias_ejecutables
+		              ;
 
-sentencias_declarativas:  declaracion_variables ';'
-        	       | declaracion_funciones
-                       | sentencia_declarativa_con_asignacion ';' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a una variable " +  $1.sval);}
+sentencias_declarativas:  declaracion_variables ','
+        	             | declaracion_funciones
+                       | declaracion_clase
+                        | sentencia_declarativa_con_asignacion ',' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a una variable " +  $1.sval);}
 		       ;
 
 sentencia_declarativa_con_asignacion: tipo ID igual_dos_puntos valor_asignacion
 				    ;
 
-sentencias_ejecutables: sentencia_asignacion ';'
-		      | sentencia_seleccion ';'
-		      | sentencia_out ';'
-		      | sentencia_control ';'
-		      | sentencia_discard ';'
-		      ;
+sentencias_ejecutables: sentencia_asignacion ','
+                      | sentencia_seleccion ','
+                      | sentencia_out ','
+                      | sentencia_control ','
+                      | sentencia_discard ','
+                      ;
 
 declaracion_variables: tipo list_var
 		     ;
@@ -72,10 +73,13 @@ list_var: list_var ',' ID {//TablaDeSimbolos.agregarSimbolo($2.sval, ambito.toSt
           TablaDeSimbolos.obtenerSimbolo($1.sval, ambito.toString()).setUso("variable");}
 	;
 
-declaracion_funciones: header_funcion '(' parametro ')' tipo_funcion '{' cuerpo_funcion '}' 
-        	     | header_funcion '(' parametro ',' parametro ')' tipo_funcion '{' cuerpo_funcion '}' 
-        	     | header_funcion '(' ')' tipo_funcion '{' cuerpo_funcion '}'
-		     ;
+declaracion_clase: ID '{' sentencias_clase '}'
+
+
+
+declaracion_funciones: tipo_funcion header_funcion '(' parametro ')' '{' cuerpo_funcion '}'  
+        	           | tipo_funcion header_funcion '(' ')' '{' cuerpo_funcion '}'
+		                  ;
 
 tipo_funcion: ':' tipo {TablaDeSimbolos.obtenerSimbolo(ambito.substring(ambito.lastIndexOf(".")+1) + ambito.substring(0, ambito.lastIndexOf("."))).setTipo($2.sval);
 			$$.sval = $2.sval;}
@@ -101,6 +105,8 @@ parametro: tipo ID {System.out.println("Linea: "+ AnalizadorLexico.getLineaActua
 		     TablaDeSimbolos.obtenerSimbolo($2.sval, ambito.toString()).setUso("parametro declaracion");}
 	 ;
 
+
+
 cuerpo_funcion: bloque_sentencias_ejecutables_return
 	      ;
 
@@ -110,11 +116,11 @@ bloque_sentencias_ejecutables_return: bloque_sentencias_ejecutables_return sente
 				    | sentencias_declarativas
 				    ;
 
-sentencia_ejecutable_return: sentencia_asignacion ';'
-			   | sentencia_seleccion_return ';'
-			   | sentencia_out ';'
-			   | sentencia_control_return ';'
-			   | sentencia_retorno ';'
+sentencia_ejecutable_return: sentencia_asignacion ','
+			   | sentencia_seleccion_return ','
+			   | sentencia_out ','
+			   | sentencia_control_return ','
+			   | sentencia_retorno ','
 			   ;
 
 sentencia_retorno: RETURN '(' expr_aritmetic ')' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una sentencia de retorno");
@@ -170,7 +176,7 @@ valor_asignacion: expr_aritmetic
 		;
 
 sentencia_seleccion: IF '(' condicion ')' '{' bloque_ejecutable '}'  end_if 
-		   | IF '(' condicion ')' '{' bloque_ejecutable '}'  else '{' bloque_ejecutable '}' end_if
+		                | IF '(' condicion ')' '{' bloque_ejecutable '}'  else '{' bloque_ejecutable '}' end_if
                    ;
 
 
