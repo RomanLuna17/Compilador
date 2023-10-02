@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Simbolo;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
 
 //Agregar el valor constante a la tabla de simbolos en caso de no estar y devuelve el ID del token constante. 
 //Verifica que el numero flotante este en el rango correcto
@@ -30,7 +30,7 @@ public class AS6 implements AccionSemantica{
         }
 		
 		
-		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
 		 														//o retornar el simbolo si ya existe
 
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres //NOSE SI TENGO QUE DEJAR EL ULTIMO O NO

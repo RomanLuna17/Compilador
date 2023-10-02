@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Constantes;
-import Compilador.analizadorLexico;
+import Compilador.AnalizadorLexico;
 import Compilador.Simbolo;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
 
 
 //Lee el siguiente caracter, lo concatena con el caracter actual y devuelve el token
@@ -21,14 +21,14 @@ public class AS7 implements AccionSemantica{
             token_act.append(caracter);//agrego al token
             
             if (caracter == Constantes.SALTO_DE_LINEA) { //Si es un salto de linea actualizo LineaActual
-                analizadorLexico.setLineaActual(analizadorLexico.getLineaActual() + 1);
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }
         } catch (IOException excepcion) {
             excepcion.printStackTrace();
         }
 		
 		String lexemaSimbolo = token_act.toString();
-		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
 		 														//o retornar el simbolo si ya existe
 		
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres

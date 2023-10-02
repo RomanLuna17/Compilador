@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Constantes;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
 import Compilador.Simbolo;
 
 
@@ -24,7 +24,7 @@ public class AS3 implements AccionSemantica{
 		
 		
 		
-		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
 																 //o retornar el simbolo si ya existe		
         
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres

@@ -8,7 +8,7 @@ import java.io.Reader;
 
 import AccionesSemanticas.AccionSemantica;
 
-public class analizadorLexico {
+public class AnalizadorLexico {
 	
 	//HICE LineaActual Y getLineaActual Y setLineaActual ESTATICAS!!
 	

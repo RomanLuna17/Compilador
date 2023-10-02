@@ -5,7 +5,8 @@ import java.io.Reader;
 
 import Compilador.Constantes;
 import Compilador.Simbolo;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
+import Compilador.AnalizadorLexico;
 
 //Agregar el valor constante a la tabla de simbolos en caso de no estar y devuelve el ID del Token. 
 //Verifica que tipo de entero es(Long o unsigned), Tambien verifica si los rangos son correctos
@@ -30,7 +31,7 @@ public class AS5 implements AccionSemantica{
 			if(valor > Constantes.MAXIMO_VALOR_INT_SIN_SIGNO) {
 				//me fui de rango
 				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
-				System.err.println("ERROR EN NUMERO ENTERO");
+				System.err.println("ERROR EN NUMERO ENTERO SIN SIGNO FUERA DE RANGO. LINEA " + AnalizadorLexico.getLineaActual());
 			}
 		}else if((lexemaSimbolo.substring(lexemaSimbolo.length() - 2)).equals("_l")) {
 			//es un numero entero largo
@@ -39,7 +40,7 @@ public class AS5 implements AccionSemantica{
 											 //y el rango de los enteros negativos tiene 1 mas que los positivos
 				//Me fui de rango
 				//MENSAJE WARNING Y RETORNO EL MAX_VALUE
-				System.err.println("ERROR EN NUMERO ENTERO");
+				System.err.println("ERROR EN NUMERO ENTERO LARGO FUERA DE RANGO. LINEA " + AnalizadorLexico.getLineaActual());
 			}
 		}
 		} catch (NumberFormatException excepcion) {
@@ -47,7 +48,7 @@ public class AS5 implements AccionSemantica{
         }
 		
 		
-		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
 		 														//o retornar el simbolo si ya existe
 
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres //-1??

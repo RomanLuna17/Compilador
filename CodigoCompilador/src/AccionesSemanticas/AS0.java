@@ -3,7 +3,7 @@ package AccionesSemanticas;
 import java.io.IOException;
 import java.io.Reader;
 
-import Compilador.analizadorLexico;
+import Compilador.AnalizadorLexico;
 import Compilador.Constantes;
 
 //SE ENCARGA DE LEER EL SIGUIENTE TOKEN EN EL PROGRAMA
@@ -16,7 +16,7 @@ public class AS0 implements AccionSemantica {
             char caracter = (char) lector.read(); // Lee el siguiente caracter
 
             if (caracter == Constantes.SALTO_DE_LINEA) {
-                analizadorLexico.setLineaActual(analizadorLexico.getLineaActual() + 1);
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }
         } catch (IOException excepcion) {
             excepcion.printStackTrace();

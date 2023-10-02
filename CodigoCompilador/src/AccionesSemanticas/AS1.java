@@ -3,7 +3,7 @@ package AccionesSemanticas;
 import java.io.IOException;
 import java.io.Reader;
 
-import Compilador.analizadorLexico;
+import Compilador.AnalizadorLexico;
 import Compilador.Constantes;
 
 //LEE EL SIGUIENTE CARACTER Y LO CONCATENA AL TOKEN ACTUAL
@@ -21,7 +21,7 @@ public class AS1 implements AccionSemantica {
 
             
             if (caracter == Constantes.SALTO_DE_LINEA) { //Si es un salto de linea actualizo LineaActual
-                analizadorLexico.setLineaActual(analizadorLexico.getLineaActual() + 1);
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }
         } catch (IOException excepcion) {
             excepcion.printStackTrace();

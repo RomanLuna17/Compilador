@@ -1,0 +1,7 @@
+p {
+_numero1 = 10_l,
+_numero2 = 20_l,
+
+_numero3 = _numero1 + _numero2,
+_numero4 = _numero1 - _numero2,
+}

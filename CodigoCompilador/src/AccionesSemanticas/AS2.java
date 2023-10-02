@@ -5,7 +5,7 @@ import java.io.Reader;
 
 import Compilador.Constantes;
 import Compilador.Simbolo;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
 
 //ENCARGADA DE LEER EL SIGUIENTE CARACTER Y DEVOLVER EL TOKEN DEL LITERAL
 public class AS2 implements AccionSemantica{
@@ -21,7 +21,7 @@ public class AS2 implements AccionSemantica{
         	
             
             String lexemaSimbolo = token_act.toString(); //Obtengo el numero
-            Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+            Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
 																	//o retornar el simbolo si ya existe
             
             token_act.delete(0, token_act.length()); //elimino todos los caracteres del token

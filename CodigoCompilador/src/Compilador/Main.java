@@ -13,7 +13,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		analizadorLexico analizador = new analizadorLexico();
+		AnalizadorLexico analizador = new AnalizadorLexico();
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		
 		//analizador.setLector("src\\archivosTxt\\CodigoPrueba.txt");
@@ -23,7 +23,7 @@ public class Main {
 		
 		Reader lector = null;
         try {
-            lector = new BufferedReader(new FileReader("src/archivosTxt/CodigoPrueba.txt"));
+            lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPruebaParser.txt"));
             /*int caracter;
             while ((lector.read()) != -1) {
             	char caracter = (char) lector.read();
@@ -45,7 +45,7 @@ public class Main {
                 char next_char = (char) lector.read();
                 lector.reset();
                 
-                int identificador_token = analizadorLexico.proximoEstado(lector, next_char);
+                int identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);
                 if (identificador_token != 0) {
                   //AnalizadorLexico.token_actual.delete(0, AnalizadorLexico.token_actual.length());
                   ids.add(identificador_token);
@@ -76,8 +76,8 @@ public class Main {
         
         System.out.println("TOKENS ENCONTRADOS: ");
         for(int i = 0;i<ids.size();i++) {
-        	String lexema = TablaDeSimbolo.buscarPorId(ids.get(i)).getLexema();
-        	if(lexema.equals(";")) {
+        	String lexema = TablaDeSimbolos.buscarPorId(ids.get(i)).getLexema();
+        	if(lexema.equals(",")) {
         		System.out.println(lexema);
         	}else {
         		System.out.print(lexema);

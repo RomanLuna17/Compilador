@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Constantes;
-import Compilador.analizadorLexico;
+import Compilador.AnalizadorLexico;
 
 
 //Se encarga de eliminar el token del comentario y leer el siguiente carater
@@ -22,7 +22,7 @@ public class AS9 implements AccionSemantica{
             token_act.append(caracter);
             
             if (caracter == Constantes.SALTO_DE_LINEA) { //Si es un salto de linea actualizo LineaActual
-                analizadorLexico.setLineaActual(analizadorLexico.getLineaActual() + 1);
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }
         } catch (IOException excepcion) {
             excepcion.printStackTrace();

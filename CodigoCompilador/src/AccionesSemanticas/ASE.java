@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Constantes;
-import Compilador.analizadorLexico;
+import Compilador.AnalizadorLexico;
 
 //notifico de que ocurrio un error lexico
 public class ASE implements AccionSemantica{
@@ -22,7 +22,7 @@ public class ASE implements AccionSemantica{
 			
             token_act.append(caracter);
             if (caracter == Constantes.SALTO_DE_LINEA){ //Si es un salto de linea actualizo LineaActual
-                analizadorLexico.setLineaActual(analizadorLexico.getLineaActual() + 1);
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }
         } catch (IOException e) {
             e.printStackTrace();

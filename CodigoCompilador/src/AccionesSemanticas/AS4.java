@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Reader;
 
 import Compilador.Simbolo;
-import Compilador.TablaDeSimbolo;
+import Compilador.TablaDeSimbolos;
 
 
 //elimina el ultimo caracter y retorna el token
@@ -18,7 +18,7 @@ public class AS4 implements AccionSemantica{
 		
 		//forma2
 		String lexemaSimbolo = token_act.toString().substring(0, token_act.length()); //saco el ultimo caracter del token
-		Simbolo simbolo = TablaDeSimbolo.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en caso de no existir
 		 														//o retornar el simbolo si ya existe
 		
 		

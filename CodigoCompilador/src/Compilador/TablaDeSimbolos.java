@@ -3,7 +3,7 @@ package Compilador;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class TablaDeSimbolo {
+public class TablaDeSimbolos {
 		
 		
 		private static Hashtable<String, Simbolo> tabla = new Hashtable<>();
