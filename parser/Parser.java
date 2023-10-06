@@ -21,12 +21,8 @@ package Compilador;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Stack;
-
-//#line 27 "Parser.java"
+import java.util.Map;
+//#line 23 "Parser.java"
 
 
 
@@ -171,68 +167,55 @@ public final static short IF=260;
 public final static short THEN=261;
 public final static short ELSE=262;
 public final static short END_IF=263;
-public final static short OUT=264;
-public final static short FUN=265;
-public final static short RETURN=266;
-public final static short BREAK=267;
-public final static short DISCARD=268;
-public final static short CONST=269;
-public final static short DEFER=270;
-public final static short I16=271;
-public final static short F32=272;
-public final static short IGUAL=273;
-public final static short MAYOR_IGUAL=274;
-public final static short MENOR_IGUAL=275;
-public final static short EXCLAMACION_EXCLAMACION=276;
+public final static short PRINT=264;
+public final static short CLASS=265;
+public final static short VOID=266;
+public final static short LONG=267;
+public final static short UINT=268;
+public final static short FLOAT=269;
+public final static short WHILE=270;
+public final static short DO=271;
+public final static short IGUAL=272;
 public final static short YYERRCODE=256;
 final static short yylhs[] = {                           -1,
-    0,    1,    2,    3,    3,    4,    4,    5,    6,    7,
-    9,    9,    9,   10,   10,    8,   11,   12,   13,   13,
-   13,   14,   14,   14,   15,   15,   16,
+    0,    1,    2,    3,    3,    4,    5,    6,    7,    8,
+    9,    9,    9,   10,   10,   10,   11,   11,   12,
 };
 final static short yylen[] = {                            2,
-    1,    4,    1,    2,    1,    1,    1,    2,    2,    2,
-    1,    1,    1,    3,    1,    3,    1,    1,    3,    3,
-    1,    3,    3,    1,    1,    1,    1,
+    1,    4,    1,    2,    1,    1,    2,    3,    1,    1,
+    3,    3,    1,    3,    3,    1,    1,    1,    1,
 };
 final static short yydefred[] = {                         0,
-    3,    0,    1,    0,    0,    0,   13,   11,   12,    0,
-    5,    6,    7,    0,    0,    0,   17,    0,    2,    4,
-    8,    9,   15,    0,   25,   27,   16,    0,    0,   24,
-   26,    0,    0,    0,    0,    0,   14,    0,    0,   22,
-   23,
+    3,    0,    1,    0,    0,    0,    0,    5,    6,    0,
+    9,    0,    2,    4,    7,   17,   19,    8,    0,    0,
+   16,   18,    0,    0,    0,    0,    0,    0,   14,   15,
 };
 final static short yydgoto[] = {                          2,
-    3,    4,   10,   11,   12,   13,   14,   15,   16,   24,
-   18,   27,   28,   29,   30,   31,
+    3,    4,    7,    8,    9,   10,   12,   18,   19,   20,
+   21,   22,
 };
-final static short yysindex[] = {                      -243,
-    0,    0,    0, -105, -256, -249,    0,    0,    0, -125,
-    0,    0,    0,  -17,  -16, -228,    0, -237,    0,    0,
-    0,    0,    0,  -14,    0,    0,    0,  -26,  -40,    0,
-    0, -226, -237, -237, -237, -237,    0,  -40,  -40,    0,
-    0,
+final static short yysindex[] = {                      -255,
+    0,    0,    0, -109, -237, -249, -125,    0,    0,  -20,
+    0, -241,    0,    0,    0,    0,    0,    0,  -30,  -41,
+    0,    0, -241, -241, -241, -241,  -41,  -41,    0,    0,
 };
 final static short yyrindex[] = {                         0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    0,    0,  -12,  -39,    0,
-    0,    0,    0,    0,    0,    0,    0,  -35,  -32,    0,
-    0,
+    0,    0,    0,    0,    0,    0,    0,    0,  -19,  -40,
+    0,    0,    0,    0,    0,    0,  -36,  -33,    0,    0,
 };
 final static short yygindex[] = {                         0,
-    0,    0,    0,   23,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,  -11,  -10,    0,
+    0,    0,    0,   19,    0,    0,    0,    0,    0,   -5,
+   -4,    0,
 };
-final static int YYTABLESIZE=147;
+final static int YYTABLESIZE=132;
 static short yytable[];
 static { yytable();}
 static void yytable(){
-yytable = new short[]{                         19,
-    6,   35,    7,   21,   21,   21,   36,   19,   19,   19,
-   20,   20,   20,    1,    8,    9,   33,    5,   34,   25,
-   26,   38,   39,   17,   40,   41,   21,   22,   23,   32,
-   37,   18,   20,    0,    0,    0,    0,    0,    0,    0,
+yytable = new short[]{                         13,
+   25,    1,   13,   13,   13,   26,   11,   11,   11,   12,
+   12,   12,   23,    5,   24,   16,   17,   27,   28,    6,
+   29,   30,   11,   15,   10,   14,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
@@ -242,18 +225,17 @@ yytable = new short[]{                         19,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
     0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-    0,    6,    0,    7,    0,    0,    0,    0,    0,    0,
-    0,    0,    0,    0,    0,    8,    9,
+    0,    0,    0,    0,    0,    0,    0,    0,    0,    0,
+    0,    6,
 };
 }
 static short yycheck[];
 static { yycheck(); }
 static void yycheck() {
 yycheck = new short[] {                        125,
-  257,   42,  259,   43,   44,   45,   47,   43,   44,   45,
-   43,   44,   45,  257,  271,  272,   43,  123,   45,  257,
-  258,   33,   34,  273,   35,   36,   44,   44,  257,   44,
-  257,   44,   10,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   42,  257,   43,   44,   45,   47,   43,   44,   45,   43,
+   44,   45,   43,  123,   45,  257,  258,   23,   24,  257,
+   25,   26,  272,   44,   44,    7,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
@@ -263,12 +245,12 @@ yycheck = new short[] {                        125,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
    -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,  257,   -1,  259,   -1,   -1,   -1,   -1,   -1,   -1,
-   -1,   -1,   -1,   -1,   -1,  271,  272,
+   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,   -1,
+   -1,  257,
 };
 }
 final static short YYFINAL=2;
-final static short YYMAXTOKEN=276;
+final static short YYMAXTOKEN=272;
 final static String yyname[] = {
 "end-of-file",null,null,null,null,null,null,null,null,null,null,null,null,null,
 null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
@@ -287,8 +269,7 @@ null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
 null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
 null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,
 null,null,null,null,null,null,null,"ID","CTE","CADENA","IF","THEN","ELSE",
-"END_IF","OUT","FUN","RETURN","BREAK","DISCARD","CONST","DEFER","I16","F32",
-"IGUAL","MAYOR_IGUAL","MENOR_IGUAL","EXCLAMACION_EXCLAMACION",
+"END_IF","PRINT","CLASS","VOID","LONG","UINT","FLOAT","WHILE","DO","IGUAL",
 };
 final static String yyrule[] = {
 "$accept : program",
@@ -297,16 +278,8 @@ final static String yyrule[] = {
 "nombre_programa : ID",
 "bloque_sentencias_programa : bloque_sentencias_programa sentencia_programa",
 "bloque_sentencias_programa : sentencia_programa",
-"sentencia_programa : sentencias_declarativas",
 "sentencia_programa : sentencias_ejecutables",
-"sentencias_declarativas : declaracion_variables ','",
 "sentencias_ejecutables : sentencia_asignacion ','",
-"declaracion_variables : tipo list_var",
-"tipo : I16",
-"tipo : F32",
-"tipo : CADENA",
-"list_var : list_var ',' ID",
-"list_var : ID",
 "sentencia_asignacion : ID igual valor_asignacion",
 "igual : IGUAL",
 "valor_asignacion : expr_aritmetic",
@@ -321,57 +294,60 @@ final static String yyrule[] = {
 "const : CTE",
 };
 
-//#line 104 "gramatica.y"
+//#line 70 "gramatica.y"
 //funciones
       public static void ConstanteNegativa(String lexema){
-  	    Simbolo s = TablaDeSimbolos.obtenerSimbolo(lexema);
+
       }
 
       public static void ConstantePositiva(String lexema){
       }
 
-      int yylex() throws IOException {
-        /*
-        int identificador_token = 0;
-        Reader lector = compilador.AnalizadorLexico.lector;
-        compilador.AnalizadorLexico.estado_actual = 0;
-        while (! EOF(lector)) {
-          char caracter = nextChar(lector);
-          identificador_token = AnalizadorLexico.proximoEstado(lector, caracter);
-          if (identificador_token != ConstantesCompilador.EN_LECTURA) {
-            yylval = new ParserVal(AnalizadorLexico.getTokenActual());
-            AnalizadorLexico.token_actual.delete(0, AnalizadorLexico.token_actual.length());
-            return identificador_token;
-          }
-        }
-        return identificador_token;
-        */
 
-        Reader lector = null;
-        lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPruebaParser.txt"));
-  
+      int yylex() throws IOException {
+        int identificador_token = 0;
+        //Reader lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt"));
+        Reader lector = Compilador.AnalizadorLexico.lector;
+        
         lector.mark(1);
         int value = lector.read();
         lector.reset();
-        
+            
         while(!(value == -1)){
+         	lector.mark(1);
+          char next_char = (char) lector.read();
+          lector.reset();
+          identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);      
+          
+          if (identificador_token != 0) {
+          String lexema_entregar = "nose"; //NOSE CON QUE INICIALIZAR
+        	if(identificador_token > 311) {
+        		  //no es palabra reservada
+          		String lexema = TablaDeSimbolos.buscarPorId(identificador_token).getLexema();
+          		lexema_entregar = lexema;
+          	}else {
+          		//System.out.println(ids.get(i));
+          		
+          		Map<String, Integer> palabrasReservadas = LectorArchivo.readMapFile("src\\archivosTxt\\TablaPalabrasReservadas.txt");
+          		
+          		for (java.util.Map.Entry<String, Integer> entry : palabrasReservadas.entrySet()) {
+          			if(entry.getValue().equals(identificador_token)) {
+                      	//Si encontre e lexema no es necesario seguir recorriendo el FOR
+          				lexema_entregar = entry.getKey();
+                      	 yylval = new ParserVal(lexema_entregar);
+                         return identificador_token;
+                      }
+                  }
+          	}
+            yylval = new ParserVal(lexema_entregar);
+            return identificador_token;
+          }
+
           lector.mark(1);
-            char next_char = (char) lector.read();
-            lector.reset();
-            
-            int identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);
-            if (identificador_token != 0) {
-              //AnalizadorLexico.token_actual.delete(0, AnalizadorLexico.token_actual.length());
-              //ids.add(identificador_token);
-              //System.out.println("EL TOKEN ENCONTRADO ES MAIN: " + identificador_token);
-              return identificador_token;
-            }           
-            
-            lector.mark(1);
-            value = lector.read();
-            lector.reset();
-      
+          value = lector.read();
+          lector.reset();
         }
+        return identificador_token;
       }
 
       public static char nextChar(Reader reader) throws IOException {
@@ -388,7 +364,12 @@ final static String yyrule[] = {
         lector.reset();
         return value == -1;
       }
-//#line 320 "Parser.java"
+
+    void yyerror(String error) {
+        // funcion utilizada para imprimir errores que produce yacc
+        System.out.println("Yacc reporto un error: " + error); //Falta mostrar cual es el error
+    }
+//#line 301 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -542,74 +523,51 @@ boolean doaction;
     switch(yyn)
       {
 //########## USER-SUPPLIED ACTIONS ##########
+case 1:
+//#line 24 "gramatica.y"
+{System.out.println("ARRANCO EL PROGRAMA");}
+break;
 case 2:
-//#line 28 "gramatica.y"
+//#line 27 "gramatica.y"
 {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el programa " +  val_peek(3).sval);}
 break;
-case 10:
-//#line 48 "gramatica.y"
-{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una declaracion de variable");}
-break;
-case 11:
-//#line 51 "gramatica.y"
-{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el tipo I16");
-	   yyval.sval = "i16";
-	   aux = "i16";}
-break;
-case 12:
-//#line 54 "gramatica.y"
-{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el tipo F32");
-    	   yyval.sval = "f32";
-    	   aux = "f32";}
-break;
-case 13:
-//#line 57 "gramatica.y"
-{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio una cadena");
-    	      aux = "CADENA";}
-break;
-case 14:
-//#line 61 "gramatica.y"
-{System.out.println("G86: se le va a asignar tipo: " + aux + " a la variable " + val_peek(0).sval + ambito);}
-break;
-case 15:
-//#line 64 "gramatica.y"
-{System.out.println("G90: se le va a asignar tipo: " + aux + " a la variable " + val_peek(0).sval + ambito);}
-break;
-case 16:
-//#line 69 "gramatica.y"
+case 8:
+//#line 43 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a la variable " + val_peek(2).sval);}
 break;
-case 19:
-//#line 81 "gramatica.y"
+case 9:
+//#line 46 "gramatica.y"
+{System.out.println("IGUAL AHRE");}
+break;
+case 11:
+//#line 52 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una suma");}
 break;
-case 20:
-//#line 82 "gramatica.y"
+case 12:
+//#line 53 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una resta");}
 break;
-case 22:
-//#line 86 "gramatica.y"
+case 14:
+//#line 57 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una multiplicacion");}
 break;
-case 23:
-//#line 87 "gramatica.y"
+case 15:
+//#line 58 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una division");}
 break;
-case 25:
-//#line 90 "gramatica.y"
-{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio " + val_peek(0).sval + " como ID" );}
+case 17:
+//#line 61 "gramatica.y"
+{System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio UN ID");}
 break;
-case 26:
-//#line 91 "gramatica.y"
+case 18:
+//#line 62 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio " + val_peek(0).sval + " como constante " );}
 break;
-case 27:
-//#line 94 "gramatica.y"
-{ if ((val_peek(0).sval).contains(".")){val_peek(0).sval = String.valueOf(PasarAFloatJava(val_peek(0).sval));}
-	     ConstantePositiva(val_peek(0).sval);
- 	     yyval.sval = val_peek(0).sval;}
+case 19:
+//#line 65 "gramatica.y"
+{System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ", Se reconocio " + val_peek(0).sval + "como constante");}
 break;
-//#line 536 "Parser.java"
+//#line 494 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

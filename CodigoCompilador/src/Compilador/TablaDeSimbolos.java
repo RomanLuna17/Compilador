@@ -7,27 +7,23 @@ public class TablaDeSimbolos {
 		
 		
 		private static Hashtable<String, Simbolo> tabla = new Hashtable<>();
-		private static int id = Constantes.PRIMER_IDENTIFICADOR;
+
 
 		
-		public static void agregarSimbolo (String lexema) {
-			Simbolo nuevo = new Simbolo(lexema,id);
-			tabla.put(lexema, nuevo);
-			id++;
-		}
-		
-		public static Simbolo obtenerSimbolo (String lexema) {
+		public static Simbolo obtenerSimbolo (String lexema, int id_simbolo) {
 			Simbolo buscado = tabla.get(lexema);
 			if (buscado == null) {
 				//agregarSimbolo(lexema); // PREGUNTAR si es correcto
-				Simbolo nuevo = new Simbolo(lexema,id);
+				Simbolo nuevo = new Simbolo(lexema,id_simbolo);
+				//System.out.println("TS24. CREE UN NUEVO SIMBOLO CON ID: " + nuevo.getId() + " SIMBOLO: " + nuevo.getLexema());
 				tabla.put(lexema, nuevo);
-				id++;
+				//id++;
 				//System.out.println("AGREGO EL SIMBOLO A LA TABLA: " + lexema);
 				//return Constantes.SIMBOLO_NO_ENCONTRADO;
 				return nuevo;
 			}
 			else {
+				//System.out.println("TS24. YA EXISTIA SIMBOLO CON ID: " + buscado.getId() + " SIMBOLO: " + buscado.getLexema());
 				return buscado;
 			}
 		}

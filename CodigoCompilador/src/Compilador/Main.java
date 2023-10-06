@@ -2,92 +2,32 @@ package Compilador;
 
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Paths;
+import java.security.KeyStore.Entry;
 
 public class Main {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub
 		AnalizadorLexico analizador = new AnalizadorLexico();
-		ArrayList<Integer> ids = new ArrayList<Integer>();
+		//ArrayList<Integer> ids = new ArrayList<Integer>();
 		
 		//analizador.setLector("src\\archivosTxt\\CodigoPrueba.txt");
-		
-		
-		
-		
-		Reader lector = null;
-        try {
-            lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPruebaParser.txt"));
-            /*int caracter;
-            while ((lector.read()) != -1) {
-            	char caracter = (char) lector.read();
-                System.out.println(caracter);
-                ids.add(analizadorLexico.proximoEstado(lector, caracter));
-            }
-            char caracter = (char) lector.read();*/
-            
-            
-            //ids.add(analizadorLexico.proximoEstado(lector, caracter));
-            
-            
-            lector.mark(1);
-            int value = lector.read();
-            lector.reset();
-            
-            while(!(value == -1)){
-            	lector.mark(1);
-                char next_char = (char) lector.read();
-                lector.reset();
-                
-                int identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);
-                if (identificador_token != 0) {
-                  //AnalizadorLexico.token_actual.delete(0, AnalizadorLexico.token_actual.length());
-                  ids.add(identificador_token);
-                  //System.out.println("EL TOKEN ENCONTRADO ES MAIN: " + identificador_token);
-                }       
-                
-                
-                lector.mark(1);
-                value = lector.read();
-                lector.reset();
-            }
-            
-            
-            
-            
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (lector != null) {
-                try {
-                    lector.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        
-        
-        System.out.println("TOKENS ENCONTRADOS: ");
-        for(int i = 0;i<ids.size();i++) {
-        	String lexema = TablaDeSimbolos.buscarPorId(ids.get(i)).getLexema();
-        	if(lexema.equals(",")) {
-        		System.out.println(lexema);
-        	}else {
-        		System.out.print(lexema);
-        	}
-        }
-		
-        
-        
-	}
+		 Parser parser = new Parser();
+		 
+         //System.out.println("LEXEMA: " + Constantes.ARCHIVO_CARACTERES_ASCII.get(";"));
 
-	
+		 
+		 AnalizadorLexico.setLector("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPruebaParserParte.txt");
+         parser.run();		
+		
+        }      
 	
 }

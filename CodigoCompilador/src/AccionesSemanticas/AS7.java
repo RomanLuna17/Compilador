@@ -28,17 +28,20 @@ public class AS7 implements AccionSemantica{
         }
 		
 		String lexemaSimbolo = token_act.toString();
-		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
-		 														//o retornar el simbolo si ya existe
-		
+		Simbolo simbolo;
+		if(Constantes.ARCHIVO_CARACTERES_ASCII.containsKey(lexemaSimbolo)) {
+			simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en caso de no existir
+		}else {
+			simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_PALABRAS_RESERVADAS.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en caso de no existir
+		}
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres
 		
 		/*
         System.out.println("TOKEN ACTUAL: " + token_act.toString());
         System.out.println("###########################################");
 		*/
-		
-		return simbolo.getId(); //TODAS LAS ACCIONES SEMANTICAS TIENEN ESTA DUDA :)
+        AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
+		return simbolo.getId(); 
 
 
 	}

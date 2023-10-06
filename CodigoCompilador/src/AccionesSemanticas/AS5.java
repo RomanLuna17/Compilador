@@ -48,7 +48,7 @@ public class AS5 implements AccionSemantica{
         }
 		
 		
-		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo); //Se encarga de agregar el simbolo en casod e no existir
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.CTE); //Se encarga de agregar el simbolo en casod e no existir
 		 														//o retornar el simbolo si ya existe
 
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres //-1??
@@ -57,7 +57,7 @@ public class AS5 implements AccionSemantica{
         System.out.println("TOKEN ACTUAL: " + token_act.toString());
         System.out.println("###########################################");
 		*/
-		
+        AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 		return simbolo.getId(); //MISMO CASO QUE ANTERIORES
 	}
 

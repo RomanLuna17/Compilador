@@ -18,6 +18,16 @@ public class AnalizadorLexico {
 	private static AccionSemantica [][] accionesSemanticas = LectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
 	private static int [][] transicionDeEstados = LectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
 	
+	private static String lexemaActual = "";
+	
+	public static void setLexemaActual(String nuevo_lexema) {
+		lexemaActual = nuevo_lexema;
+	}
+	
+	public static String getLexemaActual() {
+		return lexemaActual;
+	}
+	
 	public static int getLineaActual() {
 		return lineaActual;
 	}
@@ -60,14 +70,17 @@ public class AnalizadorLexico {
             case Constantes.MINISCULA:
                 carActual = 3;
                 break;
-            case Constantes.MAYUSCULA:
-                carActual = 19;
+            case '_':
+                carActual = 4;
                 break;
             case Constantes.DIGITO:
                 carActual = 5;
                 break;
-            case '.':
-                carActual = 16;
+            case 'E':
+            	carActual = 7;
+                break;
+            case 'e':	
+                carActual = 6;
                 break;
             case '+':
                 carActual = 8;
@@ -75,8 +88,41 @@ public class AnalizadorLexico {
             case '-':
                 carActual = 9;
                 break;
+            case '*':
+                carActual = 10;
+                break;
             case '/':
                 carActual = 11;
+                break;
+            case '=':
+                carActual = 12;
+                break;
+            case '!':
+                carActual = 13;
+                break;
+            case '<':
+                carActual = 14;
+                break;
+            case '>':
+                carActual = 15;
+                break;
+            case '.':
+                carActual = 16;
+                break;
+            case ';':
+                carActual = 17;
+                break;
+            case ',':
+                carActual = 18;
+                break;
+            case Constantes.MAYUSCULA:
+                carActual = 19;
+                break;
+            case '{':
+                carActual = 20;
+                break;
+            case '}':
+                carActual = 21;
                 break;
             case '%':
             	carActual = 22;
@@ -87,50 +133,14 @@ public class AnalizadorLexico {
             case ')':
                 carActual = 24;
                 break;
-            case '{':
-                carActual = 20;
-                break;
-            case '}':
-                carActual = 21;
-                break;
-            case ',':
-                carActual = 19;
-                break;
-            case ';':
-                carActual = 18;
-                break;
-            case '=':
-                carActual = 12;
-                break;
-            case '>':
-                carActual = 15;
-                break;
-            case '<':
-                carActual = 14;
-                break;
-            case '!':
-                carActual = 13;
-                break;
-            case '*':
-                carActual = 10;
-                break;
-            case 'E':
-            	carActual = 7;
-                break;
-            case 'e':	
-                carActual = 6;
+            case 'l':	
+                carActual = 25;
                 break;
             case 'u':	
                 carActual = 26;
                 break;
             case 'i':	
                 carActual = 27;
-                break;
-            case 'l':	
-                carActual = 25;
-                break;
-            case '_':
-                carActual = 4;
                 break;
             default: 
                 carActual = 28; //Si es un caracter no reconocido, lo manda a ASE
@@ -145,7 +155,8 @@ public class AnalizadorLexico {
         
         
         estadoActual = transicionDeEstados[estadoActual][carActual];
-        //System.out.println("Debug AL178: as: " + accion_semantica + " car: " + car + " ea: " + estado_actual + " id: " + id_token);
+        //System.out.println("AL158. IDTOKEN: " + idToken + " Token correspondiente: " + TablaDeSimbolos.buscarPorId(idToken).getLexema());
+        
         return idToken;
 	}
 }

@@ -130,7 +130,8 @@ public class LectorArchivo {
 	                return new AS6();
 	            case "AS7":
 	                return new AS7();
-
+	            case "AS8":
+	            	return new AS8();
 	            case "AS9":
 	                return new AS9();
 	            default:
