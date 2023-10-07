@@ -37,17 +37,20 @@ sentencia_programa: sentencias_declarativas {System.out.println("Linea: " + Anal
 
 //declarativas
 
-sentencias_declarativas: declaracion_variables ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de variables");}
-		       		   | declaracion_funciones     {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de funcion");}
-				       | declaracion_clases		   {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase");}
-					   | declaracion_objetos_clase {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de objeto de clase");}
+sentencias_declarativas: declaracion_variables ',' 
+		       		   | declaracion_funciones ','    
+				       | declaracion_clases	   ','	   
+					   | declaracion_objetos_clase ',' 
 					   ;
 
-declaracion_variables: tipo lista_de_variables 
+declaracion_variables: tipo lista_de_variables {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de variables");}
 				     ;
 
-declaracion_funciones: VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");}
-                     | VOID ID '(' ')' '{' cuerpo_de_la_funcion '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
+declaracion_funciones: VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");}
+                     | VOID ID '(' tipo ID ')' '{' sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");} 
+                     | VOID ID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
+                     | VOID ID '(' ')' '{' sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
+                     
 		     		 ;
 
 tipo: LONG {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo LONG");}
@@ -59,22 +62,39 @@ lista_de_variables: lista_de_variables ';' ID
 				  | ID
 				  ;
 
-cuerpo_de_la_funcion: sentencia_programa
-					| sentencias_retorno
+cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion 
+					| sentencias_de_funcion
 					;
+
+sentencias_de_funcion: sentencia_funcion_declarativa
+                     | sentencia_funcion_ejecutable
+                     ;
+
+sentencia_funcion_declarativa: declaracion_variables ','                    
+                             | declaracion_funciones ','
+                             | declaracion_objetos_clase ','
+                             ;
+                             
+sentencia_funcion_ejecutable: sentencia_asignacion ','
+                            | sentencias_IF ','
+                            | sentencias_salida ','
+                            | sentencias_control ','
+                            | sentencias_ejecucion_funcion ','
+                            ;
+
 
 sentencias_retorno: RETURN ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio RETURN");}
 				  ;
 
-declaracion_clases: CLASS ID '{' cuerpo_clase '}' 
+declaracion_clases: CLASS ID '{' cuerpo_clase '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase");}
 					//tema 21
-				  | CLASS ID ','
+				  | CLASS ID ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase a posterior");}
 				  ;
 
 cuerpo_clase: sentencia_programa
 			;
 
-declaracion_objetos_clase: ID list_objts_clase ','
+declaracion_objetos_clase: ID list_objts_clase ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de objeto de clase");}
 						 ;
 
 list_objts_clase: list_objts_clase ';' ID
@@ -82,12 +102,16 @@ list_objts_clase: list_objts_clase ';' ID
 				;
 
 //ejecutables 
-sentencias_ejecutables: sentencia_asignacion ','
+sentencias_ejecutables: sentencia_asignacion ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia Ejecutables");}
                       | sentencias_IF ','
                       | sentencias_salida ','
                       | sentencias_control ','
+                      | sentencias_ejecucion_funcion ','
                       ;
 
+sentencias_ejecucion_funcion: ID '(' expr_aritmetic ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a funcion con parametro");}
+                            | ID '(' ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a funcion sin parametro");}
+                            ;
 
 sentencia_asignacion: ID '=' valor_asignacion {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una asignacion");}
                     | ID '.' //sentencia_asignacion //???

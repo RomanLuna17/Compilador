@@ -146,10 +146,11 @@ public class AnalizadorLexico {
                 carActual = 28; //Si es un caracter no reconocido, lo manda a ASE
                 break;
         }
-        //System.out.println("ESTADO ACTUAL: " + estadoActual);
+        //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter);
         //System.out.println("CARACTER ACTUAL: " + carActual);
         //System.out.println("VALOR CARACTER: " + caracter);
         AccionSemantica accSemantica = accionesSemanticas[estadoActual][carActual];
+        //System.out.println("TOKENACT: " + tokenActual);
         int idToken = accSemantica.run(lector, tokenActual);
         //System.out.println("ID TOKEN: " + idToken);
         

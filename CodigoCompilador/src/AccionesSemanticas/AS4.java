@@ -28,23 +28,11 @@ public class AS4 implements AccionSemantica{
 		}else {
 			simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_PALABRAS_RESERVADAS.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en caso de no existir
 		}
-		//Map<String, Integer> palabrasReservadas = LectorArchivo.readMapFile("src\\archivosTxt\\TablaPalabrasReservadas.txt");
-		/*
-		if(palabrasReservadas.containsKey(lexemaSimbolo)) {
-			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
-			return palabrasReservadas.get(lexemaSimbolo);
-		}else {
-			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
-			
-			return -1; 
+		
 		
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
 		
-		/*
-        System.out.println("TOKEN ACTUAL: " + token_act.toString());
-        System.out.println("###########################################");
-		*/
-		
+		//System.out.println("AS4: Lexema: " +simbolo.getLexema() + " IDtoken: " + simbolo.getId() + " TOKEN ACT: " + token_act);
         AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 		return simbolo.getId(); 
 	}

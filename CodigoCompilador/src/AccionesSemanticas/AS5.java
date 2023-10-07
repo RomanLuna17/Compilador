@@ -22,6 +22,7 @@ public class AS5 implements AccionSemantica{
 		token_act.append(caracter);  //En este caso creo que agrego la i o la u. pero no estoy seguro
 		
 		String lexemaSimbolo = token_act.toString(); //Obtengo el numero
+		//System.out.println("TokenACT: " + token_act.toString());
 		
 		try {
 		//verifico de que tipo de entero se trata, si un entero largo, con o sin signo y si su rango es correcto
@@ -47,9 +48,11 @@ public class AS5 implements AccionSemantica{
             excepcion.printStackTrace();
         }
 		
+
 		
 		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.CTE); //Se encarga de agregar el simbolo en casod e no existir
-		 														//o retornar el simbolo si ya existe
+		
+		//System.out.println("idToken: " + simbolo.getId() + " Lexema: " + simbolo.getLexema());
 
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres //-1??
 		

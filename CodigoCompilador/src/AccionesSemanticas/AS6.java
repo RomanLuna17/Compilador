@@ -16,7 +16,7 @@ public class AS6 implements AccionSemantica{
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
 		//System.out.println("ACCION SEMANTICA 6");
 		String lexemaSimbolo = token_act.toString();
-		
+		//System.out.println("TokenACT: " + token_act.toString());
 		try {
 			float valor = Float.parseFloat(lexemaSimbolo+'f'); //tengo que concatenar el f al final porque sino float no toma el valor
 			
@@ -35,6 +35,8 @@ public class AS6 implements AccionSemantica{
 		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo,Constantes.CTE); //Se encarga de agregar el simbolo en caso de no existir
 		 														//o retornar el simbolo si ya existe
 
+		//System.out.println("idToken: " + simbolo.getId() + " Lexema: " + simbolo.getLexema());
+		
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres //NOSE SI TENGO QUE DEJAR EL ULTIMO O NO
 		
 		/*

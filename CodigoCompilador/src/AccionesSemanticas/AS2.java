@@ -36,6 +36,9 @@ public class AS2 implements AccionSemantica{
            */
             //System.out.println("SIMBOLO: " + simbolo.getLexema() + " ID: " + simbolo.getId());
             AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
+            //System.out.println("AS2: Lexema: " +simbolo.getLexema() + " IDtoken: " + simbolo.getId() + " TOKEN ACT: " + token_act);
+            
+            
             return simbolo.getId();// Retorno token
             
         } catch (IOException excepcion) {

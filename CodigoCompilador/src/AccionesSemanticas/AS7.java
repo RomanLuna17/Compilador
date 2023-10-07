@@ -40,6 +40,10 @@ public class AS7 implements AccionSemantica{
         System.out.println("TOKEN ACTUAL: " + token_act.toString());
         System.out.println("###########################################");
 		*/
+		
+		//System.out.println("AS7: Lexema: " +simbolo.getLexema() + " IDtoken: " + simbolo.getId() + " TOKEN ACT: " + token_act);
+        
+		
         AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 		return simbolo.getId(); 
 
