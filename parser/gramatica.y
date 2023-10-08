@@ -68,21 +68,13 @@ cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion
 					;
 
 sentencias_de_funcion: sentencia_declatariva_especificas
-                     | sentencia_funcion_ejecutable
+                     | sentencias_ejecutables
                      ;
 
 sentencia_declatariva_especificas: declaracion_variables ','                    
                              | declaracion_funciones ','
                              | declaracion_objetos_clase ','
                              ;
-                             
-sentencia_funcion_ejecutable: sentencia_asignacion ','
-                            | sentencias_IF ','
-                            | sentencias_salida ','
-                            | sentencias_control ','
-                            | sentencias_ejecucion_funcion ','
-                            ;
-
 
 sentencias_retorno: RETURN ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio RETURN");}
 				  ;
@@ -90,10 +82,16 @@ sentencias_retorno: RETURN ',' {System.out.println("Linea: " + AnalizadorLexico.
 declaracion_clases: CLASS ID '{' cuerpo_clase '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase");}
 					//tema  21
 				  | CLASS ID {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase a posterior");}
+                  | CLASS ID '{' cuerpo_clase error {System.out.println("Error sintectico al compilar no permite clase con cuerpos que no esten entre {} ");}
+                  | CLASS ID cuerpo_clase '}' error {System.out.println("Error sintectico al compilar no permite clase con cuerpos que no esten entre {} ");}
+                  | CLASS ID '{' '}' error {System.out.println("Error sintectico al compilar no permite declarar clases vacias");}
+                  | CLASS '{' cuerpo_clase '}' error {System.out.println("Error sintectico al compilar no permite clase sin ID");}
 				  ;
 
 cuerpo_clase: cuerpo_clase sentencia_declatariva_especificas
             | sentencia_declatariva_especificas
+            | sentencias_ejecutables error {System.out.println("Error sintectico al compilar no permite declarar sentencia ejecutables");}
+            | declaracion_clases error {System.out.println("Error sintectico al compilar no permite declarar una clase dentro de otra");}
             ;
 
 declaracion_objetos_clase: ID list_objts_clase  {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de objeto de clase");}
@@ -101,6 +99,9 @@ declaracion_objetos_clase: ID list_objts_clase  {System.out.println("Linea: " + 
 
 list_objts_clase: list_objts_clase ';' ID
 				| ID
+                | list_objts_clase ',' ID error {System.out.println("Error sintectico al compilar no permite objetos de clase separados por ,");}
+                | list_objts_clase '.' ID error {System.out.println("Error sintectico al compilar no permite objetos de clase separados por .");}
+                | list_objts_clase ID error {System.out.println("Error sintectico al compilar no permite objetos de clase separados por ,");}
 				;
 
 //ejecutables 

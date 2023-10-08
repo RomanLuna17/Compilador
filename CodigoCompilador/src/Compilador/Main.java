@@ -25,7 +25,7 @@ public class Main {
          //System.out.println("LEXEMA: " + Constantes.ARCHIVO_CARACTERES_ASCII.get(";"));
 
 		 
-		 AnalizadorLexico.setLector("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\Testeos\\CPP_TOF.txt");
+		 AnalizadorLexico.setLector("src\\Testeos\\CPP_CLASES.txt");
          parser.run();		
 		
         }      

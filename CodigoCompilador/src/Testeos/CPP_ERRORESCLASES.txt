@@ -1,0 +1,21 @@
+_p {
+
+    CLASS  {
+        LONG _a,
+		_ca _a1;_a2,
+    },
+
+    CLASS _b {},
+	
+	CLASS ,
+	
+	CLASS _ca {
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		_hola = _chau,
+	}ELSE{
+		_perro = 10_l,
+	} END_IF, 
+    },
+
+}
