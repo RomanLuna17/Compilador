@@ -6,12 +6,9 @@ import java.io.Reader;
 import java.util.Map;
 %}
 
-%token ID CTE CADENA IF THEN ELSE END_IF PRINT CLASS VOID LONG UINT FLOAT WHILE DO IGUAL
-       
-       //Borrar antes de consultar
-       //OUT FUN RETURN BREAK DISCARD
-       //CONST DEFER I16 F32 IGUAL MAYOR_IGUAL
-       //MENOR_IGUAL EXCLAMACION_EXCLAMACION
+%token ID CTE CADENA IF THEN ELSE END_IF PRINT CLASS VOID LONG UINT FLOAT WHILE DO RETURN TOF 
+        MAYOR_IGUAL MENOR_IGUAL IGUAL_IGUAL 
+        EXCLAMACION_EXCLAMACION MENOS_MENOS
 
 %left '+' '-'
 %left '*' '/'
@@ -24,120 +21,197 @@ import java.util.Map;
 program: programa {System.out.println("ARRANCO EL PROGRAMA");}
        ;
 
-programa: nombre_programa '{' bloque_sentencias_programa '}' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el programa " +  $1.sval);}
-	      ;
+programa: nombre_programa '{' bloque_sentencias_programa '}' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el programa ");}
+        | nombre_programa '{' bloque_sentencias_programa error {System.out.println("Error sintectico al compilar no permite terminar de leer el programa de forma correcta");}
+        ;
 
 nombre_programa: ID
 	       ;
 
 bloque_sentencias_programa: bloque_sentencias_programa sentencia_programa
-        		              | sentencia_programa
-        		              ;
+        		          | sentencia_programa
+        		          ;
 
-sentencia_programa: sentencias_ejecutables
-		              ;
+sentencia_programa: sentencias_declarativas {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia declarativa");}
+        	      | sentencias_ejecutables	{System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia ejecutable");}
+				  ;
 
-sentencias_ejecutables: sentencia_asignacion ','
+//declarativas
+
+sentencias_declarativas: declaracion_variables ',' 
+		       		   | declaracion_funciones ','    
+				       | declaracion_clases	   ','	   
+					   | declaracion_objetos_clase ',' 
+					   ;
+
+declaracion_variables: tipo lista_de_variables {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de variables");}
+				     ;
+
+declaracion_funciones: VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");}
+                     | VOID ID '(' tipo ID ')' '{' sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");} 
+                     | VOID ID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
+                     | VOID ID '(' ')' '{' sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
+                     
+		     		 ;
+
+tipo: LONG {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo LONG");}
+	| UINT {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo UINT");}
+	| FLOAT {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo FLOAT");}
+	;
+
+lista_de_variables: lista_de_variables ';' ID
+				  | ID
+				  ;
+
+cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion 
+					| sentencias_de_funcion
+					;
+
+sentencias_de_funcion: sentencia_declatariva_especificas
+                     | sentencia_funcion_ejecutable
+                     ;
+
+sentencia_declatariva_especificas: declaracion_variables ','                    
+                             | declaracion_funciones ','
+                             | declaracion_objetos_clase ','
+                             ;
+                             
+sentencia_funcion_ejecutable: sentencia_asignacion ','
+                            | sentencias_IF ','
+                            | sentencias_salida ','
+                            | sentencias_control ','
+                            | sentencias_ejecucion_funcion ','
+                            ;
+
+
+sentencias_retorno: RETURN ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio RETURN");}
+				  ;
+
+declaracion_clases: CLASS ID '{' cuerpo_clase '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase");}
+					//tema  21
+				  | CLASS ID {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase a posterior");}
+				  ;
+
+cuerpo_clase: cuerpo_clase sentencia_declatariva_especificas
+            | sentencia_declatariva_especificas
+            ;
+
+declaracion_objetos_clase: ID list_objts_clase  {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de objeto de clase");}
+						 ;
+
+list_objts_clase: list_objts_clase ';' ID
+				| ID
+				;
+
+//ejecutables 
+sentencias_ejecutables: sentencia_asignacion ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia Ejecutables");}
+                      | sentencias_IF ','
+                      | sentencias_salida ','
+                      | sentencias_control ','
+                      | sentencias_ejecucion_funcion ','
                       ;
 
-sentencia_asignacion: ID igual valor_asignacion {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio la asignacion a la variable " + $1.sval);}
+sentencias_ejecucion_funcion: ID '(' expr_aritmetic ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a funcion con parametro");}
+                            | ID '(' ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a funcion sin parametro");}
+                            ;
+
+sentencia_asignacion: ID '=' valor_asignacion {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una asignacion");}
+                    | ID '.' sentencia_asignacion
                     ;
 
-igual: IGUAL {System.out.println("IGUAL AHRE");}
-		 ;            
-
-valor_asignacion: expr_aritmetic
+valor_asignacion: TOF '(' expr_aritmetic ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una asignacion con conversion de tipo");}
+                | expr_aritmetic                            
                 ;
 
-expr_aritmetic: expr_aritmetic '+' termino {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una suma");}
-					    | expr_aritmetic '-' termino {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una resta");}
+invocacion_funcion: ID '(' expr_aritmetic ')' ',' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a funcion con parametro");}      
+                  | ID '('')' ',' {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una invocacion a una funcion sin parametro");}
+                  ;
+
+sentencias_IF: IF '(' condicion_if_while ')' '{' bloque_sentencias_ejecutables '}' ELSE '{' bloque_sentencias_ejecutables '}' END_IF {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IF_ELSE");}
+             | IF '(' condicion_if_while ')' '{' bloque_sentencias_ejecutables '}' END_IF {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IF");}
+             ;
+
+condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion por mayor");}
+            | expr_aritmetic '<' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion por menor");}
+            | expr_aritmetic MAYOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion por mayor o igual");}
+            | expr_aritmetic MENOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion por menor o igual");}
+            | expr_aritmetic IGUAL_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion de igualdad");}
+            | expr_aritmetic EXCLAMACION_EXCLAMACION expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una comparacion por distinto?");}
+            ;
+
+bloque_sentencias_ejecutables: bloque_sentencias_ejecutables sentencias_ejecutables  
+                             | sentencias_ejecutables
+                             ;
+
+sentencias_salida: PRINT CADENA {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una cadena");}
+                 ;
+
+sentencias_control: sentencia_while_do {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una sentencia While");}
+                  ;
+
+sentencia_while_do: WHILE '(' condicion_if_while ')' DO '{' bloque_sentencias_ejecutables '}' 
+                  |  WHILE '(' condicion_if_while ')' DO '{' '}' 
+                  ;
+
+expr_aritmetic: expr_aritmetic '+' termino {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una suma");}
+	    	  | expr_aritmetic '-' termino {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una resta");}
               | termino
               ;
 
-termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una multiplicacion");}
-       | termino '/' factor {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + "Se detecto una division");}
-       | factor;
+termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una multiplicacion");}
+       | termino '/' factor {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una division");}
+       | factor
+       | invocacion_funcion  
+       ;
 
-factor: ID {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio UN ID");}
-      | const {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ", Se reconocio " + $1.sval + " como constante " );}
+factor: ID MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un Identificador con MENOS_MENOS");} 
+      | ID {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un Identificador");}
+      | const
       ;
 
-const: CTE {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ", Se reconocio " + $1.sval + "como constante");}
-     ;
+const: CTE {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una constante");}
+     | '-'CTE {ConstanteNegativa($2.sval);}
+     ;                  
 
-
+//fin gramatica
 %%
+
 //funciones
-      public static void ConstanteNegativa(String lexema){
-
-      }
-
-      public static void ConstantePositiva(String lexema){
-      }
 
 
-      int yylex() throws IOException {
-        int identificador_token = 0;
-        //Reader lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt"));
-        Reader lector = Compilador.AnalizadorLexico.lector;
+public static void ConstanteNegativa(String lexema){
+  	Simbolo s = TablaDeSimbolos.obtenerSimbolo(lexema, Constantes.CTE);
+}
+
+int yylex() throws IOException {
+    int identificador_token = 0;
+    //Reader lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt"));
+    Reader lector = Compilador.AnalizadorLexico.lector;
+
+    lector.mark(1);
+    int value = lector.read();
+    lector.reset();
         
+    while(!(value == -1)){
         lector.mark(1);
-        int value = lector.read();
+        char next_char = (char) lector.read();
         lector.reset();
-            
-        while(!(value == -1)){
-         	lector.mark(1);
-          char next_char = (char) lector.read();
-          lector.reset();
-          identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);      
-          
-          if (identificador_token != 0) {
-          String lexema_entregar = "nose"; //NOSE CON QUE INICIALIZAR
-        	if(identificador_token > 311) {
-        		  //no es palabra reservada
-          		String lexema = TablaDeSimbolos.buscarPorId(identificador_token).getLexema();
-          		lexema_entregar = lexema;
-          	}else {
-          		//System.out.println(ids.get(i));
-          		
-          		Map<String, Integer> palabrasReservadas = LectorArchivo.readMapFile("src\\archivosTxt\\TablaPalabrasReservadas.txt");
-          		
-          		for (java.util.Map.Entry<String, Integer> entry : palabrasReservadas.entrySet()) {
-          			if(entry.getValue().equals(identificador_token)) {
-                      	//Si encontre e lexema no es necesario seguir recorriendo el FOR
-          				lexema_entregar = entry.getKey();
-                      	 yylval = new ParserVal(lexema_entregar);
-                         return identificador_token;
-                      }
-                  }
-          	}
-            yylval = new ParserVal(lexema_entregar);
+        identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);      
+        
+        if (identificador_token != 0) {
+            //System.out.println("GR176. IDENTIFICADOR: " + identificador_token + " Lexema: " + AnalizadorLexico.getLexemaActual());
+            yylval = new ParserVal(AnalizadorLexico.getLexemaActual()); 
             return identificador_token;
-          }
-
-          lector.mark(1);
-          value = lector.read();
-          lector.reset();
         }
-        return identificador_token;
-      }
 
-      public static char nextChar(Reader reader) throws IOException {
-        reader.mark(1);
-        char next_char = (char) reader.read();
-        reader.reset();
-        return next_char;
-      }
-
-      
-      private boolean EOF(Reader lector) throws IOException {
         lector.mark(1);
-        int value = lector.read();
+        value = lector.read();
         lector.reset();
-        return value == -1;
-      }
-
-    void yyerror(String error) {
-        // funcion utilizada para imprimir errores que produce yacc
-        System.out.println("Yacc reporto un error: " + error); //Falta mostrar cual es el error
     }
+    return identificador_token;
+}
+
+void yyerror(String error) {
+    // funcion utilizada para imprimir errores que produce yacc. Sin esto me sale error en yacc
+    System.out.println("Yacc reporto un error: " + error);
+}
