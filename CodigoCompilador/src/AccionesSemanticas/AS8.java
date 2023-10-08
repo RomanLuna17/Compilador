@@ -20,7 +20,7 @@ public class AS8 implements AccionSemantica{
 			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
             AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 			return palabrasReservadas.get(lexemaSimbolo);
-		}else {
+		}else { 
 			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
 			
 			return -1; 

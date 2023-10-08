@@ -1,0 +1,40 @@
+_p {
+
+	FLOAT _numero1,
+	
+	_hola = _perro-- + 10_l,
+	
+	_num = _chau---_dos,
+
+	
+	CLASS _ca {
+		
+		LONG _a;_b,
+		FLOAT _c,
+		
+		VOID _f1 (FLOAT _a){
+			_r = _b,
+			
+			IF ( _a < _b){
+				_r = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+		},
+		
+		_ca _a1;_a2,
+		_cb _b1,
+	},
+	
+	_a1._a = 3_l,
+	_b1._ca._a = 3_l,
+	_b1._a = 2.3,
+	_b1._b = _n,
+	
+	CLASS _c1,
+	
+	_c = TOF(_a +_b ),
+
+
+}

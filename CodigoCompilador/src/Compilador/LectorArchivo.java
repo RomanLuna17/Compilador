@@ -134,6 +134,8 @@ public class LectorArchivo {
 	            	return new AS8();
 	            case "AS9":
 	                return new AS9();
+	            case "AS10":
+	                return new AS10();
 	            default:
 	                return null;
 	        }

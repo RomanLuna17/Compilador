@@ -22,6 +22,7 @@ public class AS2 implements AccionSemantica{
         	
             
             String lexemaSimbolo = token_act.toString(); //Obtengo el numero
+            
             //System.out.println("LEXEMA: " + lexemaSimbolo + " ID: " + Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo));
             Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en casod e no existir
 																	//o retornar el simbolo si ya existe

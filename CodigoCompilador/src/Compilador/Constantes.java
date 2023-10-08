@@ -17,7 +17,8 @@ public class Constantes {
 	public final static int ERROR_EN_TOKEN = -1;
 	public final static int ID = 257;
 	public final static int CTE = 258;
-
+	public final static int CADENA = 259;
+	
 	public final static int MAXIMO_VALOR_INT_LARGO = 32000;
 	public final static int MAXIMO_VALOR_INT_SIN_SIGNO = 16000; 
 	
