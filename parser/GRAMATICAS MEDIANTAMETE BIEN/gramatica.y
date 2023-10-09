@@ -134,7 +134,7 @@ int yylex() throws IOException {
         
         if (identificador_token != 0) {
         
-            yylval = new ParserVal(AnalizadorLexico.getLexemaActual());
+
             //System.out.println("GR176. TOKEN: " + identificador_token + " Lexema: " + AnalizadorLexico.getLexemaActual()); 
             return identificador_token;
         }

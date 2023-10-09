@@ -30,10 +30,7 @@ public class AS3 implements AccionSemantica{
         
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres
 
-		/*
-        System.out.println("TOKEN ACTUAL: " + token_act.toString());
-        System.out.println("###########################################");
-		*/
+		
         AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 		return simbolo.getId();
  

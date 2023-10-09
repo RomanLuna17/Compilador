@@ -28,6 +28,14 @@ public class TablaDeSimbolos {
 			}
 		}
 		
+		public static void agregarSimbolo(String lexema, int id_simbolo) {
+			Simbolo buscado = tabla.get(lexema);
+			if (buscado == null) {
+				Simbolo nuevo = new Simbolo(lexema,id_simbolo);
+				tabla.put(lexema, nuevo);
+			}
+		}
+		
 		public static void borrarSimbolo (String lexema) {
 			tabla.remove(lexema);
 		}

@@ -3,7 +3,7 @@ package Compilador;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Map;
+import java.util.ArrayList;
 %}
 
 %token ID CTE CADENA IF THEN ELSE END_IF PRINT CLASS VOID LONG UINT FLOAT WHILE DO RETURN TOF 
@@ -22,7 +22,9 @@ program: programa {System.out.println("ARRANCO EL PROGRAMA");}
        ;
 
 programa: nombre_programa '{' bloque_sentencias_programa '}' {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el programa ");}
-        | nombre_programa '{' bloque_sentencias_programa error {System.out.println("Error sintectico al compilar no permite terminar de leer el programa de forma correcta");}
+        | nombre_programa '{' bloque_sentencias_programa error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta } al final");}
+        | nombre_programa bloque_sentencias_programa '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta { al final");}
+        | nombre_programa '{' '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta bloque de sentencias al final");}
         ;
 
 nombre_programa: ID
@@ -41,18 +43,37 @@ sentencia_programa: sentencias_declarativas {System.out.println("Linea: " + Anal
 sentencias_declarativas: declaracion_variables ',' 
 		       		   | declaracion_funciones ','    
 				       | declaracion_clases	   ','	   
-					   | declaracion_objetos_clase ',' 
+					   | declaracion_objetos_clase ','
+                       | declaracion_variables error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}  
+		       		   | declaracion_funciones error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}     
+				       | declaracion_clases error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}	   	   
+					   | declaracion_objetos_clase error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}   
 					   ;
 
 declaracion_variables: tipo lista_de_variables {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de variables");}
-				     ;
+				     | lista_de_variables error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta el TIPO");}
+                     | tipo error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta el identificador");}
+                     ;
 
 declaracion_funciones: VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");}
                      | VOID ID '(' tipo ID ')' '{' sentencias_retorno'}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion con parametro");} 
                      | VOID ID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
                      | VOID ID '(' ')' '{' sentencias_retorno '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una funcion sin parametro");}
-                     
-		     		 ;
+                     | VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta RETURN en la funcion");}
+		     		 | VOID ID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '}' en la funcion");}
+                     | VOID ID '(' tipo ID ')' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '{' en la funcion");}
+                     | VOID ID '(' tipo ID '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ')' en la funcion");}
+                     | VOID ID tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '(' en la funcion");}
+                     | VOID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta nombre en la funcion");}
+                     | ID '(' tipo ID ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta la palabra VOID en la funcion");}
+                     | VOID ID '(' ')' '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta RETURN en la funcion");}
+		     		 | VOID ID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '}' en la funcion");}
+                     | VOID ID '(' ')' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '{' en la funcion");}
+                     | VOID ID '(' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ')' en la funcion");}
+                     | VOID ID ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta '(' en la funcion");}
+                     | VOID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta nombre en la funcion");}
+                     | ID '(' ')' '{' cuerpo_de_la_funcion sentencias_retorno '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta la palabra VOID en la funcion");}
+                     ;
 
 tipo: LONG {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo LONG");}
 	| UINT {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo UINT");}
@@ -61,7 +82,7 @@ tipo: LONG {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + "
 
 lista_de_variables: lista_de_variables ';' ID
 				  | ID
-				  ;
+                  ;
 
 cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion 
 					| sentencias_de_funcion
@@ -74,9 +95,27 @@ sentencias_de_funcion: sentencia_declatariva_especificas
 sentencia_declatariva_especificas: declaracion_variables ','                    
                              | declaracion_funciones ','
                              | declaracion_objetos_clase ','
+                             | declaracion_variables error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}                     
+                             | declaracion_funciones error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                             | declaracion_objetos_clase error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
                              ;
 
+/*                             
+sentencia_funcion_ejecutable: sentencia_asignacion ','
+                            | sentencias_IF ','
+                            | sentencias_salida ','
+                            | sentencias_control ','
+                            | sentencias_ejecucion_funcion ','
+                            | sentencia_asignacion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                            | sentencias_IF error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                            | sentencias_salida error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                            | sentencias_control error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                            | sentencias_ejecucion_funcion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
+                            ;
+*/
+
 sentencias_retorno: RETURN ',' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio RETURN");}
+                  | RETURN error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico . Falta ',' al final");}
 				  ;
 
 declaracion_clases: CLASS ID '{' cuerpo_clase '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una declaracion de clase");}
@@ -172,16 +211,25 @@ factor: ID MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.getLineaA
 
 const: CTE {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una constante");}
      | '-'CTE {ConstanteNegativa($2.sval);}
-     ;                  
+     ;                   
 
 //fin gramatica
 %%
 
 //funciones
 
+public static ArrayList<String> errores = new ArrayList<String>();
+
+public static void agregarError(String nuevoError){
+    errores.add(nuevoError);
+}
+
+public static ArrayList<String> getErrores(){
+    return errores;
+}
 
 public static void ConstanteNegativa(String lexema){
-  	Simbolo s = TablaDeSimbolos.obtenerSimbolo(lexema, Constantes.CTE);
+  	TablaDeSimbolos.agregarSimbolo(lexema, Constantes.CTE);
 }
 
 int yylex() throws IOException {
@@ -214,5 +262,5 @@ int yylex() throws IOException {
 
 void yyerror(String error) {
     // funcion utilizada para imprimir errores que produce yacc. Sin esto me sale error en yacc
-    System.out.println("Yacc reporto un error: " + error);
+    //System.out.println("Yacc reporto un error: " + error);
 }

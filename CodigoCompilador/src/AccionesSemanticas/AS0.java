@@ -22,10 +22,7 @@ public class AS0 implements AccionSemantica {
             excepcion.printStackTrace();
         }
 		
-		/*
-        System.out.println("TOKEN ACTUAL: " + token_act.toString());
-        System.out.println("###########################################");
-		*/
+		
         return Constantes.SEGUIR_LEYENDO; //sigue leyendo
 	}
 

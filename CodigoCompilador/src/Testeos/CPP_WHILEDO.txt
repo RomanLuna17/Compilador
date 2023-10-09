@@ -1,12 +1,12 @@
-_p {
+_p{
 
 	FLOAT _numero1,
 	
-	_hola = _perro-- + 10_l,
+	_hola= _perro-- + 10_l,
 	
-	_num = _chau---_dos,
+	_num= _chau---_dos,
 	
-	WHILE (_numero1 !! _numero2)DO{
+	WHILE(_numero1 !! _numero2)DO{
 		_hola = 10_l + 20_l,
 		PRINT %SIRVE LA CONCHA DE TU MADE%,
 		_f4 (_a ),

@@ -1,13 +1,14 @@
 _p {
 
+	LONG _a,
+
     CLASS  {
         LONG _a,
 		_ca _a1;_a2,
     },
 
-    CLASS _b {},
+    CLASS _b{},
 	
-	CLASS ,
 	
 	CLASS _ca {
 	IF(10_l > 8_l){

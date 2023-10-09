@@ -25,9 +25,13 @@ public class Main {
          //System.out.println("LEXEMA: " + Constantes.ARCHIVO_CARACTERES_ASCII.get(";"));
 
 		 
-		 AnalizadorLexico.setLector("src\\Testeos\\CPP_CLASES.txt");
+		 AnalizadorLexico.setLector("src\\Testeos\\errores\\CPP_ERRORESVARIOS.txt");
          parser.run();		
-		
+         
+         for( String s : Parser.getErrores()) {
+        	 System.out.println(s);
+         }
+         
         }      
 	
 }

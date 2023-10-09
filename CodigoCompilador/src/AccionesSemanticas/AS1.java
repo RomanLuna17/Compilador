@@ -26,10 +26,7 @@ public class AS1 implements AccionSemantica {
         } catch (IOException excepcion) {
             excepcion.printStackTrace();
         }
-		/*
-        System.out.println("TOKEN ACTUAL: " + token_act.toString());
-        System.out.println("###########################################");
-		*/
+		
 		
 		return Constantes.SEGUIR_LEYENDO; //RETORNA UN '0' QUE SIGNIFICA QUE EL TOKEN NO ESTA COMPLETO
 	}

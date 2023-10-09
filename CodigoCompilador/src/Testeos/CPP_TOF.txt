@@ -1,5 +1,10 @@
 _p {
 
- _a = 2000_l,
+	FLOAT _numero1,
+	
+	_hola = _perro-- + 10_l,
+	
+	_c = TOF(_a +_b ),
 
 
+}
