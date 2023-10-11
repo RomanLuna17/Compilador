@@ -25,7 +25,7 @@ public class Main {
          //System.out.println("LEXEMA: " + Constantes.ARCHIVO_CARACTERES_ASCII.get(";"));
 
 		 
-		 AnalizadorLexico.setLector("src\\Testeos\\errores\\CPP_ERRORESVARIOS.txt");
+		 AnalizadorLexico.setLector("src\\Testeos\\errores\\CPP_ERRORESWHILE.txt");
          parser.run();		
          
          for( String s : Parser.getErrores()) {

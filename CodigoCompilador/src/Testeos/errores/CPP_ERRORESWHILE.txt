@@ -1,0 +1,30 @@
+_p{
+
+	WHILE(_numero1 !! _numero2){
+		_hola = 10_l + 20_l,
+		_f4 (_a ),
+		
+		(_numero1 !! _numero2)DO{
+		_hola = 10_l + 20_l,
+		_f4 (_a ),
+		},
+		
+		IF(_hola == 10_l){
+			_f1 ( _a),
+		IF(10_l >= 9_l){
+			_boca = _campeon,
+		}ELSE{
+			_river = _chau,
+			WHILE ( )DO{
+			_hola = 10_l + 20_l,
+			PRINT %SIRVE LA CONCHA DE TU MADE%,
+			_f4 (_a ),
+			},
+		}END_IF,
+
+		}END_IF,
+		
+	},
+	
+
+}
