@@ -5,7 +5,7 @@ _p {
 		_hola = _chau,
 	}ELSE{
 		_perro = 10_l,
-	} , 
+	} END_IF, 
 	
 	IF(10_l > 8_l){
 		_numero2 = _numero1,

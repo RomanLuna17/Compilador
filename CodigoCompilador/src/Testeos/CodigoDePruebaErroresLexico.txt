@@ -1,0 +1,19 @@
+_p{
+
+	FLOAT _abcasdfghqywterdf,
+	FLOAT _abctsregdnfuendjshdnf,
+	
+	_a = 40000_l,
+	_b = 6.8,
+	_s = 400000_ui,
+	
+	VOID _f1(LONG _a){
+		_b = 15_l,
+		IF(_a > _b){
+			_b = _a,
+		}END_IF
+		
+	},
+ 
+
+}

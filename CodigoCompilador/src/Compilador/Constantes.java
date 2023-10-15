@@ -1,6 +1,8 @@
 package Compilador;
 
 import java.util.Map;
+import java.util.HashMap;
+
 
 public class Constantes {
 	public final static Simbolo SIMBOLO_NO_ENCONTRADO = new Simbolo("Simbolo no encotrado", -1);
@@ -12,6 +14,9 @@ public class Constantes {
 	public final static int CANT_ESTADOS = 19;
 	public final static int CANT_CARACTERES = 29;
 	public final static Map<String, Integer> ARCHIVO_CARACTERES_ASCII= LectorArchivo.readMapFile("src\\archivosTxt\\caracteres_ASCII.txt");
+	public static Map<String, Integer> tokens = new HashMap<>(); 
+
+	
 	
 	public final static int SEGUIR_LEYENDO = 0;
 	public final static int ERROR_EN_TOKEN = -1;

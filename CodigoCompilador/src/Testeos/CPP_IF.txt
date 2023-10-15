@@ -1,6 +1,7 @@
 _p {
 
 	FLOAT _numero1,
+
 	IF(10_l > 8_l){
 		_numero2 = _numero1,
 		_hola = _chau,
@@ -13,9 +14,9 @@ _p {
 	IF(_hola == 10_l){
 			_f1 ( _a),
 		IF(10_l >= 9_l){
-			_boca = _campeon,
+			_hola = _esto,
 		}ELSE{
-			_river = _chau,
+			_hola = _chau,
 		}END_IF,
 
 	}END_IF,

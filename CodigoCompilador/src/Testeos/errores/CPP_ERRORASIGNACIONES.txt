@@ -1,7 +1,7 @@
 _p{
 
 	FLOAT _numero2,
-	LONG _numero1,
+	LONG _numero1
 
 	FLOAT _numero,
 

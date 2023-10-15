@@ -8,10 +8,10 @@ LONG _numero6,
 _numero6 = _numero4,
 _numero6 = _numero4 + _hola,
 
-VOID _fun1(_numero4){
-LONG _dentro,
-FLOAT _alto,
-_alto = _dentro,
-
-}
+VOID _fun1 (FLOAT _numero4){
+	LONG _dentro,	
+	FLOAT _alto,
+	_alto = _dentro,
+	RETURN,
+},
 }

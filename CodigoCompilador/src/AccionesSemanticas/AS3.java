@@ -17,10 +17,10 @@ public class AS3 implements AccionSemantica{
 		//System.out.println("ACCION SEMANTICA 3");
 		String lexemaSimbolo = token_act.substring(0, token_act.length());
 		
-		if(lexemaSimbolo.length() > Constantes.CANT_CARACTERES) {
-			lexemaSimbolo = token_act.substring(0, Constantes.CANT_CARACTERES); //Recorto el String
+		if(lexemaSimbolo.length() > 20) {
+			lexemaSimbolo = token_act.substring(0, 20); //Recorto el String
 			//TENGO QUE INFORMAR WARNING. NOSE SI MOSTRAR POR PANTALLA O DE ESTO SE ENCARGA EL PARSER
-			System.err.println("WARNING: EL NOMBRE DEL IDENTIFICADOR SUPERA EL LARGO " );
+			System.err.println("WARNING: EL NOMBRE DEL IDENTIFICADOR: " + lexemaSimbolo +" SUPERA EL LARGO" );
 		}
 		
 		

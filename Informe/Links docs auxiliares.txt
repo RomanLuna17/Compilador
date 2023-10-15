@@ -1,8 +1,0 @@
-Tablas Matriz acciones semanticas y tabla de transicion de estados
-Tambien tiene algunas consultas
-
-https://docs.google.com/document/d/1YGgpZkhB0U_03uxOc0h8Ib-3uHskmUY-jZS9-PX61Tc/edit?usp=sharing
-
-nuestro enunciado:
-
-https://docs.google.com/document/d/1iIsVru0jvSnzBnFv7MJHEG9sx1edvpr-YQG7mUwNdg4/edit?usp=sharing

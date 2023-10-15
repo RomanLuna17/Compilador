@@ -156,7 +156,10 @@ public class AnalizadorLexico {
         
         
         estadoActual = transicionDeEstados[estadoActual][carActual];
-        //System.out.println("AL158. IDTOKEN: " + idToken + " Token correspondiente: " + TablaDeSimbolos.buscarPorId(idToken).getLexema());
+        if(idToken != 0) {
+        	Constantes.tokens.put(lexemaActual, idToken);
+        }
+        
         
         return idToken;
 	}

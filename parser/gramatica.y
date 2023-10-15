@@ -252,7 +252,6 @@ public static void ConstanteNegativa(String lexema){
 
 int yylex() throws IOException {
     int identificador_token = 0;
-    //Reader lector = new BufferedReader(new FileReader("C:\\Users\\rolus\\OneDrive\\Escritorio\\git\\Compilador\\CodigoCompilador\\src\\archivosTxt\\CodigoPrueba.txt"));
     Reader lector = Compilador.AnalizadorLexico.lector;
 
     lector.mark(1);
@@ -266,8 +265,6 @@ int yylex() throws IOException {
         identificador_token = AnalizadorLexico.proximoEstado(lector, next_char);      
         
         if (identificador_token != 0) {
-            //System.out.println("GR176. IDENTIFICADOR: " + identificador_token + " Lexema: " + AnalizadorLexico.getLexemaActual());
-            yylval = new ParserVal(AnalizadorLexico.getLexemaActual()); 
             return identificador_token;
         }
 
@@ -279,6 +276,5 @@ int yylex() throws IOException {
 }
 
 void yyerror(String error) {
-    // funcion utilizada para imprimir errores que produce yacc. Sin esto me sale error en yacc
     //System.out.println("Yacc reporto un error: " + error);
 }

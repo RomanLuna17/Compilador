@@ -1,4 +1,4 @@
-_p{
+_p {
 
 	WHILE(_numero1 !! _numero2){
 		_hola = 10_l + 20_l,
@@ -17,7 +17,7 @@ _p{
 			_river = _chau,
 			WHILE ( )DO{
 			_hola = 10_l + 20_l,
-			PRINT %SIRVE LA CONCHA DE TU MADE%,
+			PRINT %SIRVE%,
 			_f4 (_a ),
 			},
 		}END_IF,
