@@ -15,14 +15,14 @@
 		IF(var1 !! 100_l){
 			var1 = var1 - 10_l,
 		}ELSE{
-			var1 = var1 * 2_l
+			var1 = var1 * 2_l,
 		}END_IF,
 		RETURN,
 	},
 	
 	PRINT %el valor de _var3 es%,
 	
-	*{esto tiene que llegar hasta aca}*
+	*{esto es un comentario}*
 	
 	WHILE(_var3 <= 1000_ui)DO{
 		_var3 = _var3 - 1_ui,

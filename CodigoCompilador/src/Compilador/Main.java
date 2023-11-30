@@ -22,205 +22,6 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub	
-		Parser parser = new Parser();
-		AnalizadorLexico analizador = new AnalizadorLexico();
-		
-		System.out.println("voy a ejecutar");
-		String datoIngresado = "Assembler_WHILE.txt";
-		
-		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\Assembler\\"+ datoIngresado);	
-		
-		
-		parser.run();		
-			
-		System.out.println("");
-		System.out.println("");
-		System.out.println("Tabla de Simbolos: ");
-		TablaDeSimbolos.imprimirTabla();
-		
-		
-      	
-      	System.out.println("");
-      	System.out.println("");
-      	
-      	ArrayList<NodoControl> clases_funcs = Parser.get_arboles();
-		
-		for(NodoControl a : clases_funcs) {
-			System.out.println("");
-			System.out.println("");
-			System.out.println("");
-			a.recorrerArbol("-");
-		}
-		System.out.println("");
-      	System.out.println("");
-      	System.out.println("ARBOL: ");
-		NodoControl raiz = parser.getRaiz();
-		if(raiz != null) {
-			raiz.recorrerArbol("-");
-		}else {
-			System.out.println("EL arbol esta vacio porque no hay sentencias ejecutables");
-		}
-		
-		System.out.println("");
-		System.out.println("");
-		System.out.println("WARNINGS: ");
-		if(!Constantes.varsNoUsadas.isEmpty()) {
-			for(String s : Constantes.varsNoUsadas) {
-				System.out.println("Variable " + s + " no usada");
-			}
-		}else {
-			System.out.println("No hay warnings");	
-		}
-			
-		System.out.println("");
-		System.out.println("");
-      	
-      	//ERRORES LEXICOS
-      	System.out.println("Errores Lexicos: ");
-      	if(AnalizadorLexico.erroresLexicos.isEmpty()) {
-			System.out.println("No hubo ningun error lexico");
-		}else {
-			for(String e : AnalizadorLexico.erroresLexicos) {
-				System.out.println(e);
-			}
-		}
-		
-
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		
-		
-		//ERRORES SINTACTICOS
-		if(!AnalizadorLexico.erroresLexicos.isEmpty())
-			System.out.println("AL HABER ERRORES LEXICO, LOS ERRORES SINTACTICOS Y SEMANTICOS PUEDEN NO CORRESPONDERSE");
-		System.out.println("");
-		System.out.println("Errores Sintacticos: ");
-		if(Parser.getErrores().isEmpty()) {
-			System.out.println("NO HUBO ERRORES SINTACTICOS");
-		}else {
-			for( String s : Parser.getErrores()) {
-				System.out.println(s);
-			}
-		}
-
-		System.out.println("");
-		System.out.println("");
-		System.out.println("");
-		
-		//ERRORES SEMANTICOS
-      	if(!Parser.getErrores().isEmpty())
-      		System.out.println("AL HABER ERRORES SINTACTICOS, LOS ERRORES SEMANTICOS PUEDEN NO CORRESPONDERSE");
-		System.out.println("");
-		System.out.println("Errores Semanticos: ");
-      	if(Parser.erroresSemanticos.isEmpty()) {
-			System.out.println("No hubo ningun error Semantico");
-		}else {
-			for(String e : Parser.erroresSemanticos) {
-				System.out.println(e);
-			}
-		}
-		
-      	System.out.println("");
-		System.out.println("");
-      	
-		//Assembler
-		if(!Parser.tieneErrores && Parser.errores.isEmpty() && Parser.erroresSemanticos.isEmpty()) {
-			if(raiz != null) {
-				GeneradorAssembler generador = new GeneradorAssembler(raiz);
-				System.out.println("");
-				System.out.println("");
-				generador.generar();
-			}else {
-				System.out.println("No hay sentencias ejecutables a las que generar el assembler");
-			}
-		}else {
-			System.out.println("EL ASSEMBLER NO SE PUDO GENERAR PORQUE HAY ERRORES");
-		}
-      	//##################################################################################################
-      	
-		/*
-		//ERRORES SINTACTICOS
-		System.out.println("Errores Sintacticos: ");
-		if(Parser.getErrores().isEmpty()) {
-			System.out.println("NO HUBO ERRORES SINTACTICOS");
-		}else {
-			for( String s : Parser.getErrores()) {
-				System.out.println(s);
-			}
-		}
-        
-        System.out.println("");
-        System.out.println("");
-        System.out.println("");
-        
-        
-        //TOKENS DETECTADOS
-        System.out.println("TOKENS DETECTADOS POR EL LEXICO: ");
-        Iterator<Map.Entry<String, Integer>> iterator = Constantes.tokens.entrySet().iterator();
-    	
-      	while (iterator.hasNext()) {
-      		Map.Entry<String, Integer> entry = iterator.next();
-      		String key = entry.getKey();
-      		Integer value = entry.getValue();
-      		System.out.println("[ " + key + " , " + value + " ]");
-      	}
-
-      	System.out.println("");
-      	System.out.println("");	 
-      	
-      	//TABLA DE SIMBOLOS
-      	System.out.println("Tabla de Simbolos. HashTable<String, Simbolo>: ");
-      	System.out.println("Muestra '[Clave]' -------------------> Simbolo: Lexema , ID");
-      	TablaDeSimbolos.imprimirTabla();
-      	System.out.println("");	 
-      	System.out.println("");	 
-      	
-      	//ERRORES LEXICOS
-      	System.out.println("Errores Lexicos: ");
-      	if(AnalizadorLexico.erroresLexicos.isEmpty()) {
-			System.out.println("No hubo ningun error lexico");
-		}else {
-			for(String e : AnalizadorLexico.erroresLexicos) {
-				System.out.println(e);
-			}
-		}
-      
-      	/*
-      	System.out.println("");
-      	System.out.println("");
-      	System.out.println("");	
-      	
-        //ARCHIVO PALABRAS RESERVADAS
-      	iterator = Constantes.ARCHIVO_PALABRAS_RESERVADAS.entrySet().iterator();
-      	System.out.println("Mapa de palabras reservadas (STRING , ID): ");
-      	while (iterator.hasNext()) {
-      		Map.Entry<String, Integer> entry = iterator.next();
-      		String key = entry.getKey();
-      		Integer value = entry.getValue();
-      		System.out.println("[ " + key + " , " + value + " ]");
-      	}
-      	
-      	
-      	System.out.println("");
-      	System.out.println("");
-      	System.out.println("");	
-      	
-      	
-      	//CODIGO PROPORCIONADO
-      	Reader codigo = new BufferedReader(new FileReader(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\"+datoIngresado));
-      	BufferedReader bufferedReader = new BufferedReader(codigo);
-      	String linea;
-      	int nro_linea = 1;
-      	System.out.println("Codigo Analizado: ");
-      	while ((linea = bufferedReader.readLine()) != null) {
-            System.out.println("LINEA " + nro_linea + ". " + linea);
-            nro_linea++;
-        }  
-		  
-		 */
-		  
-		/*
 		Scanner scanner = new Scanner(System.in);
 		
 
@@ -248,10 +49,72 @@ public class Main {
 		    System.out.println("");
 			parser.run();		
 			
+			
+			
+			
+			
 			System.out.println("");
-
+			System.out.println("");
+			System.out.println("Tabla de Simbolos: ");
+			TablaDeSimbolos.imprimirTabla();
+			
+			
+	      	
+	      	System.out.println("");
+	      	System.out.println("");
+	      	
+	      	ArrayList<NodoControl> clases_funcs = Parser.get_arboles();
+			
+			for(NodoControl a : clases_funcs) {
+				System.out.println("");
+				System.out.println("");
+				System.out.println("");
+				a.recorrerArbol("-");
+			}
+			System.out.println("");
+	      	System.out.println("");
+	      	System.out.println("ARBOL: ");
+			NodoControl raiz = parser.getRaiz();
+			if(raiz != null) {
+				raiz.recorrerArbol("-");
+			}else {
+				System.out.println("EL arbol esta vacio porque no hay sentencias ejecutables");
+			}
+			
+			System.out.println("");
+			System.out.println("");
+			System.out.println("WARNINGS: ");
+			if(!Constantes.varsNoUsadas.isEmpty()) {
+				for(String s : Constantes.varsNoUsadas) {
+					System.out.println("Variable " + s + " no usada");
+				}
+			}else {
+				System.out.println("No hay warnings");	
+			}
+				
+			System.out.println("");
+			System.out.println("");
+	      	
+	      	//ERRORES LEXICOS
+	      	System.out.println("Errores Lexicos: ");
+	      	if(AnalizadorLexico.erroresLexicos.isEmpty()) {
+				System.out.println("No hubo ningun error lexico");
+			}else {
+				for(String e : AnalizadorLexico.erroresLexicos) {
+					System.out.println(e);
+				}
+			}
+			
+	
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			
 			
 			//ERRORES SINTACTICOS
+			if(!AnalizadorLexico.erroresLexicos.isEmpty())
+				System.out.println("AL HABER ERRORES LEXICO, LOS ERRORES SINTACTICOS Y SEMANTICOS PUEDEN NO CORRESPONDERSE");
+			System.out.println("");
 			System.out.println("Errores Sintacticos: ");
 			if(Parser.getErrores().isEmpty()) {
 				System.out.println("NO HUBO ERRORES SINTACTICOS");
@@ -260,6 +123,42 @@ public class Main {
 					System.out.println(s);
 				}
 			}
+	
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			
+			//ERRORES SEMANTICOS
+	      	if(!Parser.getErrores().isEmpty())
+	      		System.out.println("AL HABER ERRORES SINTACTICOS, LOS ERRORES SEMANTICOS PUEDEN NO CORRESPONDERSE");
+			System.out.println("");
+			System.out.println("Errores Semanticos: ");
+	      	if(Parser.erroresSemanticos.isEmpty()) {
+				System.out.println("No hubo ningun error Semantico");
+			}else {
+				for(String e : Parser.erroresSemanticos) {
+					System.out.println(e);
+				}
+			}
+			
+	      	System.out.println("");
+			System.out.println("");
+	      	
+			//Assembler
+			if(!Parser.tieneErrores && Parser.errores.isEmpty() && Parser.erroresSemanticos.isEmpty()) {
+				if(raiz != null) {
+					GeneradorAssembler generador = new GeneradorAssembler(raiz);
+					System.out.println("");
+					System.out.println("");
+					generador.generar();
+				}else {
+					System.out.println("No hay sentencias ejecutables a las que generar el assembler");
+				}
+			}else {
+				System.out.println("EL ASSEMBLER NO SE PUDO GENERAR PORQUE HAY ERRORES");
+			}
+			
+			
 	        
 	        System.out.println("");
 	        System.out.println("");
@@ -275,47 +174,10 @@ public class Main {
 	      		String key = entry.getKey();
 	      		Integer value = entry.getValue();
 	      		System.out.println("[ " + key + " , " + value + " ]");
-	      	}
-
+	      	} 	
 	      	System.out.println("");
-	      	System.out.println("");	 
-	      	
-	      	//TABLA DE SIMBOLOS
-	      	System.out.println("Tabla de Simbolos. HashTable<String, Simbolo>: ");
-	      	System.out.println("Muestra '[Clave]' -------------------> Simbolo: Lexema , ID");
-	      	TablaDeSimbolos.imprimirTabla();
-	      	System.out.println("");	 
-	      	System.out.println("");	 
-	      	
-	      	//ERRORES LEXICOS
-	      	System.out.println("Errores Lexicos: ");
-	      	if(AnalizadorLexico.erroresLexicos.isEmpty()) {
-				System.out.println("No hubo ningun error lexico");
-			}else {
-				for(String e : AnalizadorLexico.erroresLexicos) {
-					System.out.println(e);
-				}
-			}
-	      
-	      	
-	      	System.out.println("");
-	      	System.out.println("");
-	      	System.out.println("");	
-	      	
-	        //ARCHIVO PALABRAS RESERVADAS
-	      	iterator = Constantes.ARCHIVO_PALABRAS_RESERVADAS.entrySet().iterator();
-	      	System.out.println("Mapa de palabras reservadas (STRING , ID): ");
-	      	while (iterator.hasNext()) {
-	      		Map.Entry<String, Integer> entry = iterator.next();
-	      		String key = entry.getKey();
-	      		Integer value = entry.getValue();
-	      		System.out.println("[ " + key + " , " + value + " ]");
-	      	}
-	      	System.out.println("");
-	      	System.out.println("");
-	      	System.out.println("");	
-	      	
-	      	
+	        System.out.println("");
+	        System.out.println("");
 	      	//CODIGO PROPORCIONADO
 	      	Reader codigo = new BufferedReader(new FileReader(Paths.get("").normalize().toAbsolutePath()+"\\CodigoCompilador\\src\\Testeos\\"+datoIngresado));
 	      	BufferedReader bufferedReader = new BufferedReader(codigo);
@@ -331,7 +193,7 @@ public class Main {
 
 		 
 		scanner.close();
-        */
+        
 
     }	
 	

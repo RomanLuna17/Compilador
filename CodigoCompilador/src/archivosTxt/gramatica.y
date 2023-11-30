@@ -81,12 +81,10 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                     String ambitoParametro = ambitoActual;
                                                     ambitoActual = ambitoActual.substring(0, indice);
 
-                                                    System.out.println("EL SIMBOLO DEL PARAMETrO ES: " + $3.sval + " EL AMBITO: "+ambitoParametro);
                                                     Simbolo simbolParametro = TablaDeSimbolos.obtenerSimbolo($3.sval+"#"+ambitoParametro);
                                                     TablaDeSimbolos.obtenerSimbolo($1.sval).setParametro(simbolParametro);
 
                                                     if(!TablaDeSimbolos.existeSimboloAmbitoActual($1.sval+"#"+ambitoActual, simbolParametro.getLexema())){
-                                                        System.out.println("ENTRE AL IF DE EXISTE SIMBOLO"); 
                                                         if(tieneReturn){
                                                             TablaDeSimbolos.modificarLexema($1.sval, $1.sval +"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval + "#"+ambitoActual);
@@ -102,7 +100,7 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
                                                     }
-                                                    System.out.println("AMBITO UNA VEZ FINALIZADA LA DECLARACIOND DE FUNCION: " + ambitoActual);   
+                                                     
                                                 }
                      | encabezado_funcion '(' ')' '{' cuerpo_de_la_funcion '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DELCARACION de FUNCION SIN PARAMETRO");
                                                     int indice = ambitoActual.lastIndexOf('#');
@@ -123,7 +121,6 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                         String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
                                                     }   
-                                                     System.out.println("AMBITO UNA VEZ FINALIZADA LA DECLARACIOND DE FUNCION: " + ambitoActual);
                                         }
                      
 		     		 | encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la_funcion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' al final de la funcion");}
@@ -233,7 +230,6 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                                             String identClase = $1.sval +"#"+ ambitoActual.substring(0, indiceLexClase);
                                                             
                                                             if((TablaDeSimbolos.obtenerSimbolo(identClase).getUso().equals("")) || (TablaDeSimbolos.obtenerSimbolo(identClase).getClaseAPosterior())){
-                                                                System.out.println("AUXVARCLASES: " + auxVarClases);
                                                                 
                                                                 
                                                                 if(!auxVarClases.equals("")){
@@ -253,13 +249,11 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
 
                                                                 TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
                                                             }else{
-                                                                System.out.println("ENTRE EN ESTE ELSE: " + identClase + " USO------- " + TablaDeSimbolos.obtenerSimbolo(identClase).getUso());
                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Clase " + $1.sval+" redeclarada";
                                                                 erroresSemanticos.add(err);
                                                             }
 
-                                                            System.out.println("FINAL DE DECLARACION. CLASE: " + identClase + " USO: " + TablaDeSimbolos.obtenerSimbolo(identClase).getUso() + " HEREDA: " + TablaDeSimbolos.obtenerSimbolo(identClase).getHereda());
-
+                                                            
                                                             auxVarClases = "";
                                                             int indice = ambitoActual.lastIndexOf('#');
                                                             ambitoActual = ambitoActual.substring(0, indice);
@@ -321,7 +315,6 @@ sentencias_ejecutables: sentencia_asignacion ',' {$$ = $1; }
                       | sentencias_salida ',' {$$ = $1;}
                       | sentencias_control ',' { $$ = $1;}
                       | sentencias_ejecucion_funcion ',' {
-                                                            System.out.println("POR LO MENOS ENCONTRE ESTO");
                                                             $$ = $1;}
                       | sentencias_retorno ',' {$$ = $1;}
                       | sentencia_asignacion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la ASIGNACION");
@@ -362,7 +355,6 @@ sentencias_ejecucion_funcion: ID '(' expr_aritmetic ')' {System.out.println("Lin
                                                             auxTipoAsig ="";
                                                         }
                             | ID '(' ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION SIN PARAMETRO");
-                                          System.out.println("EL LEXEMA DE LA FUNCION ES: " + $1.sval+"#"+ambitoActual);
                                           Simbolo simbol = TablaDeSimbolos.obtenerSimbolo($1.sval+"#"+ambitoActual);
                                           if(simbol.getId() != -1 && simbol.getParametro() == null){
                                                 simbol.setUsada(true);
@@ -408,7 +400,6 @@ sentencias_ejecucion_funcion: ID '(' expr_aritmetic ')' {System.out.println("Lin
 
 
 sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una ASIGNACION");
-                                                        System.out.println("El ambito es: " + ambitoActual);
                                                         String lexema = "";
                                                         String primer = "";
                                                         String ambitoAnt = "";
@@ -452,8 +443,7 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                                                 nuevo.setUso(simboloNuevo.getUso());
                                                                                 nuevo.setValor(simboloNuevo.getValor());
                                                                                 
-                                                                                System.out.println("El nuevo simbolo que agregue es: " + nuevo.ToString());
-                                                                            }
+                                                                             }
                                                                         }else{
                                                                             String err = "Linea: "  + AnalizadorLexico.getLineaActual()+". Error Semantico: variable no declarada";
                                                                             erroresSemanticos.add(err);
@@ -463,24 +453,20 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                                     } 
                                                                 }
                                                                 
-                                                               System.out.println("EL LEXEMA QUE VOY A AGREGAR EN LA TABLA ES: " + lexema);
-                                                                
+                                                              
 
 
                                                             }else{
-                                                                System.out.println("ES UN IDENTIFICADOR UNARIO: " + lista_identificadores.get(0)+"#"+ambitoActual);
-
+                                                                
                                                                 lexema = lista_identificadores.get(0)+"#"+ambitoActual;
                                                             }
                                                         }
-                                                        System.out.println("");
                                                         
                                                 
                                                 if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() != -1){
                                                     Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexema); //Obtengo el simbolo del lado izquierdo que acabo de crear o que ya existia
                                                     
                                                     ArbolSintactico arb = (ArbolSintactico) $3;
-                                                    System.out.println("IZQ: " + simbol.getTipo()+" DER: " + TablaDeSimbolos.obtenerSimbolo(arb.getLex()).getTipo()); 
                                                     
                                                     String aux ="";
                                                     ArbolSintactico arb_aux = arb;
@@ -539,7 +525,6 @@ valor_asignacion: expr_aritmetic {$$ = $1;
 
 sentencias_IF: IF '(' condicion_if_while ')' '{' bloque_sentencias_ejecutables '}' ELSE '{' bloque_sentencias_ejecutables '}' END_IF {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IF_ELSE");
                         if((ArbolSintactico)$3 != nodoError){
-                            System.out.println("ENTRE AL IF"); 
                             NodoControl then = new NodoControl("then",(ArbolSintactico) $6);
                             NodoControl _else = new NodoControl("else", (ArbolSintactico) $10);
                             NodoComun cuerpo = new NodoComun("cuerpo", then, _else);
@@ -631,10 +616,8 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
                                                                     if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
                                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
@@ -697,9 +680,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
                                                                     if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
@@ -761,9 +742,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
                                                                     if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
@@ -825,9 +804,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
                                                                     if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
@@ -889,9 +866,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
-                                                                    if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
+                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
@@ -953,9 +928,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             if(sI.getId() != -1){
                                                                 auxTipoAsig = sI.getTipo();
                                                                 if(sD.getId() != -1){
-                                                                    System.out.println("VALOR IZQ: " + sI.getTipo() + " VALOR DER: " + sD.getTipo());
-                                                                    if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                         System.out.println("entre al if porque los dos tipos son entenros");
+                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
                                                                         $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
                                                                         auxTipoAsig = "";           
                                                                     }else{
@@ -1064,8 +1037,7 @@ expr_aritmetic: expr_aritmetic '+' termino {System.out.println("Linea: "+ Analiz
 
 
                                             if(arbIzq.getLex().equals("TOF")){
-                                            	 System.out.println("TOY: "+TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex()).ToString());
-                                                simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
+                                            	simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
                                              }else{
                                                 
                                                 simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getLex());
@@ -1076,8 +1048,7 @@ expr_aritmetic: expr_aritmetic '+' termino {System.out.println("Linea: "+ Analiz
                                              }else{
                                                 simbolo2 = TablaDeSimbolos.obtenerSimbolo(arbDer.getLex());
                                              }
-                                             System.out.println("EL DERECHO DE LA SUMA ES: " + simbolo1.ToString()+" EL IZQUIERDO DE LA SUMA ES: " + simbolo2.ToString());
-
+                                            
 
                                              if(arbIzq != nodoError && arbDer != nodoError){
                                                 if(chequearTipos(simbolo1) && chequearTipos(simbolo2)){
@@ -1154,8 +1125,7 @@ expr_aritmetic: expr_aritmetic '+' termino {System.out.println("Linea: "+ Analiz
                                              Simbolo simbolo2;
 
                                              if(arbIzq.getLex().equals("TOF")){
-                                            	 System.out.println("TOY: "+TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex()).ToString());
-                                                simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
+                                            	simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
                                              }else{
                                                 
                                                 simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getLex());
@@ -1239,7 +1209,6 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                             Simbolo simbolo1;
                             Simbolo simbolo2;
                             if(arbIzq.getLex().equals("TOF")){
-                                System.out.println("TOY: "+TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex()).ToString());
                                 simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
                             }else{
                             
@@ -1318,7 +1287,6 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                             Simbolo simbolo2;
 
                             if(arbIzq.getLex().equals("TOF")){
-                                System.out.println("TOY: "+TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex()).ToString());
                                 simbolo1 = TablaDeSimbolos.obtenerSimbolo(arbIzq.getIzq().getLex());
                             }else{
                             
@@ -1397,7 +1365,6 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
        | TOF '(' factor ')' {    System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un FACTOR con CONVERSION DE TIPO");
                                     
                                 NodoHoja factor = (NodoHoja) $3;
-                                System.out.println("EL LEXEMA DE TOF ES: " + factor.getLex());
                                 if(TablaDeSimbolos.obtenerSimbolo(factor.getLex()).getTipo().equals("UINT") || TablaDeSimbolos.obtenerSimbolo(factor.getLex()).getTipo().equals("LONG") ){
                                     auxConversion = TablaDeSimbolos.obtenerSimbolo(factor.getLex()).getTipo();
                                     simboloAuxConversion = TablaDeSimbolos.obtenerSimbolo(factor.getLex()); 
@@ -1405,7 +1372,6 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                                     auxTipoAsig = "FLOAT";
                                     NodoControl nodoTof = new NodoControl("TOF", (ArbolSintactico) $3);
                                     $$ = (ArbolSintactico) nodoTof;
-                                    System.out.println("EL TIPO DEL LEXEMA ES: " + TablaDeSimbolos.obtenerSimbolo(factor.getLex()).getTipo());
                                 }else{
                                     String err = "Linea: " +AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo del parametro TOF ya es un flotante";
                                     erroresSemanticos.add(err);
@@ -1577,36 +1543,13 @@ public static void buscarErroresEnNodo(ArbolSintactico arb){
 }
 
 
-public static void copiarIdentificadoresDeClaseHeredada(String nombreClase, String nombreClasePropia){
-    if(!TablaDeSimbolos.obtenerSimbolo(nombreClase).getHereda().equals("nadie")){
-        String claseHereda = TablaDeSimbolos.obtenerSimbolo(nombreClase).getHereda();
-        
-        int indiceClase = claseHereda.lastIndexOf('#');
-        String aux = claseHereda.substring(0, indiceClase);
-        nombreClase = claseHereda.substring(indiceClase+1, claseHereda.length())+"#"+aux;
-        Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
-        System.out.println("NOMBRECLASE---------------------------------------------------------: " + nombreClase);
-        for (String key : tabla.keySet()) {
-            Simbolo simbolo = tabla.get(key);
-            if(simbolo.getLexema().contains(nombreClase)){
-                System.out.println("LEXEMA: " + simbolo.getLexema());
-
-            }
-        }
-    }
-}
-
-
 public static String nivelDeClaseCorrecto(String nombreClase){
-    System.out.println("ENTRE A LA FUNCION CON: " + nombreClase);
     int nivel = 1;
     String claseHereda;
     Simbolo simboloClase = TablaDeSimbolos.obtenerSimboloSinAmbito(nombreClase);
-    System.out.println("SIMBOLO: " + simboloClase.ToString());
     claseHereda = simboloClase.getHereda();
     String claseAnt = claseHereda;
     while(!claseHereda.equals("nadie") &&  nivel < 3){
-        System.out.println("ENTRE EN EL WHILE");
         nivel = nivel+1;
         simboloClase = TablaDeSimbolos.obtenerSimbolo(claseHereda);
         claseAnt = claseHereda;
@@ -1734,10 +1677,20 @@ public static void constanteNegativa(String lexemaSimbolo){
     if(lexemaSimbolo.substring(lexemaSimbolo.length() - 3).equals("_ui")){
         String err ="Linea " + AnalizadorLexico.getLineaActual() + ". ERROR LEXICO. NUMERO ENTERO SIN SIGNO NEGATIVO NO PERMITIDO.";				
         AnalizadorLexico.erroresLexicos.add(err);
+    }else if(!lexemaSimbolo.contains(".")){
+        String lexemanegativo = "-" + lexemaSimbolo;
+        TablaDeSimbolos.agregarSimbolo(lexemanegativo, Constantes.CTE);
+        TablaDeSimbolos.obtenerSimbolo(lexemanegativo).setTipo("LONG");
+        TablaDeSimbolos.obtenerSimbolo(lexemanegativo).setUso("constante");
+        
+        Constantes.tokens.put(lexemanegativo, Constantes.CTE);
     }else{
         String lexemanegativo = "-" + lexemaSimbolo;
         TablaDeSimbolos.agregarSimbolo(lexemanegativo, Constantes.CTE);
+        TablaDeSimbolos.obtenerSimbolo(lexemanegativo).setTipo("FLOAT");
+        TablaDeSimbolos.obtenerSimbolo(lexemanegativo).setUso("constante");
         Constantes.tokens.put(lexemanegativo, Constantes.CTE);
+        
     }
 }
 

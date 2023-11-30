@@ -4,8 +4,8 @@
 	UINT _var5,
 	
 	_var1 = 100_l,
-	_var2 = 20_l + _var1 * 2_l - _var1,
-	var3 = _var2 * 5_l + _var1 - var2,
+	_var2 = 20_l + _var1 + 2_l - _var1,
+	var3 = _var2 * 5_l + _var1 - _var2,
 	
 	_var5 = 1_ui,
 	
@@ -25,7 +25,7 @@
 	
 	VOID _f1(LONG _a){
 		_a = 10_l,
-		PRINT %Se ejecuto la funcion 1%
+		PRINT %Se ejecuto la funcion 1%,
 		RETURN,
 	},
 	
@@ -44,6 +44,6 @@
 	
 	WHILE (clase1.long1 > 5_l) DO{
 		_f1(clase1.long1),
-		clase1.long1 = clase1.long1--,
+		clase1.long1 = clase1.long1-1_l,
 	},
 }

@@ -1,11 +1,11 @@
 {
-	FLOAT _numero1;_numero2,
+	LONG _numero1;_numero2,
 	_numero1 = 15_l,
 	
 	_numero2 = 10_l,
 	
-	VOID fun1 (FLOAT parametro) {
-		FLOAT _numero3,
+	VOID fun1 (LONG parametro) {
+		LONG _numero3,
 		_numero3 = parametro,
 		
 		RETURN,

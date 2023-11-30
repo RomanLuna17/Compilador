@@ -42,7 +42,6 @@ public class TablaDeSimbolos {
 	    }
 	    
 	    public static boolean existeSimboloAmbitoActual(String lexema, String lexemaParametro) {
-	    	System.out.println("LEXEMA: " + lexema + " LEXEMA PARAMETRO: " + lexemaParametro);
 	    	 if(tabla.containsKey(lexema)) { 
 	    		 if(tabla.get(lexema).getParametro() != null) {
 	    			 if(tabla.get(lexema).getParametro().getLexema().equals(lexemaParametro)) {
@@ -109,7 +108,6 @@ public class TablaDeSimbolos {
 	
 		
 		public static void borrarSimbolo (String lexema) {
-			System.out.println("BORRAR: " + lexema);
 			tabla.remove(lexema);
 					
 		}

@@ -78,11 +78,11 @@ public class NodoControl extends ArbolSintactico {
 			case "TOF":
 				if(this.getIzq().getLex().substring(0, getIzq().getLex().length()-3).equals("_ui")) {
 					//es un entero de 16
-					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_")+" \n";
+					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
 					salida+= getIzq().getAssembler();
 				}else {
 					//es un entero de 32
-					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_") +" \n";
+					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
 					salida += getIzq().getAssembler();
 				}
 				break;

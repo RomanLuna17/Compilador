@@ -12,7 +12,7 @@ public abstract class ArbolSintactico extends ParserVal{
     private String lex = "";
     
     private String aux = "@aux";
-    public static int indiceAux = 0;
+    public static int indiceAux = 1;
     public static Stack<Integer> pilaAuxs = new Stack<>();
     public static Stack<String> pilaLabels = new Stack<>();
     public static int indiceLabel = 0;

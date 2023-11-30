@@ -1,19 +1,19 @@
 {
-	FLOAT _numero1;_numero2,
+	LONG _numero1;_numero2,
 	_numero1 = 15_l,
 	
 	_numero2 = 10_l,
 	
-	VOID fun1 (FLOAT parametro) {
-		FLOAT _numero1,
+	VOID fun1 (LONG parametro) {
+		LONG _numero1,
 		_numero1 = parametro + _numero2,
 		
 		IF (_numero1 == 25_l) {
-			PRINT %fun1 _numero1 == 25_l%,
+			PRINT %fun1 _numero1 es igual 25_l%,
 		} ELSE {
-			PRINT %fun1 _numero1 !! 25_l%,
+			PRINT %fun1 _numero1 es distinto 25_l%,
 		} END_IF,
 		RETURN,
-	}
+	},
 	fun1(_numero1),
 }

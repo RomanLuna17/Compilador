@@ -52,20 +52,20 @@ public class GeneradorAssembler {
             		switch(simbolo.getTipo()) {
             		case "LONG":
             			valor = simbolo.getLexema().substring(0, simbolo.getLexema().length() - 2); //me quedo con el simbolo sin el sufijo
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_") + " dd ? \n";
+            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
             			break;
             		case "UINT":
             			valor = simbolo.getLexema().substring(0, simbolo.getLexema().length() - 3);
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_") + " dW ? \n";
+            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dW ? \n";
             			break;
             		case "FLOAT":
             			valor = simbolo.getLexema();
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_") + " dd ? \n";
+            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
             			break;
 	            	}
             		break;
             	case "cadena":
-            		contenidoTabla += "$"+simbolo.getLexema().replace(" ", "$").replace(".", "_") + " db \"" + simbolo.getLexema() +"\" , 0 \n";
+            		contenidoTabla += "$"+simbolo.getLexema().replace(" ", "$").replace(".", "_").replace("+","$").replace("-","$") + " db \"" + simbolo.getLexema() +"\" , 0 \n";
             		break;
             	default:
             		if(simbolo.getLexema().contains("@aux")) {
