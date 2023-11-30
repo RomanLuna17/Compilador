@@ -1,0 +1,29 @@
+{
+
+	FLOAT _numero1;_numero2;numero3;var1;var2,
+
+	_numero1 = 10_l,
+
+	var1 = 145_l,
+
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		numero3 = var1,
+	}ELSE{
+		var2 = 10_l,
+	} END_IF, 
+
+	numero3 = 10_l,
+	_numero2 = 5_l,
+
+	IF(numero3 == 10_l){
+		IF(10_l >= 9_l){
+			numero3 = _numero2,
+		}ELSE{
+			numero3 = var1,
+		}END_IF,
+
+	}END_IF,
+	
+
+}

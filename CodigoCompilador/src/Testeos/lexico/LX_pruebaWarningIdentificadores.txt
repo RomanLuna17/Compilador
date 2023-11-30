@@ -1,0 +1,21 @@
+{
+	
+	 LONG este_identificador_s,
+	 
+	 LONG este_identificador_supera_el_largo,
+	
+	PRINT %Como se puede observar en este codigo 
+		   el warning con respecto a truncar las variables es que
+		   en este caso como al truncar la variable queda con el mismo
+		   nombre que una que ya existia Esto genera un error luego al
+		   compilar por completo el codigo%,
+	
+	este_identificador_s =10_l,
+	
+	este_identificador_supera_el_largo = 1_l,
+	
+	
+
+
+
+}

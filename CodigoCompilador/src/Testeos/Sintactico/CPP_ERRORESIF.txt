@@ -1,0 +1,59 @@
+{
+
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}ELSE{
+		_numero = 10_l,
+	} END_IF, 
+	
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}{
+		_numero = 10_l,
+	} END_IF, 
+	
+	(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}ELSE{
+		_numero = 10_l,
+	} END_IF,
+	
+	
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}{
+		_numero = 10_l,
+	} ,
+	
+	(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}{
+		_numero = 10_l,
+	} END_IF,
+	
+	(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}{
+		_numero = 10_l,
+	} ,
+	
+	IF(){
+		_numero2 = _numero1,
+		var1 = var3,
+	}ELSE{
+		_numero = 10_l,
+	} END_IF,
+	
+	
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		var1 = var3,
+	}ELSE{ } END_IF,
+
+}

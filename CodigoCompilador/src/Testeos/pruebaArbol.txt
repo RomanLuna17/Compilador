@@ -1,0 +1,32 @@
+{	
+	LONG var1,
+	
+	FLOAT var2;var3,
+	
+	var1 = 20_l,
+	
+	var2 = 10.,
+	
+	var3 = TOF(var1) + var2,
+	
+	
+	IF(var3 == 30.0){
+		PRINT %var3 es igual a 30.0%,
+	}ELSE{
+		PRINT %var3 es distinto a 30.0%,
+	}END_IF,
+	
+	var1 = var1 + 1_l,
+	
+	IF(var1 == 21_l){
+		PRINT %var1 es igual a 21%,
+	}ELSE{
+		PRINT %var1 es distinto de 21%,
+	}END_IF,
+	
+
+	
+	
+	
+
+}

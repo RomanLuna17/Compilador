@@ -1,0 +1,58 @@
+{
+	LONG _var1,
+	UINT _var2,
+	FLOAT _var3,
+	LONG a;b;d;c,
+	
+	a =10_l,
+	b = 10_l,
+	c = 20_l,
+	d = 30_l,
+	
+	
+	esteidentificadortienemasde20caracteres = 10_l,
+	
+	IF(a > b){
+		PRINT%mayor%,
+	}END_IF,
+	
+	IF(a < b){
+		PRINT%menor%,
+	}END_IF,
+	
+	IF(a == b){
+		PRINT%igual%,
+	
+	}END_IF,
+	
+	IF(a >= b){
+		PRINT%mayor o  igual%,
+	}END_IF,
+	
+	IF(a <= b){
+		PRINT%menor o igual%,
+	}END_IF,
+	
+	IF(a !! b){
+		PRINT%distinto%,
+	}END_IF,
+	
+	PRINT %esta cadena es para ver que se guarda bien%,
+	
+	WHILE(_c !! _d)DO{
+		PRINT%esto%,
+	},
+	
+	VOID funcion ( FLOAT flota){
+		RETURN,
+	},
+	
+	CLASS c1{
+		LONG largo,
+	},
+	
+	
+
+
+
+}

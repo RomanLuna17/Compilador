@@ -1,0 +1,40 @@
+{
+	FLOAT _a,
+	
+	var = 8,
+	
+	numero = 12345_l,
+	
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		_hola = _chau,
+	}ELSE{
+		_perro = 10_l,
+	} END_IF, 
+
+	_hola = 10_l,
+
+	IF(_hola == 10_l){
+			_f1 ( _a),
+		IF(10_l >= 9_l){
+			_hola = _esto,
+		}ELSE{
+			_hola = _chau,
+		}END_IF,
+
+	}END_IF,
+	
+	numero1 = 10_l,
+
+	numero2 = 1.0,
+	
+	numero1A = 10_l,
+
+
+	_num = _chau---_dos,
+	
+	IF(_hola-->10_l ) {
+		_uno = 10_l,
+	}END_IF,
+	
+}

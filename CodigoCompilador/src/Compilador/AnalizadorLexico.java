@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import AccionesSemanticas.AccionSemantica;
 
@@ -15,8 +17,13 @@ public class AnalizadorLexico {
 	private static int lineaActual = 1;
 	public static final StringBuilder tokenActual = new StringBuilder();
 	public static int estadoActual = 0;
-	private static AccionSemantica [][] accionesSemanticas = LectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
-	private static int [][] transicionDeEstados = LectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	//private static AccionSemantica [][] accionesSemanticas = LectorArchivo.readActionMatrixFile(Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	private static AccionSemantica [][] accionesSemanticas = LectorArchivo.readActionMatrixFile(Paths.get("").normalize().toAbsolutePath()+Constantes.ARCHIVO_MATRIZ_ACCIONES, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	
+	//private static int [][] transicionDeEstados = LectorArchivo.readIntMatrixFile(Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	private static int [][] transicionDeEstados = LectorArchivo.readIntMatrixFile(Paths.get("").normalize().toAbsolutePath()+Constantes.ARCHIVO_MATRIZ_ESTADO, Constantes.CANT_ESTADOS, Constantes.CANT_CARACTERES);
+	
+	public static ArrayList<String> erroresLexicos = new ArrayList<String>();
 	
 	private static String lexemaActual = "";
 	
@@ -33,7 +40,7 @@ public class AnalizadorLexico {
 	}
 
 	public static void setLineaActual(int lineaActual1) {
-		lineaActual = lineaActual1;//this.lineaActual = lineaActual; TUVE QUE SACAR EL THIS PORQUE AHORA ES ESTATICA
+		lineaActual = lineaActual1;
 	}
 	
 	private static char obtenerTipoCar (char caracter){
@@ -42,7 +49,6 @@ public class AnalizadorLexico {
         } else if ((Character.isLowerCase(caracter)) && (caracter != 'e') && (caracter != 'l') && (caracter != 'u') && (caracter != 'i')){
             return Constantes.MINISCULA;
         }else if ((caracter != 'E') && (Character.isUpperCase(caracter))){
-            //FALTO AGREGAR LA i EN EL IF DE ARRIBA
         	return Constantes.MAYUSCULA;
         } else {
             return caracter;
@@ -146,19 +152,27 @@ public class AnalizadorLexico {
                 carActual = 28; //Si es un caracter no reconocido, lo manda a ASE
                 break;
         }
-        //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter);
-        //System.out.println("CARACTER ACTUAL: " + carActual);
-        //System.out.println("VALOR CARACTER: " + caracter);
+        
+        if(estadoActual == -1) {
+        	estadoActual = 0; //Seteo el estado en 0 porque ya pase el error	
+        }
         AccionSemantica accSemantica = accionesSemanticas[estadoActual][carActual];
-        //System.out.println("TOKENACT: " + tokenActual);
+        //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter);
+        
         int idToken = accSemantica.run(lector, tokenActual);
-        //System.out.println("ID TOKEN: " + idToken);
+        
+        //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter +" ID_TOKEN: " + idToken);
         
         
         estadoActual = transicionDeEstados[estadoActual][carActual];
-        if(idToken != 0) {
+        
+        
+        
+        if(idToken != 0 && idToken != -1) {
         	Constantes.tokens.put(lexemaActual, idToken);
         }
+        
+      
         
         
         return idToken;

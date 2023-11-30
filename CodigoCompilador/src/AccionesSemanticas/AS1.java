@@ -15,10 +15,9 @@ public class AS1 implements AccionSemantica {
 		try {
             char caracter = (char) lector.read(); //Leo el caracter
 			
-			
             token_act.append(caracter);//agrego al token
             
-
+            //System.out.println("El siguiente caracter es: " + token_act + " + " + caracter);
             
             if (caracter == Constantes.SALTO_DE_LINEA) { //Si es un salto de linea actualizo LineaActual
                 AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);

@@ -1,0 +1,83 @@
+{
+	LONG _var1; _var2; _var3,
+	FLOAT _var4,
+	UINT _var5,
+	
+	var4 = TOF(_var2) +1.0,
+	
+	_var1 = 100_l,
+	_var2 = 20_l + _var1,
+	_var3 = _var2 + _var1,
+	
+	_var4 = 1.3,
+	
+	_var5 = 20000_ui,
+	
+	
+	WHILE(_var1 !! _var2)DO{
+		_hola = 10_l + 20_l,
+		_f4 (_a ),
+	},
+	
+	IF(10_l > 8_l){
+		_numero2 = _numero1,
+		_hola = _chau,
+	}ELSE{
+		_perro = 10_l,
+	} END_IF, 
+	
+	VOID _f1(FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	WHILE(_var10 !! _var2)DO{
+		_hola = 1_l,
+		_f1(_a ),
+	},
+	
+	
+	CLASS _ca {
+		
+		LONG _a;_b,
+		FLOAT _c,
+		
+		VOID _f1 (FLOAT _a){
+			_r = _b,
+			
+			IF ( _a < _b){
+				_r = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+		},
+		
+		_ca _a1;_a2,
+		_cb _b1,
+	},
+	
+	
+	_f1(_a,
+	
+	_f2 _b),
+	
+	_a1._a = 3_l,
+	_b1._ca._a = 3_l,
+	_b1._a = 2.3,
+	
+	PRINT %hola mundo%,
+	
+	*{gmweoige wegoimwego
+			ewgmpoewgm moiqgeme 
+			oiqmego}*
+	
+	_hola = 10_l,
+	
+	_f(,
+	
+	PRINT %llegue%,
+	
+	
+	
+}

@@ -1,0 +1,35 @@
+{
+	LONG var3; suma3,
+	var3 = 1_l,
+	suma3 = 1_l,
+	
+	WHILE(suma3 <= 10_l)DO{
+		PRINT %entre al while%,
+		suma3 = suma3 +1_l,
+		var3 = var3 +1_l,
+	},
+	
+	
+	IF(var3 == 100_l){
+		PRINT %var3 es igual a 100%,
+	}ELSE{
+		PRINT %var3 es distinto de 100%,
+	}END_IF,
+	
+	UINT var2; suma2,
+	var2 = 1_ui,
+	suma2 = 1_ui,
+	
+	WHILE(suma2 <= 10_ui)DO{
+		PRINT %entre al while%,
+		suma2 = suma2 +1_ui,
+		var2 = var2 +1_ui,
+	},
+	
+	IF(var2 == 100_ui){
+		PRINT %var2 es igual a 100%,
+	}ELSE{
+		PRINT %var2 es distinto de 100%,
+	}END_IF,	
+	
+}

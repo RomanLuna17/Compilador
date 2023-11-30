@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.Map;
 
 import Compilador.AnalizadorLexico;
+import Compilador.Constantes;
 import Compilador.LectorArchivo;
 
 
@@ -13,20 +14,32 @@ public class AS8 implements AccionSemantica{
 
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
-		String lexemaSimbolo = token_act.toString().substring(0, token_act.length()); //saco el ultimo caracter del token
-		Map<String, Integer> palabrasReservadas = LectorArchivo.readMapFile("src\\archivosTxt\\TablaPalabrasReservadas.txt");
+		//System.out.println("Accion Semantica 8");
+		String lexemaSimbolo = token_act.toString().substring(0, token_act.length()); 
 		
-		if(palabrasReservadas.containsKey(lexemaSimbolo)) {
-			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
+		if(Constantes.ARCHIVO_PALABRAS_RESERVADAS.containsKey(lexemaSimbolo)) {
+			token_act.delete(0, token_act.length()); 
             AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
-			return palabrasReservadas.get(lexemaSimbolo);
-		}else { 
-			token_act.delete(0, token_act.length()); //elimino todos los caracteres menos el utlimo porque lo voy a usar para el proximo token
-			
-			return -1; 
+            if(!lexemaSimbolo.equals("CTE") && !lexemaSimbolo.equals("ID") && !lexemaSimbolo.equals("CADENA") && !lexemaSimbolo.equals(">=") && !lexemaSimbolo.equals("<=") && !lexemaSimbolo.equals("==") && !lexemaSimbolo.equals("!!"))
+            	return Constantes.ARCHIVO_PALABRAS_RESERVADAS.get(lexemaSimbolo);
 		}
-		
-	
+		String err ="Linea " + AnalizadorLexico.getLineaActual() + ". ERROR LEXICO. NO EXISTE LA PALABRA RESERVADA '" + lexemaSimbolo + "'";
+		AnalizadorLexico.erroresLexicos.add(err);
+		token_act.delete(0, token_act.length());
+		char caracter = '1';
+		while(caracter != ',') {
+			//avanzo el lector hasta encontrar una coma para pasar el error
+				
+		if (caracter == Constantes.SALTO_DE_LINEA){ //Si es un salto de linea actualizo LineaActual
+			AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
+	    }
+				
+		caracter = (char) lector.read();
+				
+		}
+			
+		AnalizadorLexico.setLexemaActual(lexemaSimbolo);
+		return 0; 
 	}
-
+		
 }

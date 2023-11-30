@@ -1,0 +1,59 @@
+{
+	FLOAT var1;var2,
+	
+	var1 = 10.0,
+	var2 = var1 -2.0,
+	
+	IF (var1 == var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	IF (var1 < var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	
+	IF (var1 <= var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,	
+	
+	IF (var2 <= var1){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	
+	IF (var1 !! var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	IF (var1 > var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	
+	IF (var1 < var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+	
+	IF (var1 >= var2){
+		PRINT %entro al if del if%,
+	}ELSE{
+		PRINT %no entre%,
+	}END_IF,
+
+
+}

@@ -15,7 +15,7 @@ public class LectorArchivo {
 // Este metodo se encarga de leer un txt y aparterir de las cantidad de filas y columnas dadas genera la matriz
 	 public static int[][] readIntMatrixFile(String path, int rows, int columns) {
 	        int[][] int_matrix = new int[rows][columns];
-
+	       
 	        try {
 	            File archivo = new File(path);
 	            Scanner scanner = new Scanner(archivo);
@@ -39,6 +39,7 @@ public class LectorArchivo {
 	    public static AccionSemantica[][] readActionMatrixFile(String path, int rows, int columns) {
 	        AccionSemantica[][] action_matrix = new AccionSemantica[rows][columns];
 
+	        
 	        try {
 	            File archivo = new File(path);
 	            Scanner scanner = new Scanner(archivo);
@@ -61,14 +62,18 @@ public class LectorArchivo {
 // Este metodo se encarga de leer un archivo y setear las palabras reservadas
 	    public static Map<String, Integer> readMapFile(String path) {
 	        Map<String, Integer> map = new HashMap<>();
-
+	        
+	        
 	        try {
 	            File archivo = new File(path);
+	            
+	            //System.out.println("ARCHIVO: " + archivo);
 	            Scanner scanner = new Scanner(archivo);
 
 	            while (scanner.hasNext()) {
 	                String palabra_reservada = scanner.next();
 	                int identificador = scanner.nextInt();
+	                
 	                map.put(palabra_reservada, identificador);
 	            }
 

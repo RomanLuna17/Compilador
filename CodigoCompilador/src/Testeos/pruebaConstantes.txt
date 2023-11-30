@@ -1,0 +1,135 @@
+{
+	LONG var1; var2;var3,
+	FLOAT var4,
+	UINT var5,
+	
+	var1 = var1 * var2,
+	
+	var2 = var3 + var3,
+	var4 = var5 + var5,
+	
+	LONG var6;		var7;	var8,
+	
+	var6 = var1 / var2,
+	
+	var7 = var4--,
+	var8 = var1---2_l,
+	
+	FLOAT var9 ,
+	
+	var9 = 1.0 +.2 + 0.e+1-1.,
+	
+	VOID funcion1(LONG var10){
+		var10 = 1_l -4_l,
+		RETURN,
+	},
+	
+	funcion1(var1),
+	
+	WHILE(var1 !! 20_l)DO{
+		PRINT %es distinto%,
+	},
+	
+	IF(var2 < var1){
+		var4  = 1_l,
+	}ELSE{
+		var4 = 2_l,
+	}END_IF,
+	
+	PRINT %llegue al final%,
+	
+	casa = 80_l,
+	
+	
+	PRINT %	A PARTIR DE ACA EMPIEZO A PROBAR LOS ERRORES EN CONSTANTES%,
+	
+	num1 = 10_l,
+	num2 = 2147483647_l,
+	num3 = -2147483648_l,
+	num6 = 4294968888_l, *{fuera de rango}*
+	
+	
+	num4 = 0_ui,
+	num5 = 65535_ui,
+	num7 = 70535_ui, *{fuera de rango}*
+	num8 = -12_ui,  *{fuera de rango}*
+	
+	
+	num9 = 0.0,
+	num10 = -1.17549435E-37,
+	num11 = -3.40282350E+38,
+	num12 = 1.17549555E-38,
+	num13 = 3.40282330E+38,
+	
+	*{error identificador despues de constantes}*
+	
+	
+	var_estabilizadora = 1_l,
+	
+	const2 = 1.var2,
+	
+	var_estabilizadora = 1_l,
+	
+	const3 = .1var3,
+	
+	var_estabilizadora = 1_l,
+	const4 = 1.2EE+1,
+	
+	var_estabilizadora = 1_l,
+	const5 = 1.2E+var5,
+	
+	var_estabilizadora = 1_l,
+	
+	const6 = 1._,
+	
+	var_estabilizadora = 1_l,
+	
+	const7 = 1.0 + 2.5 + 1.{ + 0.0,
+	
+	var_estabilizadora = 1_l,
+	
+	const8 = ..2,
+	
+	var_estabilizadora = 1_l,
+	
+	const9 = .;,
+	
+	var_estabilizadora = 1_l,
+	const10 = 0.4PRINT,
+	
+	var_estabilizadora = 1_l,
+	const11 = .},
+	var_estabilizadora = 1_l,
+	const12 = 2.(,
+	var_estabilizadora = 1_l,
+	const13 = .0%,
+	var_estabilizadora = 1_l,
+	const14 = .3,
+	var_estabilizadora = 1_l,
+	
+	const15=._,
+	
+	var_estabilizadora = 1_l,
+	
+	const16 = .Y__,
+	PRINT %COMO LOS CASOS ANTERIORES HAY MUCHOS MAS%,
+	
+	PRINT %OKEY%,
+	
+	VOID fun10(FLOAT a){
+		varfun = 1_l,
+		RETURN,
+	},
+	
+	VOID fun20(LONG b){
+		a = .0,
+		b = 1_ui,
+		IF(a<b){
+			PRINT %a es menor que b%,
+			RETURN,
+		}ELSE{
+			PRINT %a es mayor que b%,
+			RETURN,
+		}END_IF,
+	},
+}

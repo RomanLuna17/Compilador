@@ -1,0 +1,56 @@
+{
+	var1 = var1 * var2,
+	
+	var2 = var3 + var3,
+	var4 = var5 + var5,
+	
+	LONG var6;		var7;	var8,
+	
+	var6 = var1 / var2,
+	
+	var7 = var4--,
+	var8 = var1---2_l,
+	
+	WHILE(var1 !! 20_l)DO{
+		PRINT %es distinto%,
+	},
+	
+	IF(var2 < var1){
+		var4  = 1_l,
+	}ELSE{
+		var4 = 2_l,
+	}END_IF,
+	
+	
+	VOID funcion1(LONG var10){
+		var10 = 1_l -4_l,
+		RETURN,
+	},
+	
+	PRINT %FIN DE CODIGO DE PRUEBA NORMAL%,
+	
+	VOID funcion(){a = 1_l,RETURN,},
+	WHILE(a<b)DO{f1(),},
+	IF(c==f){f2(),}ELSE{f3(),}END_IF,
+	PRINT%a%,
+	CLASS a{FLOAT p},
+	
+	CLASSF 
+	var_estabilizadora = 1_l,
+	IF) 
+	var_estabilizadora = 1_l,
+	PALABRA 
+	var_estabilizadora = 1_l,
+	VARIABLE 
+	var_estabilizadora = 1_l,
+	
+	FLOATbarco,
+	
+	var$$,
+	
+	var_estabilizadora = 1_l,
+	
+	c1.a.b = 10_l,
+	
+	PRINT %AHORA SI LLEGUE AL FINAL FINAL%,
+}

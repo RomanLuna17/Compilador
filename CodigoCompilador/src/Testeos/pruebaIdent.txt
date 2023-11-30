@@ -1,0 +1,73 @@
+{
+	LONG var1; var2;var3,
+	FLOAT var4,
+	UINT var5,
+	
+	var1 = var1 * var2,
+	
+	var2 = var3 + var3,
+	var4 = var5 + var5,
+	
+	LONG var6;		var7;	var8,
+	
+	var6 = var1 / var2,
+	
+	var7 = var4--,
+	var8 = var1---2_l,
+	
+	FLOAT var9 ,
+	
+	var9 = 1.0 +.2 + 0.e+1-1.,
+	
+	VOID funcion1(LONG var10){
+		var10 = 1_l -4_l,
+		RETURN,
+	},
+	
+	funcion1(var1),
+	
+	WHILE(var1 !! 20_l)DO{
+		PRINT %es distinto%,
+	},
+	
+	IF(var2 < var1){
+		var4  = 1_l,
+	}ELSE{
+		var4 = 2_l,
+	}END_IF,
+	
+	PRINT %llegue al final%,
+	
+	casa = 80_l,
+	
+	
+	*{error salto de linea}*
+	num1
+	
+	
+	var_estabilizadora = 1_l,
+	
+	*{error letra E}*
+	num2E = 1_l,
+	
+	var_estabilizadora = 1_l,
+	
+	*{no se permiten palabras reservadas seguido de un identificador}*
+	num3PRINT =10_l,
+	
+	var_estabilizadora = 1_l,
+	
+	*{no se permiten llaves de cierre despues de un identificador}*
+	num4},
+	
+	var_estabilizadora = 1_l,
+	
+	*{no se permite el caracter % seguido de un identificador}*
+	num5%,
+	
+	num6Anum3 = 1_l,
+	
+	var_estabilizadora = 1_l,
+	
+	PRINT %paso%,
+}

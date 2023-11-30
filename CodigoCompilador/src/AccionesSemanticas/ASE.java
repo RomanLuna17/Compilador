@@ -12,28 +12,45 @@ public class ASE implements AccionSemantica{
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
 		//System.out.println("ACCION SEMANTICA ERROR");
+		
 		try {
-			char caracter = (char) lector.read(); //Leo el caracter. TENGO QUE AGREGARLO AL TOKEN_ACT, SINO PIERDO UN CARACTER ME PARECE
-													//DUDA POST REALIZACION DE LA ACCION
+			char caracter = (char) lector.read(); 
 			
-			System.out.println("ERROR: TOKEN ACTUAL: " + token_act);
+			//System.out.println("Entre a error por: " + token_act + " me llego [" + caracter + "] ");
+			String err = "";
+			if (caracter == Constantes.SALTO_DE_LINEA){ //Si es un salto de linea actualizo LineaActual
+                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
+                err = "Linea " +AnalizadorLexico.getLineaActual() + ". ERROR LEXICO. HUBO UN ERROR: '" + token_act + " SALTO DE LINEA'.NO SE RECONOCE COMO UN TOKEN VALIDO.";
+    			
+			}else {
+				err = "Linea " +AnalizadorLexico.getLineaActual() + ". ERROR LEXICO. HUBO UN ERROR: '" + token_act + caracter + "'.NO SE RECONOCE COMO UN TOKEN VALIDO.";
+			}
+			
+			AnalizadorLexico.erroresLexicos.add(err);
+			
 			token_act.delete(0,token_act.length()); //elimino el token con el error
 			
 			
-            token_act.append(caracter);
-            if (caracter == Constantes.SALTO_DE_LINEA){ //Si es un salto de linea actualizo LineaActual
-                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
-            }
+			
+			while(caracter != ',') {
+				//avanzo el lector hasta encontrar una coma para pasar el error
+				
+				if (caracter == Constantes.SALTO_DE_LINEA){ //Si es un salto de linea actualizo LineaActual
+	                AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
+	            }
+				
+				caracter = (char) lector.read();
+				
+			}
+			//lector.reset();
+			AnalizadorLexico.setLexemaActual(","); //seteo una coma en lexema actual
+           
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-		/*
-        System.out.println("TOKEN ACTUAL: " + token_act.toString());
-        System.out.println("###########################################");
-		*/
 		
-        return Constantes.ERROR_EN_TOKEN;
+        return 0;  
 	}
 
 }

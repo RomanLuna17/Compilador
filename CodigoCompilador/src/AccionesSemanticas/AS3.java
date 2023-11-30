@@ -17,16 +17,17 @@ public class AS3 implements AccionSemantica{
 		//System.out.println("ACCION SEMANTICA 3");
 		String lexemaSimbolo = token_act.substring(0, token_act.length());
 		
+		//System.out.println("Entre aca porque el token es: " + token_act);
+		
 		if(lexemaSimbolo.length() > 20) {
 			lexemaSimbolo = token_act.substring(0, 20); //Recorto el String
-			//TENGO QUE INFORMAR WARNING. NOSE SI MOSTRAR POR PANTALLA O DE ESTO SE ENCARGA EL PARSER
-			System.err.println("WARNING: EL NOMBRE DEL IDENTIFICADOR: " + lexemaSimbolo +" SUPERA EL LARGO" );
+			String err = "WARNING: Linea "+ AnalizadorLexico.getLineaActual() +". EL NOMBRE DEL IDENTIFICADOR: " + token_act.substring(0, token_act.length()) +" SUPERA EL LARGO. SERA REEMPLAZADO POR: " + lexemaSimbolo;
+			AnalizadorLexico.erroresLexicos.add(err);
 		}
 		
 		
 		
-		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ID); //Se encarga de agregar el simbolo en caso de no existir
-																 //o retornar el simbolo si ya existe		
+		Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ID); 	
         
 		token_act.delete(0, token_act.length()); //elimino todos los caracteres
 

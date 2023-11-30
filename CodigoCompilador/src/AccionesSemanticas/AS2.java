@@ -17,32 +17,29 @@ public class AS2 implements AccionSemantica{
         //System.out.println("ACCION SEMANTICA 2");
 		try {
 			char caracter = (char) lector.read(); //Leo el caracter
-            
+			
+			
             token_act.append(caracter);//agrego al token
-        	
             
-            String lexemaSimbolo = token_act.toString(); //Obtengo el numero
+            String lexemaSimbolo = token_act.toString(); 
             
-            Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en casod e no existir
-																	//o retornar el simbolo si ya existe
+            //System.out.println("Lexema: " + lexemaSimbolo);
+            
+            int id_simbolo = Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo);     
             
             token_act.delete(0, token_act.length()); //elimino todos los caracteres del token
-        	
-            
-           
-          
+         
             AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
             
-            
-            return simbolo.getId();// Retorno token
-            
+            return id_simbolo;
+           
         } catch (IOException excepcion) {
             excepcion.printStackTrace();
         }
 		
 
-        return Constantes.ERROR_EN_TOKEN; //retorno -1 en caso de error
-    }
+        return 0;
+	}
 
 	
 }

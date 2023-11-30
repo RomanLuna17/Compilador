@@ -1,0 +1,77 @@
+{
+    LONG VARIABLE,  *{en este caso detecta la palabra reservada LONG y la palabra que corresponde al identificador VARIABLE, 
+						la detecta como palabra reservada y sale error lexico}*
+	
+	LONG var1;var2;var3;var4,    *{En este caso tomamos como que fue error al tipear del programador y se ovlido de separar el tipo del nombre del identificador, lo 
+					que hace es tomarlo por separado y agregar var1 en la tabla de simbolos y LONG lo detecta como el tipo}*
+	
+	UINT var5;var6;var7;var8,
+	
+	
+	
+	long var,      *{ En este caso tomamos como que long en minuscula, en lugar de tomarse como un tipo de constante, lo toma como una clase, por lo
+						agrega ambos identificadores }*
+
+	
+	var1 = -2147483648_l, *{ Variable entera larga con el rango inferior permitido}*
+	
+	var2 = 2147483647_l, *{ Variable entera larga con el rango superior permitido}*
+	
+	var3 = -2147483649_l *{ Variable entera larga que es mas chica que el menor valor permitido}*
+	
+	var4 = 2147483648_l,  *{ variable entera larga que supera el maximo valor permitido}*
+	
+	var5 = 0_ui, *{ Variable entera sin signo de menor valor posible}*
+	
+	var6 = 65535_ui, *{Variable entera sin signo de mayor valor posible}*
+	
+	var7 = -1_ui, *{ Variable entera sin signo mas chica que el rango inferior}*
+	
+	var8 = 65536_ui, *{Variable entera sin signo mayor que el maximo valor permitido}*
+	
+	
+	
+	
+	*{Casos posibles con constantes de punto flotante}*
+	var9 = 1.,
+	
+	var10 = .0,
+	
+	var11 = 1.0E+2,
+	
+	var12 = .2E+4,
+	
+	var13 = 1.e+3,
+	
+	var14 = 1.1e-2,
+	
+	var15 = 0.5E-12, 
+	
+	PRINT %paso%,
+	
+	variabledemasde25caracteres = 10_l, *{ Esta variable supera la maxima cantidad de caracteres permitidas para el identificador}*
+	
+	variablebien = 1_ui, *{ Este identificador esta bien declarado}*
+	
+	_ident = 80_ui,
+	
+	ident = 0.5e+2,
+	
+	identificadorletraM =20,  *{Esta sentencia se detecta como error ya que no es posible crear un identificador con una letra mayusculas, por 
+								lo que la parte en minuscula la detecta y agrega a la tabla de simbolos, pero al momento de no detectar M como palabra reservada
+								sale error y no no permite seguir compilando}*
+
+	FLOAT iden_20_f_,
+	
+	FLOAT float, *{Este caso es detectado como un identificador con lexema= float}*
+	
+	PRINT %cadena bien escrita%,
+	
+	PRINT %cadena mal, *{ Aca falta cerrar la cadena}*
+	
+	var40 = 1.2,
+	
+	PRI,
+	
+
+}

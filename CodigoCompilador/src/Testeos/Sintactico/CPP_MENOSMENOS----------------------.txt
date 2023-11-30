@@ -1,0 +1,16 @@
+{
+
+	FLOAT _float1;float2;float3,
+	_float1 = 5.
+
+	float2 = _float1-- + 10_l,
+	
+	float3 = float2---_float1,
+	
+	IF(float3-->10_l ) {
+		float2 = 10.,
+	}END_IF,
+	
+	
+
+}

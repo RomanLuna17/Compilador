@@ -1,0 +1,25 @@
+{
+
+	FLOAT _numero2,
+	LONG _numero1,
+
+	FLOAT _numero,
+
+	VOID _f1(LONG _a){
+		_a = 10_l,
+		RETURN,
+	},
+
+	LONG _b,
+
+	CLASS _c{
+		FLOAT _c,
+	},
+
+	LONG _f,
+
+	_c1 _a,
+
+ 
+
+}

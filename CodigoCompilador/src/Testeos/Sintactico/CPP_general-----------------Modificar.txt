@@ -1,0 +1,64 @@
+{
+	LONG var1,
+	FLOAT var2;var3;var4,
+	UINT var5,
+	
+	
+	*{comentario}*
+	
+	WHILE(_var1 !! _var2)DO{
+		_hola = 10_l + 20_l,
+		_f4 (_a ),
+	},
+	
+	CLASS _ca {
+		
+		LONG _a;_b,
+		FLOAT _c,
+		
+		VOID _f1 (FLOAT _a){
+			FLOAT _r;_b,
+			
+			IF ( _a < _b){
+				_r = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+		},
+		
+		_ca _a1;_a2,
+		_cb _b1,
+	},
+	
+	
+	VOID funcion2 (FLOAT _a){
+			FLOAT _r;_b,
+			
+			IF ( _a < _b){
+				_r = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+	},
+		
+		
+		
+	VOID funcion3 (FLOAT flotante){
+			FLOAT _r;_b,
+			_r = flotante,
+			
+			IF ( _a < _b){
+				_r = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+	},
+	
+	clase1 c1;c1;c3,
+	
+	var100 = -1_l,
+	PRINT %simulo que muestro algo%,
+}

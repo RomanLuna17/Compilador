@@ -16,6 +16,7 @@ public class AS7 implements AccionSemantica{
 	@Override
 	public int run(Reader lector, StringBuilder token_act) throws IOException {
 		//System.out.println("ACCION SEMANTICA 7");
+		
 		try {
             char caracter = (char) lector.read(); //Leo el caracter
             
@@ -30,21 +31,20 @@ public class AS7 implements AccionSemantica{
 		
 		String lexemaSimbolo = token_act.toString();
 		
-		Simbolo simbolo;
-		
+		//Simbolo simbolo;
+		int id_simbolo = -1;
 		if(Constantes.ARCHIVO_CARACTERES_ASCII.containsKey(lexemaSimbolo)) {
-			simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en caso de no existir
+			//simbolo = TablaDeSimbolos.obtenerSimbolo(lexemaSimbolo, Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo)); //Se encarga de agregar el simbolo en caso de no existir
+			id_simbolo = Constantes.ARCHIVO_CARACTERES_ASCII.get(lexemaSimbolo);
+			
 			token_act.delete(0, token_act.length()); //elimino todos los caracteres
 	        AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
-			return simbolo.getId(); 
-		
+			//return simbolo.getId(); 
+	        return id_simbolo;
 		
 		}else {
 			
 			int id_token = Constantes.ARCHIVO_PALABRAS_RESERVADAS.getOrDefault(lexemaSimbolo, Constantes.ERROR_EN_TOKEN);
-			//System.out.println("ID: " + id_token + " LEXEMA: " + lexemaSimbolo);
-			//System.out.println("ID_TOKEN: " + id_token);
-			//System.out.println("AS7: Lexema: " +simbolo.getLexema() + " IDtoken: " + simbolo.getId() + " TOKEN ACT: " + token_act);
 			token_act.delete(0, token_act.length()); //elimino todos los caracteres
 	        AnalizadorLexico.setLexemaActual(lexemaSimbolo); //seteo el lexema actual para el parser
 			return id_token; 

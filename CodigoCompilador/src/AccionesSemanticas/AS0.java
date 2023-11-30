@@ -14,7 +14,8 @@ public class AS0 implements AccionSemantica {
 		//System.out.println("ACCION SEMANTICA 0");
 		try {
             char caracter = (char) lector.read(); // Lee el siguiente caracter
-
+          
+            
             if (caracter == Constantes.SALTO_DE_LINEA) {
                 AnalizadorLexico.setLineaActual(AnalizadorLexico.getLineaActual() + 1);
             }

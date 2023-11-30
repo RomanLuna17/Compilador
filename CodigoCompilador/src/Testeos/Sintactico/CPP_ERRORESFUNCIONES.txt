@@ -1,0 +1,82 @@
+{
+
+	FLOAT _numero2,
+	LONG _numero1,
+
+	FLOAT _numero,
+	FLOAT _a,
+
+	VOID _f1(FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID _f1(FLOAT _a){
+		_a = 10_l,
+		
+	},
+	
+	VOID _f1(FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	,
+	
+	VOID _f1(FLOAT _a)
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID _f1(FLOAT _a{
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID _f1 FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID (FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	_f1(FLOAT _a){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	FLOAT _b,
+	
+	VOID _f1(){
+		_a = 10_l,
+		
+	},
+	
+	VOID _f1(){
+		_a = 10_l,
+		RETURN,
+	,
+	
+	VOID _f1()
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID _f1({
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID _f1 ){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	VOID (){
+		_a = 10_l,
+		RETURN,
+	},
+	
+	
+}
