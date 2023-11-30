@@ -3,12 +3,21 @@
 	FLOAT var2;var3;var4,
 	UINT var5,
 	
+	var1 = 10_l,
+	
+	var2 = 12.4,
+	
+	var3 = var2 + 2.4,
+	
+	var4 = 20.6,
+	
+	var5 = 11_ui,
+	
 	
 	*{comentario}*
 	
-	WHILE(_var1 !! _var2)DO{
-		_hola = 10_l + 20_l,
-		_f4 (_a ),
+	IF (var2 == 12.4) {
+		var1 = 10_l + 20_l,
 	},
 	
 	CLASS _ca {
@@ -32,33 +41,25 @@
 	},
 	
 	
-	VOID funcion2 (FLOAT _a){
-			FLOAT _r;_b,
+	VOID fun1 (LONG _a){
+			LONG _r;_b,
+			
+			_b = 5_l,
 			
 			IF ( _a < _b){
 				_r = 10_l,
+				PRINT %_r es igual a 10%,
 			}END_IF,
 			
 			RETURN,
 			
 	},
 		
-		
-		
-	VOID funcion3 (FLOAT flotante){
-			FLOAT _r;_b,
-			_r = flotante,
-			
-			IF ( _a < _b){
-				_r = 10_l,
-			}END_IF,
-			
-			RETURN,
-			
-	},
 	
-	clase1 c1;c1;c3,
+	_ca c1,
 	
-	var100 = -1_l,
-	PRINT %simulo que muestro algo%,
+	c1._a = 1_l,
+	
+	fun1(c1._a),
+	
 }

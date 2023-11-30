@@ -1,0 +1,31 @@
+{
+	CLASS c1 {
+		LONG long1,
+	},
+	CLASS c2 {
+		LONG long2,
+		c1,
+	},
+	CLASS c3 {
+		
+		VOID m1 () {
+			PRINT %invoco m1%,
+			RETURN,
+		}
+		
+		c2,
+	},
+	CLASS c4 {
+		FLOAT float1,
+		c3,
+	},
+	
+	c4 clase4,
+	
+	clase4.c3.c2.c1.long1 = 1_l,
+	
+	IF (clase4.c3.c2.c1.long1 == 1_l) {
+		PRINT %long1 es igual 1%,
+	}END_IF,
+	
+}

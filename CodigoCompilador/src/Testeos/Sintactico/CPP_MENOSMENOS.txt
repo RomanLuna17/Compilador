@@ -1,0 +1,21 @@
+{
+
+	FLOAT _float1;float2;float3,
+	_float1 = 5.
+
+	float2 = _float1-- + 10_l,
+	
+	float3 = float2---_float1,
+	
+	IF(float3--!!10.0) {
+		float2 = 10.,
+	}END_IF,
+	
+	IF (float2 == 10.) {
+		PRINT %float2 es igual a 10%,
+		IF (float3 == 18.0) {
+			PRINT %float3 es igual a 18%,
+		} END_IF,
+	} END_IF,
+
+}
