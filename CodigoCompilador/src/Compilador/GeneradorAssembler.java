@@ -23,9 +23,9 @@ public class GeneradorAssembler {
 	private void generarDataTabla(){
 		Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
 		
-		contenidoTabla += "$errorDivisionPorCero db \" Error Assembler:No se puede realizar la division por cero\" \n";  
-		contenidoTabla += "$errorOverflowMultEntero db \" Error Assembler: overflow en producto de enteros \" \n";
-		contenidoTabla += "$errorOverflowSumaFlotantes db \" Error Assembler: overflow en la suma de flotantes \" \n";
+		contenidoTabla += "$errorDivisionPorCero db \" Error Assembler:No se puede realizar la division por cero\" , 0 \n";  
+		contenidoTabla += "$errorOverflowMultEntero db \" Error Assembler: overflow en producto de enteros \", 0 \n";
+		contenidoTabla += "$errorOverflowSumaFlotantes db \" Error Assembler: overflow en la suma de flotantes \", 0 \n";
 		
 		
 		for (String llave : TablaDeSimbolos.obtenerTablaDeSimbolos().keySet()) {

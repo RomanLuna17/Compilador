@@ -1,0 +1,69 @@
+{
+	LONG var1;var2;var3,
+	
+	var1 = 10_l,
+	var2 = 20_l,
+	
+	VOID fun1(LONG a){
+		LONG num1,
+		num1 = a,
+		IF(num1 == 10_l){
+			PRINT %num1 es igual a 10 funcion main%,
+		}ELSE{
+			PRINT %num1 es distinto de 10 funcion main%,
+		}END_IF,
+		RETURN,
+	},
+	
+	fun1(var1),
+	
+	CLASS c1{
+		VOID fun1(LONG a){
+			LONG num1,
+			num1 = a,
+			IF(num1 == 10_l){
+				PRINT %num1 es igual a 10 funcion clase c1%,
+			}ELSE{
+				PRINT %num1 es distinto de 10 funcion clase c1%,
+			}END_IF,
+			RETURN,
+		},
+	},
+	
+	CLASS c2{
+		c1,
+	},
+	
+	CLASS c3{
+		c2,
+	},
+	
+	CLASS c4{
+		c3 clase_de_c4,
+	},
+	
+	CLASS c5{
+		c4,
+	},
+	
+	CLASS c6{
+		c5,
+	},
+	
+	
+	CLASS c7{
+		c6 objt_c6,
+	},
+	
+	CLASS c8{
+		c7,
+	},
+	
+	CLASS c9{
+		c8,
+	},
+	
+	c9 clase1,
+	
+	clase1.c8.c7.objt_c6.c5.c4.clase_de_c4.c2.c1.fun1(var1+12_l),
+}

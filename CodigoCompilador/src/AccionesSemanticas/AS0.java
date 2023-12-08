@@ -6,7 +6,7 @@ import java.io.Reader;
 import Compilador.AnalizadorLexico;
 import Compilador.Constantes;
 
-//SE ENCARGA DE LEER EL SIGUIENTE TOKEN EN EL PROGRAMA
+//SE ENCARGA DE LEER EL SIGUIENTE CARACTER Y SEGUIR LEYENDO SIN AGREGARLO AL TOKEN
 public class AS0 implements AccionSemantica {
 	
 	@Override

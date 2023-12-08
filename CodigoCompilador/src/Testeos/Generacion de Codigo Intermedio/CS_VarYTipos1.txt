@@ -3,18 +3,22 @@
 	FLOAT float1;float2,
 	UINT uint1;uint2,
 	
-	long1 = -112_l,
-	long2 = 223_l,
+
 	
-	float1 = 20.0,
-	float2 = 1.2e+10,
+	FLOAT var1;var2;var3;var4,
 	
-	uint1 = 20_ui,
-	uint2 = uint1,
+	var1 = 10.0,
+	var2 = 20.0,
+	var3 = 30.0,
+	var4 = 40.0,
 	
-	uint1 = uint2 * 2_ui,
+	var3 = var4 + var2 / var2,
 	
-	long1 = long1 + long2,
+	IF(var3 == 41.0){
+		PRINT %var3 es igual a 41.0%,
+	}ELSE{
+		PRINT %var3 es distinto de 41.0%,
+	}END_IF,
 	
-	float2 = float1 / float2,
+	
 }

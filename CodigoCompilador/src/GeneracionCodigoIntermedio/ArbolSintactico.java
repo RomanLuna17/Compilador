@@ -1,6 +1,6 @@
 package GeneracionCodigoIntermedio;
 
-import java.util.ArrayList;
+
 import java.util.Stack;
 
 import Compilador.ParserVal;
@@ -10,12 +10,16 @@ public abstract class ArbolSintactico extends ParserVal{
 	private ArbolSintactico izq;
     private ArbolSintactico der; 
     private String lex = "";
+   
     
-    private String aux = "@aux";
-    public static int indiceAux = 1;
+    public static int indiceAux = 0;
     public static Stack<Integer> pilaAuxs = new Stack<>();
     public static Stack<String> pilaLabels = new Stack<>();
     public static int indiceLabel = 0;
+    
+    
+    
+    public abstract String getValorAssembler();
     
     public static String apilarLabel() {
     	indiceLabel++;
@@ -30,12 +34,6 @@ public abstract class ArbolSintactico extends ParserVal{
     		indiceLabel = 0;
     		return "";
     	}
-    }
-    
-    public String getAux() {
-    	return aux+indiceAux;
-    	
-    	//return auxiliar;
     }
     
     public void aumentarVarAux() {
@@ -78,6 +76,7 @@ public abstract class ArbolSintactico extends ParserVal{
     
     public abstract void recorrerArbol(String identado);
     public abstract String getAssembler();
+    
     
    
 }

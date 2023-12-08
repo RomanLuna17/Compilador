@@ -11,5 +11,5 @@
 	},
 	
 	funcion1(float1),
-	funcion1(),
+	funcion1(float2),
 }

@@ -23,5 +23,33 @@
 		
 		RETURN,
 	},
+	
 	fun1(_numero1),
+	
+	VOID fun3(LONG parametro){
+		FLOAT _numero2,
+		_numero2 = 30000.0,
+		fun1(parametro),
+		IF (_numero1 == 110_l) {
+				PRINT %fun3 _numero1 es igual a 110_l%,
+			} ELSE {
+				PRINT %fun3 _numero1 es distinto de 110_l%,
+		} END_IF,
+		RETURN,
+	},
+	
+	fun3(15_l),
+	
+	VOID fun4(LONG param){
+		fun3(param),
+		fun1(param),
+		IF (_numero1 == 110_l) {
+				PRINT %fun4 _numero1 es igual a 110_l%,
+			} ELSE {
+				PRINT %fun4 _numero1 es distinto de 110_l%,
+		} END_IF,
+		RETURN,
+	},
+	
+	fun4(100_l),
 }

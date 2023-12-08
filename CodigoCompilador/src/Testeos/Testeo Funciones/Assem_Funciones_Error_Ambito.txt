@@ -13,5 +13,4 @@
 	
 	fun1(_numero1),
 	
-	_numero3 = 0_l,
 }

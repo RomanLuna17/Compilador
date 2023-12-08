@@ -4,14 +4,22 @@ import Compilador.Simbolo;
 import Compilador.TablaDeSimbolos;
 
 public class NodoControl extends ArbolSintactico {
-	String salida = "";
 	
+	private String valorAssembler = "";
 	
 	public NodoControl(String lex,ArbolSintactico nodo) {
         super(lex);
         setIzq(nodo);
+        valorAssembler = (lex); //seteo el valor del nodo
+    	
     }
 
+	@Override
+	public String getValorAssembler() {
+		// TODO Auto-generated method stub
+		return valorAssembler;
+	}
+	
 	@Override
 	public void recorrerArbol(String identado) {
 		// TODO Auto-generated method stub
@@ -91,5 +99,9 @@ public class NodoControl extends ArbolSintactico {
 		//System.out.println(salida);
 		return salida;
 	}
+
+
+
+	
 
 }

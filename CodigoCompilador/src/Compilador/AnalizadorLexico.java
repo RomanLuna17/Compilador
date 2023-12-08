@@ -158,23 +158,12 @@ public class AnalizadorLexico {
         }
         AccionSemantica accSemantica = accionesSemanticas[estadoActual][carActual];
         //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter);
-        
         int idToken = accSemantica.run(lector, tokenActual);
-        
         //System.out.println("ESTADO ACTUAL: " + estadoActual + " CARACTER ACTUAL: " + carActual + " VALOR CARACTER: " + caracter +" ID_TOKEN: " + idToken);
-        
-        
         estadoActual = transicionDeEstados[estadoActual][carActual];
-        
-        
-        
         if(idToken != 0 && idToken != -1) {
         	Constantes.tokens.put(lexemaActual, idToken);
         }
-        
-      
-        
-        
         return idToken;
 	}
 }

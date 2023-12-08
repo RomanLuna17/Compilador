@@ -22,9 +22,127 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub	
-		Scanner scanner = new Scanner(System.in);
+		Parser parser = new Parser();
+		AnalizadorLexico analizador = new AnalizadorLexico();
+		
+		
+		String datoIngresado = "prueba.txt";
+		
+		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\"+ datoIngresado);	
+		
+		
+		parser.run();		
+			
+		System.out.println("");
+		System.out.println("");
+		System.out.println("Tabla de Simbolos: ");
+		TablaDeSimbolos.imprimirTabla();
+		
+		
+      	
+      	System.out.println("");
+      	System.out.println("");
+      	
+      	ArrayList<NodoControl> clases_funcs = Parser.get_arboles();
+		
+		for(NodoControl a : clases_funcs) {
+			System.out.println("");
+			System.out.println("");
+			System.out.println("");
+			a.recorrerArbol("-");
+		}
+		System.out.println("");
+      	System.out.println("");
+      	System.out.println("ARBOL: ");
+		NodoControl raiz = parser.getRaiz();
+		if(raiz != null) {
+			raiz.recorrerArbol("-");
+		}else {
+			System.out.println("EL arbol esta vacio porque no hay sentencias ejecutables");
+		}
+		
+		System.out.println("");
+		System.out.println("");
+		System.out.println("WARNINGS: ");
+		if(!Constantes.varsNoUsadas.isEmpty()) {
+			for(String s : Constantes.varsNoUsadas) {
+				System.out.println("Variable " + s + " no usada");
+			}
+		}else {
+			System.out.println("No hay warnings");	
+		}
+			
+		System.out.println("");
+		System.out.println("");
+      	
+      	//ERRORES LEXICOS
+      	System.out.println("Errores Lexicos: ");
+      	if(AnalizadorLexico.erroresLexicos.isEmpty()) {
+			System.out.println("No hubo ningun error lexico");
+		}else {
+			for(String e : AnalizadorLexico.erroresLexicos) {
+				System.out.println(e);
+			}
+		}
 		
 
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		
+		
+		//ERRORES SINTACTICOS
+		if(!AnalizadorLexico.erroresLexicos.isEmpty())
+			System.out.println("AL HABER ERRORES LEXICO, LOS ERRORES SINTACTICOS Y SEMANTICOS PUEDEN NO CORRESPONDERSE");
+		System.out.println("");
+		System.out.println("Errores Sintacticos: ");
+		if(Parser.getErrores().isEmpty()) {
+			System.out.println("NO HUBO ERRORES SINTACTICOS");
+		}else {
+			for( String s : Parser.getErrores()) {
+				System.out.println(s);
+			}
+		}
+
+		System.out.println("");
+		System.out.println("");
+		System.out.println("");
+		
+		//ERRORES SEMANTICOS
+      	if(!Parser.getErrores().isEmpty())
+      		System.out.println("AL HABER ERRORES SINTACTICOS, LOS ERRORES SEMANTICOS PUEDEN NO CORRESPONDERSE");
+		System.out.println("");
+		System.out.println("Errores Semanticos: ");
+      	if(Parser.erroresSemanticos.isEmpty()) {
+			System.out.println("No hubo ningun error Semantico");
+		}else {
+			for(String e : Parser.erroresSemanticos) {
+				System.out.println(e);
+			}
+		}
+		
+      	System.out.println("");
+		System.out.println("");
+      	
+		//Assembler
+		if(!Parser.tieneErrores && Parser.errores.isEmpty() && Parser.erroresSemanticos.isEmpty()) {
+			if(raiz != null) {
+				GeneradorAssembler generador = new GeneradorAssembler(raiz);
+				System.out.println("");
+				System.out.println("");
+				generador.generar();
+			}else {
+				System.out.println("No hay sentencias ejecutables a las que generar el assembler");
+			}
+		}else {
+			System.out.println("EL ASSEMBLER NO SE PUDO GENERAR PORQUE HAY ERRORES");
+		}
+		
+		
+		/* MAIN A ENTREGAR
+		Scanner scanner = new Scanner(System.in);
+		
+		
 			System.out.println("");
 	        System.out.println("");
 	        System.out.println("###########################################################################");
@@ -193,7 +311,7 @@ public class Main {
 
 		 
 		scanner.close();
-        
+        */
 
     }	
 	

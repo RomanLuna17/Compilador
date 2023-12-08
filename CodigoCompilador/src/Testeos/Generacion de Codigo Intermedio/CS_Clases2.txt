@@ -1,4 +1,10 @@
 {
+	LONG var1;var2;var3,
+	
+	var1 = 10_l,
+	var2 = 20_l,
+	var3 = var1 +var2*var1*var2+var1,
+	
 	CLASS class_1,
 	
 	CLASS class_2 {
@@ -13,24 +19,23 @@
 		
 	obj_1.long1 = 10_l,
 	
-	obj_1.long2 = obj_1.long1,
+	obj_1.class_1.long2 = obj_1.long1,
 	
 	CLASS class_1 {
 		LONG long2,
-	}
+	},
 	
-	CLASS class_1 {
-		FLOAT float1,
-	}
+	
 	
 	VOID f1 () {
 		CLASS class_2 {
 			FLOAT float1,
-		}
+		},
 		
 		class_2 c2,
 		
-		c2.float1 = 1.
-	}
+		c2.float1 = 1.,
+		RETURN,
+	},
 		
 }
