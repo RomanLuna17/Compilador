@@ -1,0 +1,35 @@
+{
+
+	FLOAT _float1;float2;float3,
+	LONG long1;_long2,
+	UINT unit1;unit2,
+	
+	long1 = 24_l,
+	_long2 = -12_l,
+	
+	unit1 = 12_ui,
+	unit2 = 3_ui,
+	
+	_float1 = 5.
+
+	float2 = _float1-- / TOF(unit1) + TOF(long1) * TOF(unit2) ,
+	
+	float3 = float2--- TOF(_long2),
+	
+	long1 = long1 / _long2,
+	
+	_long2 = long1 * long1 + _long2,
+	
+	IF(float3--!!10.0) {
+		PRINT %float3 no es 10%
+	}END_IF,
+	
+	IF (_float1 == 5.) {
+		PRINT %_float1 es igual a 5%,
+		IF (float3 <= 30.0) {
+			PRINT %float3 es menor igual a 30%,
+		} ELSE{
+			PRINT %float3 es mayor igual a 30%,
+		}END_IF,
+	} END_IF,
+}
