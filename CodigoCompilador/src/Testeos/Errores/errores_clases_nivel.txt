@@ -11,7 +11,7 @@
 		VOID m1 () {
 			PRINT %invoco m1%,
 			RETURN,
-		}
+		},
 		
 		c2,
 	},

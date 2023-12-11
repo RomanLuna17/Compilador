@@ -1,0 +1,23 @@
+{
+	LONG long1,
+
+	FLOAT float1,
+
+	long1 = -112_l,
+	float1 = 120.0,
+	
+	VOID funcion1(FLOAT float_var){
+		float1 = float_var,
+		PRINT %entro a la funcion1%,
+		RETURN,
+	},
+	
+	funcion1(TOF(long1)),
+	IF (float1 >= TOF(long1)){
+		PRINT %long1 vale menos 112%,
+	}ELSE {
+		PRINT %no entro%,
+	}END_IF,
+
+	*{No funciona el TOF para funcion o almenos no le manda el valor correcto y da error de tipos para comparaciones}*
+}

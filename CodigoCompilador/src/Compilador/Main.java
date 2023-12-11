@@ -26,9 +26,9 @@ public class Main {
 		AnalizadorLexico analizador = new AnalizadorLexico();
 		
 		
-		String datoIngresado = "pruebaArbol.txt";
+		String datoIngresado = "calculos_anidados.txt";
 		
-		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\"+ datoIngresado);	
+		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\Aritmetica\\"+ datoIngresado);	
 		
 		
 		parser.run();		

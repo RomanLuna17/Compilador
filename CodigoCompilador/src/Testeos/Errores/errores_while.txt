@@ -1,0 +1,20 @@
+{
+
+	FLOAT _a,
+	LONG var6,
+	
+	WHILE(_numero1 !! _numero2){
+		var6 = 10_l + 20_l,
+		_f4 (_a ),
+		
+		(_numero1 !! _numero2)DO{
+			var6 = 10_l + 20_l,
+		},
+
+		WHILE ( )DO{
+			var6 = 10_l + 20_l,
+			PRINT %SIRVE%,
+		},		
+	},
+
+}

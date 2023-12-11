@@ -1,0 +1,18 @@
+{	
+	CLASS c1 {
+		LONG _numero1;_numero2;numero3,
+		_numero1 = 10_l,
+        VOID met1 {
+            PRINT %se utilizo el met1%,
+        },
+    },
+
+    c1 clase1,
+
+    IF (clase1._numero1 == 10_l){
+        PRINT%_numero1 vale 10%,
+    }END_IF,
+
+    *{En este caso como se quiere realizar sentencias ejecutables como una asignacion, da un error de que falta una llave}*
+
+}

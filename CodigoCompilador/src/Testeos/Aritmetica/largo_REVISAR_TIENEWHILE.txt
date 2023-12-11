@@ -1,0 +1,60 @@
+{
+	
+	FLOAT _numero1;_numero2;_num,
+	
+	LONG var1,
+	var1 = 500_l,
+
+	_numero1 = 15.E+2,
+	
+	_numero2= TOF(var1),
+	
+	_num= TOF(var1) / _numero1,
+	
+	CLASS class_1 {
+		FLOAT float1,
+	},
+	
+	class_1 c1,
+	
+	c1.float1 = 51.,
+
+	VOID _f1 (FLOAT _a){
+		_num = _a + 15.,
+		PRINT %_num es _a mas 15%,
+		RETURN,
+	},
+	
+	IF (_numero1 !! _numero2) {
+		_numero2 = 10.0 + 20.0,
+		PRINT %_numero2 es igual a 30%,
+		_f1 (_numero2),
+		
+		IF(c1.float1 > 20.){
+			_f1 (c1.float1),
+			IF(10_l >= 9_l){
+				_numero1 = TOF(var1),
+				PRINT %_numero1 es igual a var1%,
+			}ELSE{
+				WHILE (_numero2 !! 40.0)DO{
+					_numero2 = _numero2 + 5.0,
+					PRINT %_numero2 le sume 5%,
+					_f1 (_numero2),
+				},
+			}END_IF,
+
+		}END_IF,
+
+		var1 = 60_l,
+
+		IF (var1 == 60_l){
+			PRINT %var1 es igual a 60%,
+		}END_IF,
+		
+		WHILE (var1 > 50_l)DO{
+			var1 = 60_l - 5_l,
+			PRINT %le reste  a var1%,
+		},
+		
+	}END_IF,
+}

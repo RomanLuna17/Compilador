@@ -1,0 +1,78 @@
+{
+	LONG var1;var2,
+	
+	var1 = 10_l,
+	var2 = var1 -2_l,
+
+	IF(var1 == 10_l) {
+		PRINT%var1 es igual 10%,
+	}END_IF,
+	
+	IF(var2 == 8_l) {
+		PRINT%var2 es igual 8%,
+	}END_IF,
+	
+	IF (var1 == var2){
+		PRINT %var1 es igual a var2%,
+	}ELSE{
+		PRINT %var1 es distinta de var2%,
+	}END_IF,
+
+	IF (var1 !! var2 + 2_l){
+		PRINT %var1 es distinta de var2 mas 2%,
+	}ELSE{
+		PRINT %var1 es igual de var2 mas 2%,
+	}END_IF,
+
+	*{comparaciones lado izquierdo var1}*
+	
+	IF (var1 < var2){
+		PRINT %var1 es menor a var2%,
+	}ELSE{
+		PRINT %var1 es mayor a var2%,
+	}END_IF,
+	
+	IF (var1 <= var2){
+		PRINT %var1 es menor igual a var2%,
+	}ELSE{
+		PRINT %var1 es mayor a var2%,
+	}END_IF,	
+
+	IF (var1 > var2){
+		PRINT %var1 es mayor que var2%,
+	}ELSE{
+		PRINT %var1 es menor a var2%,
+	}END_IF,
+	
+	IF (var1 >= var2){
+		PRINT %var1 es mayor igual a var2%,
+	}ELSE{
+		PRINT %var1 es menor a var2%,
+	}END_IF,
+	
+	*{comparaciones lado izquierdo var2}*
+
+	IF (var2 <= var1){
+		PRINT %var2 es menor igual a var1%,
+	}ELSE{
+		PRINT %var2 es mayor a var1%,
+	}END_IF,
+
+	IF (var2 < var1){
+		PRINT %var2 es menor a var1%,
+	}ELSE{
+		PRINT %var2 es mayor a var1%,
+	}END_IF,
+
+	IF (var2 > var1){
+		PRINT %var2 es mayor a var1%,
+	}ELSE{
+		PRINT %var2 es menor a var1%,
+	}END_IF,
+
+	IF (var2 >= var1){
+		PRINT %var2 es mayor igual a var1%,
+	}ELSE{
+		PRINT %var2 es menor var1%,
+	}END_IF,
+}

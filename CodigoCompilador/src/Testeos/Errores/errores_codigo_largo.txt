@@ -15,13 +15,13 @@
 	
 	
 	WHILE(_var1 !! _var2)DO{
-		_hola = 10_l + 20_l,
+		_numero3 = 10_l + 20_l,
 		_f4 (_a ),
 	},
 	
 	IF(10_l > 8_l){
 		_numero2 = _numero1,
-		_hola = _chau,
+		_numero3 = _chau,
 	}ELSE{
 		_perro = 10_l,
 	} END_IF, 
@@ -32,7 +32,7 @@
 	},
 	
 	WHILE(_var10 !! _var2)DO{
-		_hola = 1_l,
+		_numero3 = 1_l,
 		_f1(_a ),
 	},
 	
@@ -72,7 +72,7 @@
 			ewgmpoewgm moiqgeme 
 			oiqmego}*
 	
-	_hola = 10_l,
+	_numero3 = 10_l,
 	
 	_f(,
 	

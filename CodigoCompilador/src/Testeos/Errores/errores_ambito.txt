@@ -1,0 +1,18 @@
+{
+	LONG _numero1,
+	_numero1 = 15_l,
+
+	VOID fun1 (LONG parametro) {
+		LONG _numero2,
+		_numero2 = parametro,
+		
+		RETURN,
+	},
+	
+	fun1(_numero1),
+
+	IF (_numero2 == 10_l){
+		PRINT %_numero2 es igual 10%,
+	}END_IF,
+	
+}
