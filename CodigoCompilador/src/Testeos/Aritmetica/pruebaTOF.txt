@@ -9,6 +9,8 @@
 	
 	var3 = TOF(var1) + var2,
 	
+	FLOAT var4;var5,
+	
 	
 	IF(var3 == 30.0){
 		PRINT %var3 es igual a 30.0%,

@@ -1,69 +1,60 @@
 {
-	LONG var1;var2;var3,
+	FLOAT var1;var2;var3,
 	
-	var1 = 10_l,
-	var2 = 20_l,
-	
-	VOID fun1(LONG a){
-		LONG num1,
-		num1 = a,
-		IF(num1 == 10_l){
-			PRINT %num1 es igual a 10 funcion main%,
-		}ELSE{
-			PRINT %num1 es distinto de 10 funcion main%,
-		}END_IF,
-		RETURN,
+	CLASS a{
+		LONG var1,
 	},
 	
-	fun1(var1),
-	
-	CLASS c1{
-		VOID fun1(LONG a){
-			LONG num1,
-			num1 = a,
-			IF(num1 == 10_l){
-				PRINT %num1 es igual a 10 funcion clase c1%,
-			}ELSE{
-				PRINT %num1 es distinto de 10 funcion clase c1%,
-			}END_IF,
-			RETURN,
-		},
+	CLASS b{
+		LONG var2,
+		a,
 	},
 	
-	CLASS c2{
-		c1,
-	},
+	a objt1,
+	objt1.var1 = 100_l,
 	
-	CLASS c3{
-		c2,
-	},
+	a bjt3,
 	
-	CLASS c4{
-		c3 clase_de_c4,
-	},
-	
-	CLASS c5{
-		c4,
-	},
-	
-	CLASS c6{
-		c5,
-	},
+	bjt3.var1 = 20_l,
 	
 	
-	CLASS c7{
-		c6 objt_c6,
-	},
+	LONG var20,
+	var20 = objt1.var1,
 	
-	CLASS c8{
-		c7,
-	},
+	IF(objt1.var1 == 100_l){
+		PRINT % entre al primer if%,
+	}ELSE{
+		PRINT % entre al primer else%,
+	}END_IF,
 	
-	CLASS c9{
-		c8,
-	},
+	IF(var20 == 100_l){
+		PRINT % entre al segundo if%,
+	}ELSE{
+		PRINT % entre al segundo else%,
+	}END_IF,
 	
-	c9 clase1,
+	b objt2,
 	
-	clase1.c8.c7.objt_c6.c5.c4.clase_de_c4.c2.c1.fun1(var1+12_l),
+	objt2.var2 = 40_l,
+	objt2.a.var1 = 20_l,
+	
+	IF(objt2.var2 == 40_l){
+		PRINT % entre al segundo if 40%,
+	}ELSE{
+		PRINT % entre al segundo else 40%,
+	}END_IF,
+	
+	IF(objt2.a.var1 == 20_l){
+		PRINT % entre al segundo if 20%,
+	}ELSE{
+		PRINT % entre al segundo else 20%,
+	}END_IF,
+	
+	IF(objt1.var1 == 100_l){
+		PRINT % entre al segundo if 100%,
+	}ELSE{
+		PRINT % entre al segundo else 100%,
+	}END_IF,
+	
+
 }

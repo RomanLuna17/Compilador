@@ -66,6 +66,8 @@ public class NodoComun extends ArbolSintactico {
         }*/
         String hijoIzq = "";
     	String hijoDer = "";
+    	boolean menosmenosIzq = false;
+    	boolean menosmenosDer = false;
     	
         switch(super.getLex()){
        
@@ -102,14 +104,25 @@ public class NodoComun extends ArbolSintactico {
             		salida+= "MOV AX , " + hijoDer + "\n"; 
                     salida+= "MOV " + hijoIzq + ", AX"+ "\n";
             	}else {
-            		if(!hijoIzq.contains("@")) {
-            			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
+            		
+            		if(hijoDer.equals("TOF")) {
+            			//hijoDer = getDer().getIzq().getValorAssembler();
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			if(!hijoIzq.contains("@")) {
+                			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
+                		}
+            			salida += "FSTP " + hijoIzq + " \n";
+            		}else {
+            		
+	            		if(!hijoIzq.contains("@")) {
+	            			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
+	            		}
+	            		if(!hijoDer.contains("@")) {	
+	            			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
+	            		}
+	            		salida += "FLD " + hijoDer + "\n";
+	                    salida += "FSTP " + hijoIzq + "\n";
             		}
-            		if(!hijoDer.contains("@")) {	
-            			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
-            		}
-            		salida += "FLD " + hijoDer + "\n";
-                    salida += "FSTP " + hijoIzq + "\n";
                 }
                 /*
                 if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")){
@@ -150,11 +163,22 @@ public class NodoComun extends ArbolSintactico {
             	//pregunto el simbolo existe, le quito el primer $
             	System.out.println("LO QUE BUSCO PARA IZQ: " + getIzq().getValorAssembler());
             	System.out.println("LO QUE BUSCO PARA DER: " + getDer().getValorAssembler());
+            	
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	
             	//pregunto si el simbolo existe, le quito el primer $ que le agregue cuando cree el nodo
-            	System.out.println("SUMA: ARBIZQ: "+ hijoIzq + " ARBDER: " + hijoDer+"######################################");
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	//System.out.println("SUMA: ARBIZQ: "+ hijoIzq + " ARBDER: " + hijoDer+"######################################");
+            	
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF") ) {
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -169,7 +193,21 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+            		
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")&& !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -184,28 +222,75 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                	
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
             		if(!hijoDer.contains("@")) {	
             			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
-            		//FALTA LOS NUMEROS FLOTANTES
-            		ArbolSintactico.indiceAux++;
-            		salida+= "FLD " +hijoIzq+ "\n";
-            		salida+= "FADD " +hijoDer+ "\n";
+            		
+            		System.out.println("hijoIzq: " + hijoIzq + " hijoDer: " + hijoDer);
+            		if(hijoIzq.equals("$TOF") && !hijoDer.equals("$TOF")) {
+            			//hijoIzq = getIzq().getIzq().getValorAssembler();
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FADD " + hijoDer + " \n";
+            		}else if(hijoDer.equals("$TOF") && !hijoIzq.equals("$TOF")) {
+            			//hijoDer = getDer().getIzq().getValorAssembler();
+            			salida += "FLD "+hijoIzq+" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FADD \n";
+            		}else if(hijoDer.equals("$TOF") && hijoIzq.equals("$TOF")) {
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FADD \n";
+            		}else {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FADD " +hijoDer+ "\n";
+            		}
+            		
             		//verifico overflow
-            		salida += "FNSTSW ax \n";   
+            		salida += "FNSTSW AX \n";   
             		salida += "SAHF \n";       
-            		salida += "TEST ah, 2 \n";         
+            		salida += "TEST AH, 1 \n";         
             		salida += "JNZ errorOverflowSumaFlotantes \n";
+            		//salida += "JO errorOverflowSumaFlotantes \n";
+            		ArbolSintactico.indiceAux++;
             		salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
             		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
+            		
+            		if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
             	}
+            	
             	break;
             case "-":
             	salida += getIzq().getAssembler() +  getDer().getAssembler();
@@ -214,8 +299,18 @@ public class NodoComun extends ArbolSintactico {
             	System.out.println("LO QUE BUSCO PARA DER: " + getDer().getValorAssembler());
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
+            	
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
             	System.out.println("RESTA: ARBIZQ: "+ hijoIzq + " ARBDER: " + hijoDer +"######################################");
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -230,7 +325,20 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")){
+            		
+            		if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+            		
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -245,22 +353,68 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")){
+            		
+            		if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
             		if(!hijoDer.contains("@")) {	
             			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
+            		if(hijoIzq.equals("$TOF") && !hijoDer.equals("$TOF")) {
+            			//hijoIzq = getIzq().getIzq().getValorAssembler();
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FSUB " + hijoDer + " \n";
+            		}else if(hijoDer.equals("$TOF") && !hijoIzq.equals("$TOF")) {
+            			//hijoDer = getDer().getIzq().getValorAssembler();
+            			salida += "FLD "+hijoIzq+" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FSUB \n";
+            		}else if(hijoDer.equals("$TOF") && hijoIzq.equals("$TOF")) {
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FSUB \n";
+            		}else {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FSUB " +hijoDer+ "\n";
+            		}
+            		
+            		
             		//FALTA LOS NUMEROS FLOTANTES
+            		//salida+= "FLD " +hijoIzq+ "\n";
+            		//salida+= "FSUB " +hijoDer+ "\n";
             		ArbolSintactico.indiceAux++;
-            		salida+= "FLD " +hijoIzq+ "\n";
-            		salida+= "FSUB " +hijoDer+ "\n";
+            		
             		salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
             		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
+            		
+            		if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
             	}
             	break;
             case "*":
@@ -270,8 +424,18 @@ public class NodoComun extends ArbolSintactico {
             	//System.out.println("LO QUE BUSCO PARA DER: " + getDer().getValorAssembler());
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	
             	System.out.println("MULTIPLICACION: PADRE: "+ getValorAssembler()+" ARBIZQ: "+ hijoIzq + " ARBDER: " + hijoDer+"######################################");
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -288,7 +452,20 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -307,22 +484,68 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
             		if(!hijoDer.contains("@")) {	
             			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
+            		if(hijoIzq.equals("$TOF") && !hijoDer.equals("$TOF")) {
+            			//hijoIzq = getIzq().getIzq().getValorAssembler();
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FMUL " + hijoDer + " \n";
+            		}else if(hijoDer.equals("$TOF") && !hijoIzq.equals("$TOF")) {
+            			//hijoDer = getDer().getIzq().getValorAssembler();
+            			salida += "FLD "+hijoIzq+" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FMUL \n";
+            		}else if(hijoDer.equals("$TOF") && hijoIzq.equals("$TOF")) {
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FMUL \n";
+            		}else {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FMUL " +hijoDer+ "\n";
+            		}
+            		
+            		
             		//FALTA LOS NUMEROS FLOTANTES
             		ArbolSintactico.indiceAux++;
-            		salida+= "FLD " + hijoIzq+ "\n";
-            		salida+= "FMUL " + hijoDer+ "\n";
+            		//salida+= "FLD " + hijoIzq+ "\n";
+            		//salida+= "FMUL " + hijoDer+ "\n";
             		salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
             		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
+            		
+            		if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
             	}
             	break;
             case "/":
@@ -332,8 +555,17 @@ public class NodoComun extends ArbolSintactico {
             	System.out.println("LO QUE BUSCO PARA DER: " + getDer().getValorAssembler());
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
             	System.out.println("DIVISION: PADRE: "+ getValorAssembler()+" ARBIZQ: "+ hijoIzq + " ARBDER: " + hijoDer+"######################################");
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -355,7 +587,20 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
             		//seteo el valor del nodo padre igual al resultado de la operacion entre los hijos
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
@@ -377,33 +622,88 @@ public class NodoComun extends ArbolSintactico {
             		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
             		//seteo el valor del nodo padre igual al resultado de la operacion entre los hijos
             		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
-            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")){
+            		
+            		//la operacion tiene un menos menos
+            		if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+            	}else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")){
             		if(!hijoIzq.contains("@")) {
             			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
             		if(!hijoDer.contains("@")) {	
             			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
             		}
+            		
+            		if(hijoIzq.equals("$TOF") && !hijoDer.equals("$TOF")) {
+            			//hijoIzq = getIzq().getIzq().getValorAssembler();
+            			salida += "FLD "+ hijoDer +" \n";
+               		 	salida += "FTST \n";
+               		 	salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
+               		 	salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
+               		 	salida += "JE errorDivisionPorCero \n";
+               		 	salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+         			 	salida += "FDIV "+hijoDer+"\n";
+            		}else if(hijoDer.equals("$TOF") && !hijoIzq.equals("$TOF")) {
+            			//hijoDer = getDer().getIzq().getValorAssembler();
+            			salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FTST \n";
+               		 	salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
+               		 	salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
+               		 	salida += "JE errorDivisionPorCero \n";
+               		 	salida += "FLD "+hijoIzq+" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FDIV \n";
+            		}else if(hijoDer.equals("$TOF") && hijoIzq.equals("$TOF")) {
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FTST \n";
+               		 	salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
+               		 	salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
+               		 	salida += "JE errorDivisionPorCero \n";
+               		 	salida += "FILD $"+getIzq().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            			salida += "FILD $"+getDer().getIzq().getValorAssembler().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+            			salida += "FDIV \n";
+            		}else {
+            			salida += "FLD "+ hijoDer +" \n";
+               		 	salida += "FTST \n";
+               		 	salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
+               		 	salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
+               		 	salida += "JE errorDivisionPorCero \n";
+                        salida += "FLD " +hijoIzq+" \n";
+               		 	salida += "FDIV "+hijoDer+"\n";
+               		}
             		//System.out.println("ES FLOAT");
             		//verifico que el divisor no sea 0
               		 ArbolSintactico.indiceAux++;
             		 //System.out.println("EL primer valor de la pila: " + hijoIzq + " El segundo valor: "+ hijoDer);
-              		 salida += "FLD "+ hijoIzq +" \n";
-            		 /*
-              		 salida += "FLD "+ hijoDer+" \n";
-            		 
-            		 salida += "FTST \n";
-            		 salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
-            		 salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
-            		 salida += "JE errorDivisionPorCero \n";
-                     */
-            		 salida += "FDIV "+hijoDer+"\n";
-            		 salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
+              		 salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
             		 ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
             		 TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
             		 TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
              		//seteo el valor del nodo padre igual al resultado de la operacion entre los hijos
              		valorAssembler = "@aux"+ArbolSintactico.indiceAux;
+             		
+             		if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
             	}
             	System.out.println("LUEGO DE REALIZAR LA DIVISION EL VALOR DE ESTE NODO ES: "+ valorAssembler);
             	break;
@@ -434,7 +734,18 @@ public class NodoComun extends ArbolSintactico {
                 salida += getIzq().getAssembler() + getDer().getAssembler();
                 hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	 if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	
+            	//por si hubo menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	
+            	 if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -443,8 +754,22 @@ public class NodoComun extends ArbolSintactico {
              		}
             		salida += "MOV EAX , " + hijoIzq+"\n";
                  	salida += "CMP EAX , " +hijoDer+"\n";
+                 	
+                 	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                 	
                  	salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-                 }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                 }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -453,8 +778,22 @@ public class NodoComun extends ArbolSintactico {
              		}
                 	salida += "MOV AX , " +hijoIzq+"\n";
                  	salida += "CMP AX , " +hijoDer+"\n";
+                 	
+                 	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                 	
                  	salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-                 }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
+                 }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                  	//SI SE COMPARAN 2 FLOTANTES. NOSE SI ESTA BIEN
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -466,78 +805,42 @@ public class NodoComun extends ArbolSintactico {
                  	salida += "FCOM " +hijoDer+"\n";
                  	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                    //menos menos
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                  	salida+="JNE "+ArbolSintactico.apilarLabel()+"\n";//salta por distinto al else
                  }
                 
-            	/*
-                if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                	salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES. NOSE SI ESTA BIEN
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                    salida+="JNE "+ArbolSintactico.apilarLabel()+"\n";//salta por distinto al else
-                
-                
-                
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JNE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}
-                }*/
+            	
                 break;
             case "!!":
             	salida += getIzq().getAssembler() + getDer().getAssembler();
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	
+            	//por si hubo menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -546,8 +849,22 @@ public class NodoComun extends ArbolSintactico {
              		}
             		salida += "MOV EAX , " + hijoIzq+"\n";
                 	salida += "CMP EAX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                	
                 	salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -556,8 +873,22 @@ public class NodoComun extends ArbolSintactico {
              		}	
                 	salida += "MOV AX , " + hijoIzq+"\n";
                     salida += "CMP AX , " +hijoDer+"\n";
+                    
+                  //menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                    
                     salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                 	//SI SE COMPARAN 2 FLOTANTES
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -569,76 +900,40 @@ public class NodoComun extends ArbolSintactico {
                 	salida += "FCOM " + hijoDer+"\n";
                 	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                  //menos menos
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                 	salida+="JE "+ArbolSintactico.apilarLabel()+"\n";
                 }
-            	/*if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                     	salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                     	salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                     	salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                	salida+="JE "+ArbolSintactico.apilarLabel()+"\n";
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , " +getDer().getLex()+ "\n";
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}
-                }*/
+            	
                 break;
             case ">":
             	salida += getIzq().getAssembler() + getDer().getAssembler();
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -647,8 +942,22 @@ public class NodoComun extends ArbolSintactico {
              		}
              		salida += "MOV EAX , " + hijoIzq+"\n";
                 	salida += "CMP EAX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                	
                 	salida+= "JLE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -657,8 +966,22 @@ public class NodoComun extends ArbolSintactico {
              		}
                 	salida += "MOV AX , " + hijoIzq+"\n";
                 	salida += "CMP AX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                	
                 	salida+= "JLE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                 	//SI SE COMPARAN 2 FLOTANTES
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -670,74 +993,39 @@ public class NodoComun extends ArbolSintactico {
                 	salida += "FCOM " + hijoDer+"\n";
                 	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                 	salida+="JLE "+ArbolSintactico.apilarLabel()+"\n";
                 }
-            	/*if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JLE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                	salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JLE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                	salida+="JLE "+ArbolSintactico.apilarLabel()+"\n";
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() + "\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() +"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() +"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() +"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() +"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JLE " + ArbolSintactico.apilarLabel() +"\n";
-	            		}
-                	}
-                }*/
+            	
                 break;
             case ">=":
             	salida += getIzq().getAssembler() + getDer().getAssembler();
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -746,8 +1034,22 @@ public class NodoComun extends ArbolSintactico {
              		}
             		salida += "MOV EAX , " + hijoIzq+"\n";
                 	salida += "CMP EAX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                	
                 	salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT") && !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -756,8 +1058,22 @@ public class NodoComun extends ArbolSintactico {
              		}
                 	salida += "MOV AX , " + hijoIzq+"\n";
                     salida += "CMP AX , " +hijoDer+"\n";
+                    
+                  //menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                    
                     salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                 	//SI SE COMPARAN 2 FLOTANTES
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -769,74 +1085,39 @@ public class NodoComun extends ArbolSintactico {
                 	salida += "FCOM " + hijoDer+"\n";
                 	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                 	salida+="JB "+ArbolSintactico.apilarLabel()+"\n";
                 }
-            	/*if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                    salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                	salida+="JL "+ArbolSintactico.apilarLabel()+"\n";
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JL " + ArbolSintactico.apilarLabel() +"\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JL " + ArbolSintactico.apilarLabel() +"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JL " + ArbolSintactico.apilarLabel() +"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	                		salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-	            			
-	                		salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	                		
-	                		salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JL " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}
-                }*/
+            	
                 break; 
             case "<":
             	salida += getIzq().getAssembler() + getDer().getAssembler();
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")&& !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -845,8 +1126,22 @@ public class NodoComun extends ArbolSintactico {
              		}
             		salida += "MOV EAX , " + hijoIzq+"\n";
                 	salida += "CMP EAX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                	
                 	salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")&& !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -855,8 +1150,22 @@ public class NodoComun extends ArbolSintactico {
              		}
                 	salida += "MOV AX , " +hijoIzq+"\n";
                     salida += "CMP AX , " +hijoDer+"\n";
+                    
+                  //menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                    
                     salida+= "JAE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                 	//SI SE COMPARAN 2 FLOTANTES
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -868,74 +1177,39 @@ public class NodoComun extends ArbolSintactico {
                 	salida += "FCOM " + hijoDer+"\n";
                 	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                 	salida+="JNL "+ArbolSintactico.apilarLabel()+"\n";
                 }
-            	/*if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                    salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                	salida+="JGE "+ArbolSintactico.apilarLabel()+"\n";
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JGE " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}
-                }*/
+            	
             	break;
             case "<=":
             	salida += getIzq().getAssembler() + getDer().getAssembler();
             	hijoIzq = getIzq().getValorAssembler();
             	hijoDer = getDer().getValorAssembler();
-            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")) {
+            	//para menos menos
+            	if(hijoIzq.contains("--")) {
+            		menosmenosIzq = true;
+            		hijoIzq= hijoIzq.substring(0, hijoIzq.length()-2);
+            	}
+            	if(hijoDer.contains("--")) {
+            		menosmenosDer = true;
+            		hijoDer = hijoDer.substring(0,hijoDer.length()-2);
+            	}
+            	if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("LONG")&& !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
             		if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -944,8 +1218,22 @@ public class NodoComun extends ArbolSintactico {
              		}
             		salida += "MOV EAX , " + hijoIzq+"\n";
                 	salida += "CMP EAX , " +hijoDer+"\n";
+                	
+                	//menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV EAX , "+hijoIzq+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , EAX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV EAX , "+hijoDer+" \n";
+                		salida+= "SUB EAX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , EAX \n";
+                	}
+                	
                 	salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("UINT")&& !getDer().getLex().equals("TOF") && !getIzq().getLex().equals("TOF")) {
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
              		}
@@ -954,8 +1242,22 @@ public class NodoComun extends ArbolSintactico {
              		}
                 	salida += "MOV AX , " + hijoIzq+"\n";
                     salida += "CMP AX , " +hijoDer+"\n";
+                    
+                  //menos menos
+                 	if(menosmenosIzq) {
+                		salida+= "MOV AX , "+hijoIzq+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoIzq+" , AX \n";
+                	}
+                	
+                	if(menosmenosDer) {
+                		salida+= "MOV AX , "+hijoDer+" \n";
+                		salida+= "SUB AX , 1 \n";
+                		salida += "MOV "+ hijoDer+" , AX \n";
+                	}
+                    
                     salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT")) {
+                }else if(TablaDeSimbolos.obtenerSimbolo(hijoIzq).getTipo().equals("FLOAT") || getDer().getLex().equals("TOF") || getIzq().getLex().equals("TOF")) {
                 	//SI SE COMPARAN 2 FLOTANTES
                 	if(!hijoIzq.contains("@")) {
              			hijoIzq ="$"+hijoIzq.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
@@ -967,68 +1269,24 @@ public class NodoComun extends ArbolSintactico {
                 	salida += "FCOM " +hijoDer+"\n";
                 	salida += "FSTSW AX \n";
                     salida += "SAHF \n";
+                    
+                    if(menosmenosIzq) {
+            			salida+= "FLD " +hijoIzq+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoIzq+" \n";
+                	}
+                	
+                	if(menosmenosDer) {
+            			salida+= "FLD " +hijoDer+ "\n";
+            			salida+= "FLD1 \n";
+            			salida+= "FSUB \n";
+            			salida+= "FSTP "+hijoDer+" \n";
+                	}
+                    
                 	salida+="JG "+ArbolSintactico.apilarLabel()+"\n";
                 }
-            	/*if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-                	salida += "MOV EAX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida += "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                	salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")) {
-                    	salida += "MOV AX , $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    	salida += "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
-                    	salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-                }else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")) {
-                	//SI SE COMPARAN 2 FLOTANTES
-                	salida += "FLD $" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	salida += "FCOM $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+"\n";
-                	
-                	salida += "FSTSW AX \n";
-                    salida += "SAHF \n";
-                	
-                	salida+="JG "+ArbolSintactico.apilarLabel()+"\n";
-                }else {
-                	//quiere decir que es un +, -, /, *
-                	if(salida.contains("EAX")) {
-	                	if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else if(salida.contains("AX")) {
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "CMP AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}else {
-                		//ES UN FLOTANTE
-                		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                		salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}else {
-	            			salida+= "FLD @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "FCOM @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	            			salida += "FSTSW AX \n";
-	                        salida += "SAHF \n";
-	            			
-	            			salida+= "JG " + ArbolSintactico.apilarLabel()+"\n";
-	            		}
-                	}
-                }*/
+            	
                 break;
             //FIN CONDICIONES
             case "WHILE":

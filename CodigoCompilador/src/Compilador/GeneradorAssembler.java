@@ -51,16 +51,28 @@ public class GeneradorAssembler {
             	case "identificador":
             		switch(simbolo.getTipo()) {
             		case "LONG":
-            			valor = simbolo.getLexema().substring(0, simbolo.getLexema().length() - 2); //me quedo con el simbolo sin el sufijo
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
-            			break;
+            			if(simbolo.getValor().contains("_l")) {
+	            			valor = simbolo.getValor().substring(0, simbolo.getValor().length() - 2); //me quedo con el simbolo sin el sufijo
+	            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd "+ valor+ "\n";
+            			}else {
+            				contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
+                		}
+	            		break;
             		case "UINT":
-            			valor = simbolo.getLexema().substring(0, simbolo.getLexema().length() - 3);
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dW ? \n";
-            			break;
+            			if(simbolo.getValor().contains("_ui")) {
+	    	            	valor = simbolo.getValor().substring(0, simbolo.getValor().length() - 3);
+	            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dw "+valor +" \n";
+            			}else {
+            				contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dw ? \n";
+                		}
+	            		break;
             		case "FLOAT":
-            			valor = simbolo.getLexema();
-            			contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
+            			if(simbolo.getValor().contains(".")) {
+            				valor = simbolo.getValor();
+            				contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd "+valor +" \n";
+            			}else {
+            				contenidoTabla += "$"+simbolo.getLexema().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " dd ? \n";
+                		}
             			break;
 	            	}
             		break;

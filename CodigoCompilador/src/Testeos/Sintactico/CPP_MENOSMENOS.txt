@@ -1,9 +1,9 @@
 {
 
 	FLOAT _float1;float2;float3,
-	_float1 = 5.
+	_float1 = 5.,
 
-	float2 = _float1-- + 10_l,
+	float2 = _float1-- + 10.0,
 	
 	float3 = float2---_float1,
 	

@@ -2,22 +2,18 @@
 
 	LONG _a,
 
-    CLASS {
+    CLASS fg{
         LONG _a,
-		_ca _a1;_a2,
+		
     },
 
-    CLASS _b{},
+    CLASS _b{
+	},
 	
 	
 	CLASS _ca {
 		LONG _numero1;_numero2;numero3,
-
-		IF(10_l > 8_l){
-			_numero2 = _numero1,
-		}ELSE{
-			numero3 = 10_l,
-		} END_IF, 
+		_numero1 = 10_l,
     },
 
 }

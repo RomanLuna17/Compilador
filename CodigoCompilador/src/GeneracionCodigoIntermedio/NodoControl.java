@@ -84,15 +84,18 @@ public class NodoControl extends ArbolSintactico {
 				}
 				break;
 			case "TOF":
+				/*
 				if(this.getIzq().getLex().substring(0, getIzq().getLex().length()-3).equals("_ui")) {
 					//es un entero de 16
 					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+" \n";
+					//salida += "FILD WORD PTR [$" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +"] \n";
 					salida+= getIzq().getAssembler();
 				}else {
 					//es un entero de 32
 					salida += "FILD $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+					//salida += "FILD DWORD PTR [$" +getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +"] \n";
 					salida += getIzq().getAssembler();
-				}
+				}*/
 				break;
 		}
 		//System.out.println("ASSEMBLER: ");

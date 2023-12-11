@@ -1,0 +1,33 @@
+{
+	LONG num1;num2;num3,
+	
+	num1 = 10_l,
+	num2 = 20_l,
+	
+	IF(num1-- !! 9_l){
+		PRINT %num1 es igual a 9%,
+	}ELSE{
+		PRINT %num1 es distinto de 9%,
+	}END_IF,
+	
+	num3 = num1-- - num2--,
+	
+	IF(num3 == -11_l){
+		PRINT %num3 es igual a menos 11_l%,
+	}ELSE{
+		PRINT %num3 es distinto de menos 11_l%,
+	}END_IF,
+
+	
+	IF(num2 == 19_l){
+		PRINT %num2 es igual a 19%,
+	}ELSE{
+		PRINT %num2 es distinto de 19%,
+	}END_IF,
+	
+	IF(num1 == 8_l){
+		PRINT %num1 es igual a 8%,
+	}ELSE{
+		PRINT %num1 es distinto de 8%,
+	}END_IF,
+}

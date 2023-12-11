@@ -10,19 +10,23 @@
 	unit1 = 12_ui,
 	unit2 = 3_ui,
 	
-	_float1 = 5.
+	_float1 = 5.,
 
-	float2 = _float1-- / TOF(unit1) + TOF(long1) * TOF(unit2) ,
+	float2 = TOF(long1) / TOF(unit2) + 2.0 + TOF(unit1) + TOF(unit1) + 6.0,
 	
-	float3 = float2--- TOF(_long2),
+	IF(float2 == 40.0){
+		PRINT %es 40%,
+	}ELSE{
+		PRINT %no es 40%,
+	}END_IF,
+	
+	float3 = float2-- + TOF(_long2),
 	
 	long1 = long1 / _long2,
 	
 	_long2 = long1 * long1 + _long2,
 	
-	IF(float3--!!10.0) {
-		PRINT %float3 no es 10%
-	}END_IF,
+	
 	
 	IF (_float1 == 5.) {
 		PRINT %_float1 es igual a 5%,

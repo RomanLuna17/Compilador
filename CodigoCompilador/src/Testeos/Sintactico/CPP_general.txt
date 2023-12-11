@@ -18,7 +18,7 @@
 	
 	IF (var2 == 12.4) {
 		var1 = 10_l + 20_l,
-	},
+	}END_IF,
 	
 	CLASS _ca {
 		

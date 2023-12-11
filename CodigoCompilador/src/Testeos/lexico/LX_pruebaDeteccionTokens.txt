@@ -3,6 +3,7 @@
 	UINT _var2,
 	FLOAT _var3,
 	LONG a;b;d;c,
+	LONG esteidentificadortienemasde20caracteres,
 	
 	a =10_l,
 	b = 10_l,
@@ -39,9 +40,7 @@
 	
 	PRINT %esta cadena es para ver que se guarda bien%,
 	
-	WHILE(_c !! _d)DO{
-		PRINT%esto%,
-	},
+	
 	
 	VOID funcion ( FLOAT flota){
 		RETURN,

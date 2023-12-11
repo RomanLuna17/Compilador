@@ -16,12 +16,33 @@
 	},
 	
 	IF(10_l > 8_l){
-		_var4 = TOF(_var1),
+		_var4 = TOF(_var1) + TOF(_var2) + TOF(_var2) + 20.0,
 		PRINT %_var4 es igual a _var1%,
 	}ELSE{
 		_var4 = TOF(_var2),
 		PRINT %_var4 es igual a _var2%,
 	} END_IF, 
+	
+	IF(_var4 == 164.0){
+		PRINT %var4 es igual a 100.0%,
+	}END_IF,
+	
+	IF(_var4 == 22.0){
+		PRINT %var4 es igual a 22.0%,
+	}END_IF,
+	
+	FLOAT num1;num2,
+	
+	num1 = 10.0,
+	num2 = 3.40282347E+38,
+	num1 = num2 + 3.40282347E+38,
+	
+	
+	IF(num2 == 110.0){
+		PRINT %num2 es igual a 90%,
+	}ELSE{
+		PRINT %num2 es distinto de 90%,
+	}END_IF,
 	
 	VOID _f1(LONG _a){
 		_a = 10_l,
