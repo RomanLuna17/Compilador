@@ -1,0 +1,158 @@
+{
+	*{El error es que no se genera bien el assembler, por esto no se puede probar tiene problemas de labels y genera dos puntos sin sentido}*
+	FLOAT var1;var2;var3,
+	var1 = 5.,
+
+	var2 = var1-- + 10.0,
+	
+	var3 = var2---var1,
+
+	VOID fun1 (FLOAT param){
+		PRINT%llamo a la funcion%,
+		IF (param == 8.0){
+			PRINT%param es igual 8%,
+		}END_IF,
+		RETURN,
+	},
+
+	IF(var1 == 4.0) {
+		PRINT%var1 es igual 4%,
+	}END_IF,
+
+	IF(var3 == 11.0) {
+		PRINT%var3 es igual a 11%,
+	}END_IF,
+
+
+	IF(var2 == 14.0) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	*{se salta esta igualdad}*
+	IF(var2-- == 14.0) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	var2 = 13.0,
+
+	IF(var2-- < 14.0){
+		PRINT%var2 es menor a 14%,
+	}ELSE{
+		PRINT%var2 es mayor igual a 14%,
+	}END_IF,
+
+	IF(var2 == 12.0) {
+		PRINT%var2 es igual 12%,
+	}END_IF,
+
+	IF(var2-- > 12.0){
+		PRINT%var2 es mayor a 12%,
+	}ELSE{
+		PRINT%var2 es menor igual a 12%,
+	}END_IF,
+
+	IF(var2 == 11.0) {
+		PRINT%var2 es igual 11%,
+	}END_IF,
+
+	IF(var2-- <= 11.0){
+		PRINT%var2 es menor igual a 11%,
+	}ELSE{
+		PRINT%var2 es mayor a 11%,
+	}END_IF,
+
+	IF(var2 == 10.0) {
+		PRINT%var2 es igual 10%,
+	}END_IF,
+
+	IF(var2-- >= 11.0){
+		PRINT%var2 es mayor igual a 11%,
+	}ELSE{
+		PRINT%var2 es menor a 11%,
+	}END_IF,
+
+	IF(var2 == 9.0) {
+		PRINT%var2 es igual 9%,
+	}END_IF,
+
+	IF(var2-- !! 9.0){
+		PRINT%var2  diferente a 9%,
+	}ELSE{
+		PRINT%var2 es igual a 9%,
+	}END_IF,
+
+	IF(var2 == 8.0) {
+		PRINT%var2 es igual 8%,
+	}END_IF,
+
+	fun1(var2--),
+
+	IF(var2 == 7.0) {
+		PRINT%var2 es igual 7%,
+	}END_IF,
+
+	*{Prueba la variable en el lado derecho}*
+
+	var2 = 14.0,
+
+	IF(14.0 == var2--) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	IF(var2 == 13.0) {
+		PRINT%var2 es igual 12%,
+	}END_IF,
+
+	IF(14.0 > var2--){
+		PRINT%var2 es menor a 14%,
+	}ELSE{
+		PRINT%var2 es mayor igual a 14%,
+	}END_IF,
+
+	IF(var2 == 12.0) {
+		PRINT%var2 es igual 12%,
+	}END_IF,
+
+	IF(12.0 < var2--){
+		PRINT%var2 es mayor a 12%,
+	}ELSE{
+		PRINT%var2 es menor igual a 12%,
+	}END_IF,
+
+	IF(var2 == 11.0) {
+		PRINT%var2 es igual 11%,
+	}END_IF,
+
+
+	IF(11.0 >= var2--){
+		PRINT%var2 es menor igual a 11%,
+	}ELSE{
+		PRINT%var2 es mayor a 11%,
+	}END_IF,
+
+	IF(var2 == 10.0) {
+		PRINT%var2 es igual 10%,
+	}END_IF,
+
+
+	IF(11.0 <= var2--){
+		PRINT%var2 es mayor igual a 11%,
+	}ELSE{
+		PRINT%var2 es menor a 11%,
+	}END_IF,
+
+	IF(var2 == 9.0) {
+		PRINT%var2 es igual 9%,
+	}END_IF,
+
+	IF(9.0 !! var2--){
+		PRINT%var2  diferente a 9%,
+	}ELSE{
+		PRINT%var2 es igual a 9%,
+	}END_IF,
+
+	IF(var2 == 8.0) {
+		PRINT%var2 es igual 8%,
+	}END_IF,
+
+}

@@ -1,0 +1,92 @@
+{
+    FLOAT var1;var2,
+
+    var1 = 3.0,
+    var2 = 3.0,
+
+    WHILE (var1 > 1.0) DO {
+        PRINT%var1 es mayor a 1%,
+        var1 = var1 -1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 >= 1.0) DO {
+        PRINT%var1 es mayor igual a 1%,
+        var1 = var1 -1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 < 5.0) DO {
+        PRINT%var1 es menor a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 <= 5.0) DO {
+        PRINT%var1 es menor igual a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 !! 5.0) DO {
+        PRINT%var1 es distinto a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 == 3.0) DO {
+        PRINT%var1 es igual a 3%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    *{comparaciones con var1 en el lado derecho}*
+    
+    WHILE (1.0 < var1) DO {
+        PRINT%var1 es mayor a 1%,
+        var1 = var1 -1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (1.0 <= var1) DO {
+        PRINT%var1 es mayor igual a 1%,
+        var1 = var1 -1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (5.0 > var1) DO {
+        PRINT%var1 es menor a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (5.0 >= var1) DO {
+        PRINT%var1 es menor igual a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (5.0 !! var1 ) DO {
+        PRINT%var1 es distinto a 5%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+
+    WHILE (3.0 == var1) DO {
+        PRINT%var1 es igual a 3%,
+        var1 = var1 + 1.0,
+    },
+
+    var1 = var2,
+}

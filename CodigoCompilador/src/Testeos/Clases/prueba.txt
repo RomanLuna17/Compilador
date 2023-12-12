@@ -1,60 +1,60 @@
 {
-	FLOAT var1;var2;var3,
+	LONG var1,
 	
 	CLASS a{
 		LONG var1,
+		VOID met1(LONG param1){
+			LONG var2,
+			var2 = 10_l,
+			var1 = var2 + 20_l,
+			RETURN,
+		},
+	},
+	
+	CLASS c{
+		LONG num1,
+		LONG num2,
+		FLOAT flot1,
+		FLOAT flot2,
 	},
 	
 	CLASS b{
-		LONG var2,
+		LONG var2,  *{clase3.b.var2 global}*
 		a,
+		VOID met2(LONG param2){
+			a.var1 = 5_l,  *{clase3.b.a.var1 global }*
+			var2 = 10_l,
+			RETURN,
+		},
 	},
 	
-	a objt1,
-	objt1.var1 = 100_l,
+	CLASS d{
+		LONG var3,
+		b,
+		VOID clas(LONG a){
+			LONG f,
+			f = 100_l,
+			RETURN,
+		},
+	},
 	
-	a bjt3,
+	d clase3,
 	
-	bjt3.var1 = 20_l,
+	clase3.b.met2(10_l),
 	
 	
-	LONG var20,
-	var20 = objt1.var1,
+	clase3.clas(19_l),
 	
-	IF(objt1.var1 == 100_l){
-		PRINT % entre al primer if%,
+	LONG num1, 
+	num1 = clase3.b.a.var1, 
+	
+	IF(num1 == 5_l){
+		PRINT %num1 es 5_l%,
 	}ELSE{
-		PRINT % entre al primer else%,
+		PRINT %num1 es distinto de 5_l%,
 	}END_IF,
 	
-	IF(var20 == 100_l){
-		PRINT % entre al segundo if%,
-	}ELSE{
-		PRINT % entre al segundo else%,
-	}END_IF,
 	
-	b objt2,
-	
-	objt2.var2 = 40_l,
-	objt2.a.var1 = 20_l,
-	
-	IF(objt2.var2 == 40_l){
-		PRINT % entre al segundo if 40%,
-	}ELSE{
-		PRINT % entre al segundo else 40%,
-	}END_IF,
-	
-	IF(objt2.a.var1 == 20_l){
-		PRINT % entre al segundo if 20%,
-	}ELSE{
-		PRINT % entre al segundo else 20%,
-	}END_IF,
-	
-	IF(objt1.var1 == 100_l){
-		PRINT % entre al segundo if 100%,
-	}ELSE{
-		PRINT % entre al segundo else 100%,
-	}END_IF,
-	
+
 
 }

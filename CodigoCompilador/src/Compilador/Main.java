@@ -26,7 +26,8 @@ public class Main {
 		AnalizadorLexico analizador = new AnalizadorLexico();
 		
 		
-		String datoIngresado = "calculos_anidados.txt";
+
+		String datoIngresado = "compatibilidad_funciones_REVISAR.txt";
 		
 		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\Aritmetica\\"+ datoIngresado);	
 		

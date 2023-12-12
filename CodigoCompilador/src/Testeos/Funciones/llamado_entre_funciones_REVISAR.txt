@@ -1,0 +1,59 @@
+{
+	*{problema la funcion no termina si encuentra un return antes de el final de la fun, esto se ve en fun3}*
+	LONG _numero1;_numero2,
+	_numero1 = 15_l,
+	
+	_numero2 = 10_l,
+	
+	VOID fun1 (LONG parametro) {
+		LONG _numero3,
+		_numero3 = parametro,
+		
+		VOID fun2 () {
+			_numero1 = _numero2 + _numero3,
+			
+			IF (_numero1 == 25_l) {
+				PRINT %fun2 _numero1 es igual a 25%,
+			} ELSE {
+				PRINT %fun2 _numero1 es distinto de 25%,
+			} END_IF,
+			RETURN,
+		},
+		
+		fun2(),
+		
+		RETURN,
+	},
+	
+	fun1(_numero1),
+	
+	VOID fun3(LONG parametro){
+		FLOAT _numero2,
+		_numero2 = 30000.0,
+		fun1(parametro),
+		IF (_numero1 == 110_l) {
+				PRINT %fun3 _numero1 es igual a 110%,
+				*{la funcion no termina si llega a esta funcion}*
+				RETURN,
+			} ELSE {
+				PRINT %fun3 _numero1 es distinto de 110%,
+		} END_IF,
+		PRINT%se llego al retunr que esta afuera del if de la fun3%,
+		RETURN,
+	},
+	
+	fun3(15_l),
+	
+	VOID fun4(LONG param){
+		fun3(param),
+		fun1(param),
+		IF (_numero1 == 110_l) {
+				PRINT %fun4 _numero1 es igual a 110%,
+			} ELSE {
+				PRINT %fun4 _numero1 es distinto de 110%,
+		} END_IF,
+		RETURN,
+	},
+	
+	fun4(100_l),
+}

@@ -1,0 +1,92 @@
+{
+    UINT var1;var2,
+
+    var1 = 3_ui,
+    var2 = 3_ui,
+
+    WHILE (var1 > 1_ui) DO {
+        PRINT%var1 es mayor a 1%,
+        var1 = var1 -1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 >= 1_ui) DO {
+        PRINT%var1 es mayor igual a 1%,
+        var1 = var1 -1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 < 5_ui) DO {
+        PRINT%var1 es menor a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 <= 5_ui) DO {
+        PRINT%var1 es menor igual a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 !! 5_ui) DO {
+        PRINT%var1 es distinto a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (var1 == 3_ui) DO {
+        PRINT%var1 es igual a 3%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    *{comparaciones con var1 en el lado derecho}*
+    
+    WHILE (1_ui < var1) DO {
+        PRINT%var1 es mayor a 1%,
+        var1 = var1 -1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (1_ui <= var1) DO {
+        PRINT%var1 es mayor igual a 1%,
+        var1 = var1 -1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (5_ui > var1) DO {
+        PRINT%var1 es menor a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (5_ui >= var1) DO {
+        PRINT%var1 es menor igual a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (5_ui !! var1 ) DO {
+        PRINT%var1 es distinto a 5%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+
+    WHILE (3_ui == var1) DO {
+        PRINT%var1 es igual a 3%,
+        var1 = var1 + 1_ui,
+    },
+
+    var1 = var2,
+}

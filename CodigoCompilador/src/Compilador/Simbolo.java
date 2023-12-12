@@ -1,5 +1,7 @@
 package Compilador;
 
+import java.util.ArrayList;
+
 public class Simbolo {
 	
 	private String lexema;
@@ -14,6 +16,15 @@ public class Simbolo {
 	private boolean claseAPosterior = false;
 	private Simbolo parametro = null;
 	
+	private ArrayList<String> nombreMetodo = new ArrayList<String>(); 
+	
+	public void agregarNombreMetodo(String nombre) {
+		nombreMetodo.add(nombre);
+	}
+	
+	public ArrayList<String> getNombreMetodo() {
+		return nombreMetodo;
+	}
 	
 	public Simbolo(String lexema, int id) {
 		super();

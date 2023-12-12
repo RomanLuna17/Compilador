@@ -577,10 +577,12 @@ public class NodoComun extends ArbolSintactico {
             		salida += "CMP " + hijoDer + ", 0 \n";
                     salida += "JE errorDivisionPorCero\n";
                     
-            		salida+= "MOV EAX , "+hijoIzq+ "\n";
-            		salida+= "XOR EDX, EDX \n";
-            		salida+= "MOV EBX , "+hijoDer+" \n";
-                    salida+= "DIV EBX \n";
+                    salida += "MOV EAX, " + hijoIzq +" \n";
+                    salida += "CDQ \n"; // extiendo el signo de EAX a EAX y EDX
+                    salida += "MOV EBX, "+hijoDer +" \n";
+                    salida += "IDIV EBX \n"; // divide el registro EAX:EDX por EBX
+                    
+                
             		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
             		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
             		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
@@ -1306,6 +1308,8 @@ public class NodoComun extends ArbolSintactico {
                  			hijoDer ="$"+hijoDer.replace("#", "$").replace(".","_").replace("+","$").replace("-","$");
                  		}
             			salida += "MOV EAX , "+hijoDer+ " \n";
+            			System.out.println("Simbolo: " + TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).ToString());
+            			System.out.println("Parametro: " +TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getParametro().getLexema());
             			salida += "MOV $"+TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getParametro().getLexema().replace("#", "$").replace(".","_") +" , EAX \n";
             		}else if(TablaDeSimbolos.obtenerSimbolo(hijoDer).getTipo().equals("UINT")){
             			if(!hijoIzq.contains("@")) {

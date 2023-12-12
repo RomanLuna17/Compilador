@@ -1,0 +1,27 @@
+{
+	LONG var1;var2,
+	
+	var1 = 60_l,
+	
+	IF(var1 > 40_l){
+		PRINT %var1 es mayor a 40%,
+	}END_IF,
+	
+	WHILE(var1 > 40_l)DO{
+		var1 = var1 - 5_l,
+		PRINT %entre al while%,
+	},
+
+
+	var1 = 60_l,
+
+		IF (var1 == 60_l){
+			PRINT %var1 es igual a 60%,
+		}END_IF,
+		
+		WHILE (var1 > 50_l)DO{
+			var1 = var1 - 5_l,
+			PRINT %le reste  a var1%,
+		},
+
+}

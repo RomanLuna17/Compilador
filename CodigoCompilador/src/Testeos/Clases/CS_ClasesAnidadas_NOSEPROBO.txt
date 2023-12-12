@@ -1,0 +1,92 @@
+{
+	CLASS c2,
+	CLASS c1 {
+		LONG long4,
+		c2,
+	},
+	CLASS c2 {
+		LONG long2,
+	},
+	
+	CLASS c3 {
+		LONG long1,
+		c1,
+		VOID met1(LONG param){
+			LONG long2,
+			UINT uint3,
+			
+			long2 = param,
+			IF(long2 == param){
+				PRINT %es param%,
+			}ELSE{
+				PRINT %no es param%,
+			}END_IF,
+			VOID fun2(){
+				long2 = 400_l,
+				IF(long2 == 400_l){
+					PRINT % es 400%,
+				}ELSE{
+					PRINT %no es 400%,
+				}END_IF,
+				RETURN,
+			},
+			
+			fun2(),
+			long2 = param,
+			long1 = 10_l,
+			RETURN,
+		},
+		
+		VOID met2(){
+			met1(10_l),
+			RETURN,
+		},
+	},
+	
+	c3 clase3,
+	clase3.met1(20_l),
+	clase3.long1 = 10_l,
+	IF(clase3.long1 == 10_l){
+		PRINT %es 10%,
+	}ELSE{
+		PRINT %no es 10%,
+	}END_IF,
+	
+	
+	c1 clase1,
+	
+	clase1.c2.long2 = 10_l,
+	
+	IF (clase1.c2.long2 == 10_l){
+		PRINT %clase1.c2.long2 es igual a 10%,
+	} END_IF,
+	
+
+	clase3.c1.long4 = 5_l,
+	clase3.c1.c2.long2 = 12_l,
+	clase3.met1(clase1.c2.long2),
+	clase3.met2(),
+	
+	
+	VOID fun1(){
+		LONG casa,
+		VOID fun2(){
+			casa = 10_l,
+			RETURN,
+		},
+		fun2(),
+		IF(casa == 10_l){
+			PRINT %es igual%,
+		}ELSE{
+			PRINT %es distindo a 10%,
+		}END_IF,
+		RETURN,
+	},
+	fun1(),
+	
+	IF(clase3.long1 == 10_l){
+		PRINT %es 10%,
+	}ELSE{
+		PRINT %no es 10%,
+	}END_IF,
+}	

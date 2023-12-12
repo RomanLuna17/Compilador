@@ -1,0 +1,70 @@
+{
+	LONG _var1; _var2; var3,
+	FLOAT _var4,
+	UINT _var5,
+	
+	_var1 = 100_l,
+	_var2 = 20_l + _var1 + 2_l - _var1,
+	var3 = _var2 * 5_l + _var1 - _var2,
+	
+	_var5 = 1_ui,
+	
+	
+	WHILE(_var5 !! 3_ui)DO{
+		_var5 = _var5 + 1_ui,
+		PRINT %_var5 es diferente a 3%,
+	},
+	
+	IF(10_l > 8_l){
+		_var4 = TOF(_var1) + TOF(_var2) + TOF(_var2) + 20.0,
+		PRINT %_var4 es igual a _var1%,
+	}ELSE{
+		_var4 = TOF(_var2),
+		PRINT %_var4 es igual a _var2%,
+	} END_IF, 
+	
+	IF(_var4 == 164.0){
+		PRINT %var4 es igual a 100.0%,
+	}END_IF,
+	
+	IF(_var4 == 22.0){
+		PRINT %var4 es igual a 22.0%,
+	}END_IF,
+	
+	FLOAT num1;num2,
+	
+	num1 = 10.0,
+	num2 = 3.40282347E+38,
+	num1 = num2 + 3.40282347E+38,
+	
+	
+	IF(num2 == 110.0){
+		PRINT %num2 es igual a 90%,
+	}ELSE{
+		PRINT %num2 es distinto de 90%,
+	}END_IF,
+	
+	VOID _f1(LONG _a){
+		_a = 10_l,
+		PRINT %Se ejecuto la funcion 1%,
+		RETURN,
+	},
+	
+	IF (_var1 !! _var2){
+		_var1 = 10_l + 20_l,
+		PRINT %_var1 es igual a 30%,
+	} END_IF,
+	
+	CLASS c1 {
+		LONG long1,
+	},
+	
+	c1 clase1,
+	
+	clase1.long1 = 10_l,
+	
+	WHILE (clase1.long1 > 5_l) DO{
+		_f1(clase1.long1),
+		clase1.long1 = clase1.long1-1_l,
+	},
+}

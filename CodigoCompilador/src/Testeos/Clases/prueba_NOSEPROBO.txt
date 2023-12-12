@@ -1,0 +1,60 @@
+{
+	FLOAT var1;var2;var3,
+	
+	CLASS a{
+		LONG var1,
+	},
+	
+	CLASS b{
+		LONG var2,
+		a,
+	},
+	
+	a objt1,
+	objt1.var1 = 100_l,
+	
+	a bjt3,
+	
+	bjt3.var1 = 20_l,
+	
+	
+	LONG var20,
+	var20 = objt1.var1,
+	
+	IF(objt1.var1 == 100_l){
+		PRINT % entre al primer if%,
+	}ELSE{
+		PRINT % entre al primer else%,
+	}END_IF,
+	
+	IF(var20 == 100_l){
+		PRINT % entre al segundo if%,
+	}ELSE{
+		PRINT % entre al segundo else%,
+	}END_IF,
+	
+	b objt2,
+	
+	objt2.var2 = 40_l,
+	objt2.a.var1 = 20_l,
+	
+	IF(objt2.var2 == 40_l){
+		PRINT % entre al segundo if 40%,
+	}ELSE{
+		PRINT % entre al segundo else 40%,
+	}END_IF,
+	
+	IF(objt2.a.var1 == 20_l){
+		PRINT % entre al segundo if 20%,
+	}ELSE{
+		PRINT % entre al segundo else 20%,
+	}END_IF,
+	
+	IF(objt1.var1 == 100_l){
+		PRINT % entre al segundo if 100%,
+	}ELSE{
+		PRINT % entre al segundo else 100%,
+	}END_IF,
+	
+
+}

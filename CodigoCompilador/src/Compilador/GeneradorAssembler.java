@@ -156,7 +156,7 @@ public class GeneradorAssembler {
 		//System.out.println("FUNCS: ");
 		for(NodoControl x : listaFuncs) {
 			//System.out.println("ES: " + x.getLex());
-			salida += "$" + x.getLex().replace("#", "$")+": \n";
+			salida += "$" + x.getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+": \n";
 			salida += x.getIzq().getAssembler();
 			salida += "ret \n";
 		}

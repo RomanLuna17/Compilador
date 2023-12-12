@@ -1,0 +1,170 @@
+{
+	*{genera bien el assembler, tanto long como uint tienen exactamente la misma salida}*
+	LONG var1;var2;var3,
+	var1 = 5_l,
+
+	var2 = var1-- + 10_l,
+	
+	var3 = var2---var1,
+
+	VOID fun1 (LONG param){
+		PRINT%llamo a la funcion%,
+		*{compara mal pero resta}*
+		IF (param == 8_l){
+			PRINT%param es igual 8%,
+		}END_IF,
+		RETURN,
+	},
+
+	IF(var1 == 4_l) {
+		PRINT%var1 es igual 4%,
+	}END_IF,
+
+	IF(var3 == 11_l) {
+		PRINT%var3 es igual a 11%,
+	}END_IF,
+
+	*{Prueba la variable en el lado izquierdo}*
+
+	IF(var2 == 14_l) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	*{se salta esta igualdad}*
+	IF(var2-- == 14_l) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	IF(var2 == 13_l) {
+		PRINT%var2 es igual 13%,
+	}END_IF,
+
+	*{la comparacion parece que no funciona correctamente por el menos menos sin el menos menos funciona bien pero le resta a la variable}*
+	IF(var2-- < 14_l){
+		PRINT%var2 es menor a 14%,
+	}ELSE{
+		PRINT%var2 es mayor igual a 14%,
+	}END_IF,
+
+	IF(var2 == 12_l) {
+		PRINT%var2 es igual 12%,
+	}END_IF,
+
+	*{compara mal pero resta}*
+	IF(var2-- > 12_l){
+		PRINT%var2 es mayor a 12%,
+	}ELSE{
+		PRINT%var2 es menor igual a 12%,
+	}END_IF,
+
+	IF(var2 == 11_l) {
+		PRINT%var2 es igual 11%,
+	}END_IF,
+
+	*{compara mal y resta}*
+	IF(var2-- <= 11_l){
+		PRINT%var2 es menor igual a 11%,
+	}ELSE{
+		PRINT%var2 es mayor a 11%,
+	}END_IF,
+
+	IF(var2 == 10_l) {
+		PRINT%var2 es igual 10%,
+	}END_IF,
+
+	*{compara mal pero resta}*
+	IF(var2-- >= 11_l){
+		PRINT%var2 es mayor igual a 11%,
+	}ELSE{
+		PRINT%var2 es menor a 11%,
+	}END_IF,
+
+	IF(var2 == 9_l) {
+		PRINT%var2 es igual 9%,
+	}END_IF,
+
+	*{compara mal pero resta}*
+	IF(var2-- !! 9_l){
+		PRINT%var2  diferente a 9%,
+	}ELSE{
+		PRINT%var2 es igual a 9%,
+	}END_IF,
+
+	IF(var2 == 8_l) {
+		PRINT%var2 es igual 8%,
+	}END_IF,
+
+	fun1(var2--),
+
+	IF(var2 == 7_l) {
+		PRINT%var2 es igual 7%,
+	}END_IF,
+
+	*{Prueba la variable en el lado derecho}*
+
+	var2 = 14_l,
+
+	*{se salta esta igualdad}*
+	IF(14_l == var2--) {
+		PRINT%var2 es igual 14%,
+	}END_IF,
+
+	IF(var2 == 13_l) {
+		PRINT%var2 es igual 13%,
+	}END_IF,
+
+	*{compara bien y resta}*
+	IF(14_l > var2--){
+		PRINT%var2 es menor a 14%,
+	}ELSE{
+		PRINT%var2 es mayor igual a 14%,
+	}END_IF,
+
+	IF(var2 == 12_l) {
+		PRINT%var2 es igual 12%,
+	}END_IF,
+
+	*{compara bien y resta}*
+	IF(12_l < var2--){
+		PRINT%var2 es mayor a 12%,
+	}ELSE{
+		PRINT%var2 es menor igual a 12%,
+	}END_IF,
+
+	IF(var2 == 11_l) {
+		PRINT%var2 es igual 11%,
+	}END_IF,
+
+	*{compara bien y resta}*
+	IF(11_l >= var2--){
+		PRINT%var2 es menor igual a 11%,
+	}ELSE{
+		PRINT%var2 es mayor a 11%,
+	}END_IF,
+
+	IF(var2 == 10_l) {
+		PRINT%var2 es igual 10%,
+	}END_IF,
+
+	*{compara bien y resta}*
+	IF(11_l <= var2--){
+		PRINT%var2 es mayor igual a 11%,
+	}ELSE{
+		PRINT%var2 es menor a 11%,
+	}END_IF,
+
+	IF(var2 == 9_l) {
+		PRINT%var2 es igual 9%,
+	}END_IF,
+
+	*{compara mal pero resta}*
+	IF(9_l !! var2--){
+		PRINT%var2  diferente a 9%,
+	}ELSE{
+		PRINT%var2 es igual a 9%,
+	}END_IF,
+
+	IF(var2 == 8_l) {
+		PRINT%var2 es igual 8%,
+	}END_IF,
+}

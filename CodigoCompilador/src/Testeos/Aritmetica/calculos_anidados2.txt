@@ -1,0 +1,53 @@
+{
+	FLOAT _float1;float2;float3,
+	LONG long1;_long2,
+	UINT unit1;unit2,
+	
+	long1 = 24_l,
+	_long2 = -12_l,
+	
+	unit1 = 12_ui,
+	unit2 = 3_ui,
+	
+	_float1 = 5.,
+
+	float2 = TOF(long1) / TOF(unit2) + 2.0 + TOF(unit1) + TOF(unit1) + 6.0,
+	
+	IF(float2 == 40.0){
+		PRINT %es 40%,
+	}ELSE{
+		PRINT %no es 40%,
+	}END_IF,
+
+	
+	long1 = long1 / _long2,
+	
+	IF(long1 == -2_l){
+		PRINT %long1 es menos 2%,
+	}ELSE{
+		PRINT % long1 no es menos 2%,
+	}END_IF,
+	
+	IF (long1 == 0_l) {
+		PRINT%la divicion entre negativo como dividendo da 0%,
+	}END_IF,
+	
+	_float1 = 10.0 / -2.0,
+
+	_float1 = -10.0 / 2.0,
+	
+	_long2 = long1 * long1 + _long2,
+
+	IF (long1 == 0_l) {
+		PRINT%la divicion entre negativo como dividendo da 0%,
+	}END_IF,
+	
+	IF (_float1 == -5.0) {
+		PRINT %long1 es igual a menos 2%,
+		IF (_long2 < 0_l) {
+			PRINT %_long2 es negativo%,
+		} ELSE{
+			PRINT %_long2 es positivo%,
+		}END_IF,
+	} END_IF,
+}

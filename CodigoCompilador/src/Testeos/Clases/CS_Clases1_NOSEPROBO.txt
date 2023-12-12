@@ -1,0 +1,35 @@
+{
+	CLASS class_1,
+	
+	CLASS class_2 {
+		
+		LONG long1;long2,
+		FLOAT float1,
+		
+		VOID m1 (LONG a){
+			LONG aux,
+			
+			IF (a < 5_l){
+				aux = 10_l,
+			}END_IF,
+			
+			RETURN,
+			
+		},
+		
+		class_1,
+	
+	},
+	
+	CLASS class_1 {
+		LONG long3,
+	},
+	
+	class_2 obj_1,
+		
+	obj_1.long1 = 10_l,
+	obj_1.float1 = 8.,
+	
+	obj_1.class_1.long3 = 21_l,
+		
+}
