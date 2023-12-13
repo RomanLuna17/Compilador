@@ -27,7 +27,7 @@ public class Main {
 		
 		
 
-		String datoIngresado = "compatibilidad_funciones_REVISAR.txt";
+		String datoIngresado = "menosmenos_float_REVISAR.txt";
 		
 		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\Aritmetica\\"+ datoIngresado);	
 		

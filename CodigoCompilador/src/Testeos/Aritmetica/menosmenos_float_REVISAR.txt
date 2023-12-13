@@ -33,7 +33,6 @@
 		PRINT%var2 es igual 14%,
 	}END_IF,
 
-	var2 = 13.0,
 
 	IF(var2-- < 14.0){
 		PRINT%var2 es menor a 14%,

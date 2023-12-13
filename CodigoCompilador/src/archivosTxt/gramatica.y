@@ -441,9 +441,29 @@ sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {System.out.println
                                         
                                         if(simbol != null && simbol.getParametro() != null){
                                             simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                            if(simbol.getParametro().getTipo().equals(auxTipoAsig)){
+                                            
+                                            ArbolSintactico param = (ArbolSintactico) $3;
+                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
+                                            boolean tieneTof = false;
+                                            if(param.getLex().equals("TOF")){
+                                                tieneTofd = true;
+                                                if(param.getIzq().getLex().contains("--")){
+                                                    //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
+                                                }else{
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
+                                                }
+                                            }else{
+                                                if(param.getLex().contains("--")){
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
+                                                }else{
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
+                                                }
+                                            }
+                                            
+                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneTof){
                                                 NodoHoja id_func = new NodoHoja(nuevoArbol.getLex());
-                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico)$3);
+                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
                                             }else{
                                                 String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
                                                 erroresSemanticos.add(err);
@@ -458,9 +478,29 @@ sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {System.out.println
                                         Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
                                         if(simbol != null && simbol.getParametro() != null){
                                             simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                            if(simbol.getParametro().getTipo().equals(auxTipoAsig)){
+                                            
+                                            ArbolSintactico param = (ArbolSintactico) $3;
+                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
+                                            boolean tieneToF = false;
+                                            if(param.getLex().equals("TOF")){
+                                                tieneToF = true;
+                                                if(param.getIzq().getLex().contains("--")){
+                                                    //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
+                                                }else{
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
+                                                }
+                                            }else{
+                                                if(param.getLex().contains("--")){
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
+                                                }else{
+                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
+                                                }
+                                            }
+                                            
+                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneToF){
                                                 NodoHoja id_func = new NodoHoja(lexemaIdentificador);
-                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico)$3);
+                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
                                             }else{
                                                 String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
                                                 erroresSemanticos.add(err);

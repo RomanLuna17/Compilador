@@ -1,0 +1,103 @@
+{
+	LONG var1,
+	
+	CLASS a{
+		LONG var1,
+		VOID met1(LONG param1){
+			LONG var2,
+			var2 = 10_l,
+			var1 = var2 + 20_l,
+			RETURN,
+		},
+	},
+	
+	CLASS c{
+		LONG num1,
+		LONG num2,
+		FLOAT flot1,
+		FLOAT flot2,
+	},
+	
+	CLASS b{
+		LONG var2,  *{clase3.b.var2 global}*
+		a,
+		VOID met2(LONG param2){  
+			var2 = param2,  
+			
+			IF(var2 == 10_l){  
+				PRINT %var2 es 10%,
+			}END_IF,
+			RETURN,
+		},
+	},
+	
+	CLASS d{
+		LONG var3,
+		b,
+		VOID clas(){
+			LONG f,
+			f = 100_l,
+			IF(f == 100_l){
+				PRINT % f es 100%,
+			}ELSE{
+				PRINT % f no es 100%,
+			}END_IF,
+			RETURN,
+		},
+	},
+	
+	d clase3,
+	
+	d clase4,
+	
+	clase3.b.met2(10_l),
+	
+	
+	clase3.clas(),
+	
+	
+	clase3.b.a.var1 = 45_l,
+	
+	
+	
+	LONG num1,
+	
+	clase4.b.met2(5_l),
+	
+	IF(clase3.b.a.var1 == 45_l){
+		PRINT %es igual a 45%,
+	}ELSE{
+		PRINT %es distinto de 45%,
+	}END_IF,
+	
+	num1 = clase3.b.var2 + clase4.b.var2,         
+	
+	IF(num1 == 15_l){
+		PRINT %num1 es 10_l%,
+	}ELSE{
+		PRINT %num1 es distinto de 10_l%,
+	}END_IF,
+	
+	c clase_c,
+	
+	clase_c.num1 = 10_l,
+	clase_c.num2 = clase_c.num1 * 10_l,
+	
+	IF(clase_c.num1 == 10_l){
+		PRINT % clase c num1 es 10%,
+	}ELSE{
+		PRINT % clase c num1 no es 10%,
+	}END_IF,
+	
+	IF(clase_c.num2 == 100_l){
+		PRINT %clase c num2 es 100_l%,
+	}ELSE{
+		PRINT %clase c num2 es 100_l%,
+	}END_IF,
+	
+	
+
+	
+	
+
+}
