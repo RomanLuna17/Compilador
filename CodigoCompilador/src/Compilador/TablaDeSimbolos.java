@@ -19,6 +19,10 @@ public class TablaDeSimbolos {
 	            System.out.println("Clave del hashtable: [" + key + "] ---------------> " + value.ToString());
 	            if(!value.getUsada() && value.getUso().equals("identificador") && value.getLexema().contains("#global") )
 	            	Constantes.varsNoUsadas.add(value.getLexema());
+	            System.out.println("LISTA listaAQuienLeDebo: " + value.getListaAQuienLeDebo());
+	            System.out.println("LISTA listaQuienMeDebe: " + value.getListaQuienMeDebe());
+	            System.out.println("A POSTERIOR: " + value.getClaseAPosterior());
+	            System.out.println("");
 			}
 		}
 		
@@ -28,6 +32,9 @@ public class TablaDeSimbolos {
 			}
 		}
 		
+		public static void agregarSimbolo(String lexema, Simbolo simbolo) {
+			tabla.put(lexema, simbolo);
+		}
 		
 		// Devuelve el primer simbolo con igual lexema
 	    public static Simbolo obtenerSimbolo(String lexema) {
@@ -66,6 +73,7 @@ public class TablaDeSimbolos {
 	    	if(tabla.containsKey(llaveActual)) {
 	    		Simbolo simbol = tabla.get(llaveActual);
 	    		simbol.setLexema(nuevaLlave);
+	    		System.out.println("DENTRO DE MODIFICAR LEXEMA----------------------------"+ simbol.ToString() + simbol.getClaseAPosterior());
 	    		tabla.remove(llaveActual);
 	    		tabla.put(nuevaLlave, simbol);
 	    	}

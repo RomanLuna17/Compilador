@@ -1,5 +1,9 @@
 package GeneracionCodigoIntermedio;
 
+import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import Compilador.AnalizadorLexico;
 import Compilador.Constantes;
 import Compilador.GeneradorAssembler;
@@ -270,6 +274,8 @@ public class NodoComun extends ArbolSintactico {
             		salida += "SAHF \n";       
             		salida += "TEST AH, 1 \n";         
             		salida += "JNZ errorOverflowSumaFlotantes \n";
+            		
+            		
             		//salida += "JO errorOverflowSumaFlotantes \n";
             		ArbolSintactico.indiceAux++;
             		salida+= "FSTP @aux" +ArbolSintactico.indiceAux +"\n";
@@ -1386,14 +1392,55 @@ public class NodoComun extends ArbolSintactico {
             			ArbolSintactico.indiceAux = i;
             			ArbolSintactico.pilaAuxs.push(i);
             		}
+            		System.out.println("FUNCION: " + getIzq().getLex());
+            		ArrayList<String> listaObjeto = TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getAtributosTotalesClase();
             		
-            		salida += "call $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " \n";
+            		
+            		String lexMetodo = TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getDireccionMetodo();
+            		ArrayList<String> listaClase = TablaDeSimbolos.obtenerSimbolo(lexMetodo).getVariablesMetodo();
+            		
+            		salida += PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 0);
+            		System.out.println("LISTACLASE: " + listaClase);
+            		System.out.println("LISTAOBJeto: " + listaObjeto);
+            		System.out.println("LAS INSTRUCCIONES antes: " + PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 1));
+            		if(!lexMetodo.equals("")) {
+            			salida += "call $"+lexMetodo.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " \n";
+            		}else {
+            			salida += "call $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " \n";
+                	}
+            		System.out.println("LAS INSTRUCCIONES Despues: " + PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 0));
+            		
+            		salida += PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 1); 
             		
             		//salida += getIzq().getAssembler()+getDer().getAssembler();
             	}else {
             		//salida += "HIJO DERECHO ES NULL";
-            		salida += "call $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
+            		System.out.println("FUNCION: " + getIzq().getLex());
+            		
+            		ArrayList<String> listaObjeto = TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getAtributosTotalesClase();
+            		
+            		
+            		String lexMetodo = TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getDireccionMetodo();
+            		ArrayList<String> listaClase = TablaDeSimbolos.obtenerSimbolo(lexMetodo).getVariablesMetodo();
+            		
+            		salida += PasarValoresVariables(listaObjeto, listaClase, getIzq().getLex(), 0);
+            		System.out.println("LISTACLASE: " + listaClase);
+            		System.out.println("LISTAOBJeto: " + listaObjeto);
+            		System.out.println("LAS INSTRUCCIONES antes: " + PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 1));
+            		
+            		if(!lexMetodo.equals("")) {
+            			salida += "call $"+lexMetodo.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " \n";
+            		}else {
+            			salida += "call $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " \n";
+                	}
+            		
+            		System.out.println("LAS INSTRUCCIONES Despues: " + PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 0));
+            		
+            		salida += PasarValoresVariables(listaObjeto, listaClase,getIzq().getLex(), 1); 
             		//salida += getIzq().getAssembler();
+
+                    		
+            	
             	}
             	break;
            
@@ -1409,474 +1456,69 @@ public class NodoComun extends ArbolSintactico {
         return salida;
 	}
 
+	public static String PasarValoresVariables(ArrayList<String> listaVarObj, ArrayList<String> listaVarClase, String lexemaMetObj, int simboloDistinguido) {
+		String auxC = "";
+		String auxO = "";
+		String salida = "";
+		String principioMet = "";
+		Pattern patternPrincipioMet = Pattern.compile("^(.*?)\\.[^.]+$");
+		Matcher matcherPrincipioMet = patternPrincipioMet.matcher(lexemaMetObj);
+		if (matcherPrincipioMet.find()) {
+			principioMet = matcherPrincipioMet.group(1);
+		}
+		for (String lexC : listaVarClase) {
+            Pattern pattern2 = Pattern.compile("^(.*?#global)");
+            Matcher matcher2 = pattern2.matcher(lexC);
+            auxO = "";
+            if (matcher2.find()) {
+            	auxO = principioMet+ "." + matcher2.group();
+            }
+            System.out.println("lexema clase: "+auxO);
+			for (String lexO : listaVarObj) {
+		        Pattern pattern1 = Pattern.compile("^(.*?#global)");
+		        Matcher matcher = pattern1.matcher(lexO);
+		        auxC = "";
+		        if (matcher.find()) {
+		        	auxC = matcher.group();
 
+		        }
+		        System.out.println("lexema obj: "+auxC);
+
+                if (auxC.equals(auxO)) {
+                    System.out.println("El lexema "+lexC+" y el lexema "+lexO+" refieren al mismo objeto de la clase");
+                    if (simboloDistinguido == 0) {
+                    	if (TablaDeSimbolos.obtenerSimbolo(lexO).getTipo().equals("LONG")) {
+                    		salida += "MOV EAX, $"+lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
+                    		salida +=  "MOV $" + lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", EAX"+ "\n";
+                    	} else if ((TablaDeSimbolos.obtenerSimbolo(lexO).getTipo().equals("UINT"))) {
+                    		salida+= "MOV AX , $" + lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                            salida+= "MOV $" + lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", AX"+ "\n";
+                    	} else {
+                    		salida += "FLD $" + lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                    		salida += "FSTP $" + lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                    	}
+
+                    } else {
+                    	if (TablaDeSimbolos.obtenerSimbolo(lexO).getTipo().equals("LONG")) {
+                    		salida += "MOV EAX, $"+lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+"\n";
+                    		salida +=  "MOV $" + lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", EAX"+ "\n";
+                    	} else if ((TablaDeSimbolos.obtenerSimbolo(lexO).getTipo().equals("UINT"))) {
+                    		salida+= "MOV AX , $" + lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                            salida+= "MOV $" + lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", AX"+ "\n";
+                    	} else {
+                    		salida += "FLD $" + lexC.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                    		salida += "FSTP $" + lexO.replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + "\n";
+                    	}
+                    }
+                    break;
+                }
+            }
+
+        }
+		return salida;
+    }
 
 	
 }
 
-/*
- case "+":
-            	salida += getIzq().getAssembler() +  getDer().getAssembler();
-            	//System.out.println("ARBIZQ: "+ getIzq().getLex() + " ARBDER: " + getDer().getLex()+"######################################");
-            	
-            	if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV EAX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "ADD EAX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")){
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV AX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "ADD AX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")){
-            		//FALTA LOS NUMEROS FLOTANTES
-            		ArbolSintactico.indiceAux++;
-            		salida+= "FLD $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-            		salida+= "FADD $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-            		
-            		//verifico overflow
-            		salida += "FNSTSW ax \n";   
-            		salida += "SAHF \n";       
-            		salida += "TEST ah, 2 \n";         
 
-            		salida += "JNZ errorOverflowSumaFlotantes \n";
-            		
-            		
-            		salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-            	}else {
-            		//quiere decir que es un +, -, /, *
-            		if(salida.contains("EAX")) {
-            			//si es un entero largo
-	            		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "ADD EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			ArbolSintactico.pilaAuxs.pop();
-	            			salida+= "ADD EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}
-            		}else if(salida.contains("AX")) {
-            			//si es un entero sin signo
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "ADD AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "ADD AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}
-            		}else if(salida.contains("FLD")){
-            			//flotantes
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FADD $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$") +"\n";
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}else {
-	            			salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FADD @aux" + ArbolSintactico.pilaAuxs.pop() +"\n";
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}
-            		}
-            	}
-            	//super.aumentarVarAux();
-            	
-            	
-                break;
-            case "-":
-            	salida += getIzq().getAssembler() +  getDer().getAssembler();
-            	//System.out.println("ARBIZQ: "+ getIzq().getLex() + " ARBDER: " + getDer().getLex()+"######################################");
-            	
-            	if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV EAX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "SUB EAX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")){
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV AX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "SUB AX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")){
-            		//FALTA LOS NUMEROS FLOTANTES
-            		ArbolSintactico.indiceAux++;
-            		salida+= "FLD $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-            		salida+= "FSUB $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+ "\n";
-            		salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-            	}else{
-            		//quiere decir que es un +, -, /, * y el derecho es un identificador
-            		if(salida.contains("EAX")) {
-            			//si es un entero largo
-	            		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "SUB EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "SUB EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}
-            		}else if(salida.contains("AX")) {
-            			//si es un entero sin signo
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "SUB AX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "SUB AX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}
-            		}else if(salida.contains("FLD")){
-            			//flotantes
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FSUB $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$") +"\n";
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}else {
-	            			salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FSUB @aux" + ArbolSintactico.pilaAuxs.pop() +"\n";
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}
-            		}
-            	}
-            	//super.aumentarVarAux();
-                break;
-            case "*":
-            	salida += getIzq().getAssembler() +  getDer().getAssembler();
-            	//System.out.println("ARBIZQ: "+ getIzq().getLex() + " ARBDER: " + getDer().getLex()+"######################################");
-            	
-            	if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV EAX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "IMUL EAX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		
-            		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-            		salida += "JO errorOverflowMultEntero \n";
-            		
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")){
-            		ArbolSintactico.indiceAux++;
-            		salida+= "MOV AX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		//salida+= "MUL AX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV BX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MUL BX \n";
-            		
-            		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-            		salida += "JO errorOverflowMultEntero \n";
-            		
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")){
-            		//FALTA LOS NUMEROS FLOTANTES
-            		ArbolSintactico.indiceAux++;
-            		salida+= "FLD $" + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "FMUL $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		
-            		salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-            	}else {
-            		//quiere decir que es un +, -, /, *
-            		if(salida.contains("EAX")) {
-            			//si es un entero largo
-	            		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "IMUL EAX , $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			
-	                		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-	                		salida += "JO errorOverflowMultEntero \n";
-
-	            			
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}else {
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "IMUL EAX , @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			
-	                		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-	                		salida += "JO errorOverflowMultEntero \n";
-	            			
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}
-            		}else if(salida.contains("AX")) {
-            			//si es un entero sin signo
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "MOV BX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	                		salida+= "MUL BX \n";
-	                		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-	                		salida += "JO errorOverflowMultEntero \n";
-	                		
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}else {
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "MOV BX , $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	                		salida+= "MUL BX \n";
-	                		//verifico si no hubo overflow, en caso de haber salto a la etiqueta
-	                		salida += "JO errorOverflowMultEntero \n";
-	                		
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}
-            		}else if(salida.contains("FLD")){
-            			//flotantes
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	                    	salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FMUL $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$") +"\n";
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}else {
-	            			salida+= "FLD @aux" + ArbolSintactico.indiceAux+"\n"; 
-                			salida+= "FMUL @aux" + ArbolSintactico.pilaAuxs.pop() +"\n";
-                			
-                			ArbolSintactico.indiceAux++;
-	            			salida+= "FST @aux"+ArbolSintactico.indiceAux+"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}
-            		}
-            	}
-            	//super.aumentarVarAux();
-                break;
-            case "/":
-            	salida += getIzq().getAssembler() +  getDer().getAssembler();
-            	//System.out.println("ARBIZQ: "+ getIzq().getLex() + " ARBDER: " + getDer().getLex()+"######################################");
-            	
-            	if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("LONG")) {
-            		ArbolSintactico.indiceAux++;
-            		salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-                    salida += "JE errorDivisionPorCero\n";
-            		salida+= "MOV EAX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "DIV $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("UINT")){
-            		ArbolSintactico.indiceAux++;
-            		//tema particular, division por cero
-            		salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-                    salida += "JE errorDivisionPorCero\n";
-            		salida+= "MOV AX , $"+getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "DIV $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-            		salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-            		ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-            	}else if(TablaDeSimbolos.obtenerSimbolo(getIzq().getLex()).getTipo().equals("FLOAT")){
-            		//verifico que el divisor no sea 0
-              		 ArbolSintactico.indiceAux++;
-            		 System.out.println("EL primer valor de la pila: " + getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + " El segundo valor: "+ getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$"));
-              		 
-              		 salida += "FLD $"+ getIzq().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") +" \n";
-            		 salida += "FLD $"+ getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+" \n";
-            		 salida += "FTST \n";
-            		 
-            		 salida += "FSTSW AX \n"; //Almacena el estado de la palabra de estado de la FPU en AX
-            		 salida += "SAHF \n";     //Transfiere los flags de la FPU al registro de flags del procesador
-            		 
-                     salida += "JE errorDivisionPorCero \n";
-                     salida += "FDIV \n";
-            		 salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-            		 ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-            		 TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-            		 TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-            	}else {
-            		//quiere decir que es un +, -, /, *
-            		if(salida.contains("EAX")) {
-            			//si es un entero largo
-	            		if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	            			salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-	                        salida += "JE errorDivisionPorCero\n";
-	            			
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "DIV $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}else {
-	            			salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-	                        salida += "JE errorDivisionPorCero\n";
-	            			
-	            			salida+= "MOV EAX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "DIV @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , EAX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("LONG");
-	            		}
-            		}else if(salida.contains("AX")) {
-            			//si es un entero sin signo
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-            				salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-                            salida += "JE errorDivisionPorCero\n";
-            				
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "DIV $" +getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$")+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}else {
-	            			salida += "CMP $" + getDer().getLex().replace("#", "$").replace(".","_").replace("+","$").replace("-","$") + ", 0 \n";
-	                        salida += "JE errorDivisionPorCero\n";
-	            			
-	            			salida+= "MOV AX , @aux"+ArbolSintactico.indiceAux+ "\n";
-	            			salida+= "DIV @aux" +ArbolSintactico.pilaAuxs.pop()+ "\n";
-	            			ArbolSintactico.indiceAux++;
-	            			salida+= "MOV @aux"+ArbolSintactico.indiceAux+ " , AX " + "\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("UINT");
-	            		}
-            		}else if(salida.contains("FLD")){
-            			//flotantes
-            			if(!getDer().getLex().contains("+") &&  !getDer().getLex().contains("-") && !getDer().getLex().contains("*") && !getDer().getLex().contains("/")) {
-	            			//ArbolSintactico.indiceAux++;
-	               		    //salida += "FLD @aux" + ArbolSintactico.indiceAux +" \n";
-            				System.out.println("EL primer valor de la pila: " +ArbolSintactico.pilaAuxs.pop() + " El segundo valor: $"+ getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$"));
-                     		 
-            				//ArbolSintactico.pilaAuxs.pop();
-            				//salida += "FLD @aux"+ArbolSintactico.pilaAuxs.pop() +" \n";
-            				
-            				salida += "FLD $"+ getDer().getLex().replace("#", "$").replace(".","_").replace("+", "$").replace("-","$")+" \n";
-	               		    salida += "FTST \n";
-	               		    
-	               		    salida += "FSTSW AX \n";
-	               		 	salida += "SAHF \n";
-	               		    
-	                        salida += "JE errorDivisionPorCero \n";
-	                        salida += "FDIV \n";
-	                        ArbolSintactico.indiceAux++;
-	               		    salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}else {
-	            			//salida += "FLD @aux" + ArbolSintactico.pilaAuxs.pop() +" \n";
-	               		    //salida += "FLD @aux"+ ArbolSintactico.pilaAuxs.pop() +" \n";
-	            			System.out.println("EL primer valor de la pila: " + ArbolSintactico.pilaAuxs.pop() + " El segundo valor: "+ ArbolSintactico.pilaAuxs.pop());
-	                 		 
-	            			//ArbolSintactico.pilaAuxs.pop();
-	               		    //ArbolSintactico.pilaAuxs.pop();
-	            			salida += "FTST \n";
-	            			
-	            			salida += "FSTSW AX \n";
-	               		 	salida += "SAHF \n";
-	            			
-	               		 	salida += "JE errorDivisionPorCero \n";
-	                        salida += "FDIV \n";
-	                        ArbolSintactico.indiceAux++;
-	               		    salida+= "FST @aux" +ArbolSintactico.indiceAux +"\n";
-	            			
-	            			ArbolSintactico.pilaAuxs.push(ArbolSintactico.indiceAux);
-	            			TablaDeSimbolos.agregarSimbolo("@aux"+ArbolSintactico.indiceAux, Constantes.ID);
-	                		TablaDeSimbolos.obtenerSimbolo("@aux"+ArbolSintactico.indiceAux).setTipo("FLOAT");
-	            		}
-            		}
-            	}
- */

@@ -1,5 +1,4 @@
-{
-	LONG num1,
+LONG num1,
 	
 	num1 = 400_l,
 	
@@ -114,4 +113,3 @@
 	}ELSE{
 		PRINT %float2 no es igual a 60%,
 	}END_IF,
-}

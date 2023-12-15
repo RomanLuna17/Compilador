@@ -17,6 +17,9 @@ public class NodoHoja extends ArbolSintactico {
 	@Override
 	public String getValorAssembler() {
 		// TODO Auto-generated method stub
+		if(getLex().equals("RETURN")) {
+			return "ret \n";
+		}
 		return valorAssembler;
 	}
 	

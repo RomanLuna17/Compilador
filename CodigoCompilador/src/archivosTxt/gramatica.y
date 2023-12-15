@@ -10,6 +10,7 @@ import GeneracionCodigoIntermedio.NodoComun;
 import GeneracionCodigoIntermedio.NodoHoja;
 import GeneracionCodigoIntermedio.NodoControl;
 import java.util.Hashtable;
+import java.util.Stack;
 
 %}
 
@@ -66,6 +67,14 @@ declaracion_variables: tipo lista_de_variables {
                                                             TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
                                                             simbolo.setUso("identificador");
+                                                            simbolo.setValorAsignado(true);
+                                                            simbolo.setUsada(true);
+                                                            System.out.println("Estoy agergando una variable: " + simbolo.getLexema() + " auxiliar_clase vale: "+auxiliar_clase + " la profundidad es: " + auxiliar_profundidad);
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                System.out.println("cumpli las condiciones entonces entre al if y me agregue a la lista");
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                                
+                                                            }
                                                         }else{
                                                            String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
                                                             erroresSemanticos.add(err);
@@ -88,11 +97,18 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                     if(!TablaDeSimbolos.existeSimboloAmbitoActual($1.sval+"#"+ambitoActual, simbolParametro.getLexema())){
                                                         if(tieneReturn){
                                                             TablaDeSimbolos.modificarLexema($1.sval, $1.sval +"#"+ambitoActual);
-                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval + "#"+ambitoActual);
+                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo($1.sval+"#"+ambitoActual);
                                                             simbolo.setUso("funcion");
                                                             simbolo.setParametro(simbolParametro);
+                                                            simbolo.setDireccionMetodo($1.sval+"#"+ambitoActual);
                                                             agregarArbol($1.sval+"#"+ambitoActual);
                                                             tieneReturn = false; 
+
+                                                            auxiliar_profundidad--;
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                simbolo.agergarListaVariablesMetodo(auxiliar_lista_clase);
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                            }
                                                         }else{
                                                             String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Falta la sentencia return en la declaracion de funcion";
                                                             erroresSemanticos.add(err);    
@@ -101,7 +117,11 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
                                                     }
-                                                     
+                                                    
+                                                    if(!pilaAuxArbol.empty()){
+                                                        ptrRaizFuncion = pilaAuxArbol.pop();
+                                                        aux_raiz_func = pilaAuxArbol.pop();
+                                                    }
                                                 }
                      | encabezado_funcion '(' ')' '{' cuerpo_de_la_funcion '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DELCARACION de FUNCION SIN PARAMETRO");
                                                     int indice = ambitoActual.lastIndexOf('#');
@@ -112,8 +132,16 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                             TablaDeSimbolos.modificarLexema($1.sval, $1.sval +"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval + "#"+ambitoActual);
                                                             simbolo.setUso("funcion");
+                                                            simbolo.setDireccionMetodo($1.sval+"#"+ambitoActual);
                                                             agregarArbol($1.sval+"#"+ambitoActual); 
                                                             tieneReturn = false; 
+
+                                                            auxiliar_profundidad--;
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                simbolo.agergarListaVariablesMetodo(auxiliar_lista_clase);
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                            }   
+
                                                         }else{
                                                             String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Falta la sentencia return en la declaracion de funcion";
                                                             erroresSemanticos.add(err);    
@@ -121,14 +149,19 @@ declaracion_funciones: encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la
                                                     }else{
                                                         String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
-                                                    }   
+                                                    }
+                                                    if(!pilaAuxArbol.empty()){
+                                                        ptrRaizFuncion = pilaAuxArbol.pop();
+                                                        aux_raiz_func = pilaAuxArbol.pop();
+                                                    }
+
+                                                    
                                         }
                      | encabezado_funcion '(' parametro_fun ')' '{' cuerpo_de_la_funcion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' al final de la funcion");}
                      | encabezado_funcion '(' parametro_fun ')' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '{' en la declaracion de la funcion");}
                      | encabezado_funcion '(' parametro_fun '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ')' en la declaracion de la funcion");}
                      | encabezado_funcion parametro_fun ')' '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '(' en la declaracion de la funcion");}
-		     		 
-                     | encabezado_funcion '(' ')' '{' cuerpo_de_la_funcion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' en la declaracion de la funcion");}
+		     		 | encabezado_funcion '(' ')' '{' cuerpo_de_la_funcion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' en la declaracion de la funcion");}
                      | encabezado_funcion '(' ')' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '{' en la declaracion de la funcion");}
                      | encabezado_funcion '(' '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ')' en la declaracion de la funcion");}
                      | encabezado_funcion ')' '{' cuerpo_de_la_funcion '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '(' en la declaracion de la funcion");}
@@ -146,6 +179,20 @@ parametro_fun: tipo ID {
             ;                     
 
 encabezado_funcion: VOID ID{ 
+                                if(aux_raiz_func != null){
+                                    NodoComun auxRaiz = aux_raiz_func;
+                                    NodoComun auxPtrFunc = ptrRaizFuncion;
+                                    pilaAuxArbol.push(auxRaiz); // guardo primero la raiz
+                                    pilaAuxArbol.push(auxPtrFunc); // guardo segundo el ptro
+                                }
+                                NodoComun arbolFun = new NodoComun("Sentencia", null, null);
+                                aux_raiz_func = arbolFun;
+                                ptrRaizFuncion = arbolFun;
+
+                                if(!auxiliar_clase.equals("")){
+                                    auxiliar_profundidad++;
+                                }
+
                                 ambitoActual = ambitoActual+"#"+$2.sval;
                                 $$ = $2;
                             }
@@ -167,12 +214,8 @@ tipo: LONG {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + "
             }
 	;
 
-lista_de_variables: lista_de_variables ';' ID { 
-                                                lista_identificadores.add($3.sval); 
-                                              }
-				  | ID { 
-                         lista_identificadores.add($1.sval);
-                        }
+lista_de_variables: lista_de_variables ';' ID {lista_identificadores.add($3.sval);}
+				  | ID {lista_identificadores.add($1.sval);}
                   ;
 
 cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion 
@@ -180,7 +223,11 @@ cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion
                     ;
 
 sentencias_de_funcion: sentencia_declatariva_especificas 
-                     | sentencias_ejecutables { generarArbolFunc((ArbolSintactico) $1);}
+                     | sentencias_ejecutables { generarArbolFunc((ArbolSintactico) $1);
+                                                System.out.println("El subArbol que estoy creando es: ");
+                                                ArbolSintactico arb = (ArbolSintactico) $1;
+                                                arb.recorrerArbol("-");
+                                              }
                      ;
 
 sentencia_declatariva_especificas: declaracion_variables ','               
@@ -195,15 +242,55 @@ sentencia_declatariva_especificas: declaracion_variables ','
 
 declaracion_clase_hereda: ID {  if(auxVarClases.equals("")){
 
-                                        int indice = ambitoActual.lastIndexOf('#');
-                                        String lexema = $1.sval+"#"+ambitoActual.substring(0, indice);
-                                        if(TablaDeSimbolos.obtenerSimbolo($1.sval).getId() != -1){
-                                            auxVarClases = lexema;
+                                    int indice = ambitoActual.lastIndexOf('#');
+                                    String lexema = $1.sval+"#"+ambitoActual.substring(0, indice);
+                                    if(TablaDeSimbolos.obtenerSimbolo($1.sval).getId() != -1){
+                                        auxVarClases = lexema;
+                                        // primero creo los atributos con el objt adelante
+                                        
+                                        Simbolo simboloTipo = TablaDeSimbolos.obtenerSimbolo($1.sval+"#"+ambitoActual);
+                                        if(!simboloTipo.getClaseAPosterior()){
+                                            ArrayList<String> atributosClase = simboloTipo.getAtributosTotalesClase();
+                                            ArrayList<String> lexemasListaObjt = new ArrayList<>();
+                                            for(String lexemaAtributo : atributosClase){
+                                                lexemasListaObjt.add(CrearCopiaVariable(lexemaAtributo,$1.sval, ambitoActual)); // s es el principio del lexema, el nombre del objeto
+                                                
+                                            }
+                                            
+                                            // Todos los atributos
+                                            simboloTipo.agregarAtributosTotalesClase(lexemasListaObjt);
+                                            
+
+                                           
+                                            
+
+                                            
+                                            
+                                            lexemasListaObjt.add(simboloTipo.getLexema());
+
+
+
+
+                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                auxiliar_lista_clase.addAll(lexemasListaObjt);
+                                            }
+                                            if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                simboloTipo.agregarAQuienLeDebo(auxiliar_clase);
+                                                TablaDeSimbolos.obtenerSimbolo(auxiliar_clase).agregarQuienMeDebe(simboloTipo.getLexema());
+                                            }
+
                                         }else{
-                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se declaro la clase " + lexema;
-                                            erroresSemanticos.add(err);    
-                                            auxVarClases = "";
+                                            System.out.println("HERENCIA: " + simboloTipo.getLexema() + " posterior: " + simboloTipo.getClaseAPosterior() + " auxiliar_clase: " + auxiliar_clase);
+                                            simboloTipo.agregarAQuienLeDebo(auxiliar_clase);
+                                            TablaDeSimbolos.obtenerSimbolo(auxiliar_clase).agregarQuienMeDebe(simboloTipo.getLexema());
+                                            System.out.println("LISTA HASTA AHORA: " + simboloTipo.getListaAQuienLeDebo());
                                         }
+
+                                    }else{
+                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se declaro la clase " + lexema;
+                                        erroresSemanticos.add(err);    
+                                        auxVarClases = "";
+                                    }
                                 }else{
                                         auxVarClases = auxVarClases+"#"+$1.sval; // concateno las dos clases para demostrar que hay un error
                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se permite heredar de mas de una clase.";
@@ -226,8 +313,9 @@ sentencias_retorno: RETURN {System.out.println("Linea: " + AnalizadorLexico.getL
 
 
 declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de CLASE");
-                                                            
                                                             int indiceLexClase = ambitoActual.lastIndexOf('#');
+                                                            System.out.println("SIMBOLO: " + TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).ToString() + " LISTA DEBO: " +TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).getListaAQuienLeDebo());
+                                                            
                                                             String identClase = $1.sval +"#"+ ambitoActual.substring(0, indiceLexClase);
                                                             
                                                             if((TablaDeSimbolos.obtenerSimbolo(identClase).getUso().equals("")) || (TablaDeSimbolos.obtenerSimbolo(identClase).getClaseAPosterior())){
@@ -236,7 +324,14 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                                                     if(claseHereda.equals("")){
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setHereda(auxVarClases);
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
-                                                                        TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+                                                                        // TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+
+                                                                        //creo todos los identificadores o metodos de la clase que heredo en esta clase
+                                                                        // String[] claseHeredada = auxVarClases.split("#");
+                                                                        // crearAtributoClaseHeredada(claseHeredada[0], $1.sval); //paso solo el nombre de la clase que heredo, no el ambito
+
+                                                                        
+                                                                        
                                                                     }else{
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setHereda(auxVarClases); //agrego igual de la clase que hereda por si luego hay mas clases
                                                                         String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: El nivel de herencia es superior a 3 por: " + claseHereda;
@@ -245,7 +340,38 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                                                 }else{
                                                                     TablaDeSimbolos.obtenerSimbolo(identClase).setHereda("nadie");
                                                                     TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
-                                                                    TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+                                                                    //TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+                                                                }
+
+                                                                
+
+                                                                Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                                                simboloClase.agregarAtributosTotalesClase(auxiliar_lista_clase);
+                                                                
+                                                              
+                                                                
+
+                                                                if(!pilaAuxiliarClases.isEmpty()){
+                                                                    System.out.println("TERMINE LA DECLARACION DE LA CLASE QUE ESTABA ADENTRO DE OTRA. AHORA PUEDO SEGUIR CON LA CLASE PADRE: " + pilaAuxiliarClases);
+                                                                    ContenedorClase cont = pilaAuxiliarClases.pop();
+                                                                    auxiliar_clase = cont.getLexema();
+                                                                    auxiliar_lista_clase.clear();
+                                                                    auxiliar_lista_clase.addAll(cont.getListaAtributos());
+                                                                    auxiliar_profundidad = cont.getContador();
+                                                                }else{
+                                                                    System.out.println("TERMINE CON LA DECLARACION DE CLASES Y LA PILA DE AUXILIARES ESTABA VACIA");
+                                                                    auxiliar_clase ="";
+                                                                    auxiliar_lista_clase.clear();
+                                                                    auxiliar_profundidad = 0;
+                                                                }
+
+                                                                Simbolo simbolClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                                                System.out.println("LA CLASE: " + simboloClase.getLexema() + " POSTERIOR: " +simboloClase.getClaseAPosterior()+" LE DEBO: " + simboloClase.getListaAQuienLeDebo() +" ME DEBE: " + simboloClase.getListaQuienMeDebe());
+
+                                                                if(simboloClase.getClaseAPosterior()){
+                                                                    if(!simboloClase.getListaAQuienLeDebo().isEmpty()){
+                                                                        CreacionVariablesPosteriori(simboloClase.getLexema(), simboloClase.getAtributosTotalesClase());
+                                                                    }
                                                                 }
 
                                                                 TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
@@ -254,23 +380,42 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                                                 erroresSemanticos.add(err);
                                                             }
 
-                                                            
+                                                            nombre_clase = "";
                                                             auxVarClases = "";
                                                             int indice = ambitoActual.lastIndexOf('#');
                                                             ambitoActual = ambitoActual.substring(0, indice);
                                                         }
 				  | encabezado_clase {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de CLASE A POSTERIOR");
                                         int indiceLexClase = ambitoActual.lastIndexOf('#');
+                                        
+                                                          
                                         String identClase = $1.sval +"#"+ ambitoActual.substring(0, indiceLexClase);
                                         if((TablaDeSimbolos.obtenerSimbolo(identClase).getUso().equals(""))){                    
                                             TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(true);
                                             TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
+                                                                 
+                                            Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                            simboloClase.agregarAtributosTotalesClase(auxiliar_lista_clase);
+                                            if(!pilaAuxiliarClases.isEmpty()){
+                                                ContenedorClase cont = pilaAuxiliarClases.pop();
+                                                auxiliar_clase = cont.getLexema();
+                                                auxiliar_lista_clase.clear();
+                                                auxiliar_lista_clase.addAll(cont.getListaAtributos());
+                                                auxiliar_profundidad = cont.getContador();
+                                            }else{
+                                                auxiliar_clase = "";
+                                                auxiliar_lista_clase.clear();
+                                                auxiliar_profundidad = 0; 
+                                            }
                                         }
                                         auxVarClases = "";
+                                        nombre_clase = "";
                                         int indice = ambitoActual.lastIndexOf('#');
                                         ambitoActual = ambitoActual.substring(0, indice);
                                         //TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setClasePosterior(true);
                                         //TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setUso("clase");
+                                         System.out.println("SIMBOLO FINAL DEC POSTERIOR: " + TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).ToString() + " LISTA DEBO: " +TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).getListaAQuienLeDebo() );
+                                         
                                     }
                   | encabezado_clase '{' cuerpo_clase error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() + ". Error sintactico.Falta } al final de la clase");}
                   | encabezado_clase cuerpo_clase '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico.Falta '{' al inicio de la clase");}
@@ -279,10 +424,22 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
 
 encabezado_clase: CLASS ID {
                         $$ = $2;
-
+                        nombre_clase = $2.sval;
                         String lexema = $2.sval +"#"+ ambitoActual;
-                       
-                        TablaDeSimbolos.modificarLexema($2.sval, lexema);
+                        
+                        if(!auxiliar_clase.equals("")){
+                            System.out.println("####################### ESTOY AL PRINCIPIO DE LA DECLARACION DE UNA CLASE, LA LISTA DE AUXILIAR_CLASE HASTA AHORA ES: " + auxiliar_lista_clase);
+                            ContenedorClase nuevoCont = new ContenedorClase(auxiliar_clase, auxiliar_lista_clase, auxiliar_profundidad);
+                            pilaAuxiliarClases.push(nuevoCont);    
+                            auxiliar_clase = "";
+                            auxiliar_lista_clase.clear();
+                            auxiliar_profundidad = 0;   
+                        } 
+
+                        auxiliar_clase = lexema; // auxiliar_clase = c2#global
+                        if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() == -1)
+                            TablaDeSimbolos.modificarLexema($2.sval, lexema);
+                        
                         ambitoActual = ambitoActual + "#" + $2.sval;
                 }
                 | CLASS '{' cuerpo_clase '}' error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico.Falta el identificador de la clase");}
@@ -295,42 +452,60 @@ cuerpo_clase: cuerpo_clase sentencia_declatariva_especificas
             ;
 
 declaracion_objetos_clase: ID list_objts_clase  {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de OBJETO DE CLASE");
-                                                    for(String s : lista_identificadores){
-                                                        if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
-                                                            TablaDeSimbolos.setTipo($1.sval, s);
-                                                            TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
-                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
-                                                            simbolo.setUso("identificador");
-                                                            TablaDeSimbolos.borrarSimbolo(s);
-                                                            System.out.println("LOS OBJETOS QUE VOY A CREAR SON: ");
-                                                            Hashtable<Simbolo, String> atributos = crearAtributosClase($1.sval, s);
-                                                            for (Simbolo simbol : atributos.keySet()){
-                                                                //int ultimoIndice = simbol.getLexema().lastIndexOf("#");
-                                                                String nombreObjt = atributos.get(simbol);
-                                                                TablaDeSimbolos.agregarSimbolo(nombreObjt, simbol.getId()); // Creo le nuevo simbolo en la tabla
-                                                                Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(nombreObjt); // Obtengo el simbolo que acabo de crear
-                                                                
-                                                                //seteo los atributos igual que el simbolo original
-                                                                simboloNuevo.setTipo(simbol.getTipo());
-                                                                simboloNuevo.setValor(simbol.getValor());
-                                                                simboloNuevo.setHereda(simbol.getHereda());
-                                                                simboloNuevo.setUso(simbol.getUso());
-                                                                simboloNuevo.setUsada(true);
-                                                                simboloNuevo.setValorAsignado(true);
-                                                                if(simbol.getUso().equals("funcion")){
-                                                                    simboloNuevo.setParametro(simbol.getParametro());
+                                                    if(!$1.sval.equals("")){
+                                                        for(String s : lista_identificadores){
+                                                            if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
+                                                                TablaDeSimbolos.setTipo($1.sval, s);
+                                                                TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
+                                                                Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
+                                                                simbolo.setUso("identificador");
+                                                                TablaDeSimbolos.borrarSimbolo(s);
+                                                                simbolo.setEsObjetoClase(true);
+
+                                                                // primero creo los atributos con el objt adelante
+                                                                Simbolo simboloTipo = TablaDeSimbolos.obtenerSimbolo($1.sval+"#"+ambitoActual);
+                                                                ArrayList<String> atributosClase = simboloTipo.getAtributosTotalesClase();
+                                                                ArrayList<String> lexemasListaObjt = new ArrayList<>();
+                                                                for(String lexemaAtributo : atributosClase){
+                                                                   lexemasListaObjt.add(CrearCopiaVariable(lexemaAtributo, s, ambitoActual)); // s es el principio del lexema, el nombre del objeto
                                                                 }
-                                                                //System.out.println(simboloNuevo.ToString());
                                                                 
-                                                                //Le agrego al simbolo original el nombre que va a tener el atributode la clase
-                                                                System.out.println("El simbolo viejo es: "+ simbol.getLexema() + " le voy a agregar: " + simboloNuevo.getLexema());
-                                                                simbol.agregarNombreMetodo(simboloNuevo.getLexema());
+                                                                
+                                                                for(String s1 : lexemasListaObjt){
+                                                                    TablaDeSimbolos.obtenerSimbolo(s1).agregarAtributosTotalesClase(lexemasListaObjt);
+
+                                                                }
+                                                                System.out.println("LEXEMA LISTA OBJTEOS: " + lexemasListaObjt);
+                                                                simbolo.agregarAtributosTotalesClase(lexemasListaObjt);
+                                                                lexemasListaObjt.add(simbolo.getLexema());
+
+                                                                if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                    auxiliar_lista_clase.addAll(lexemasListaObjt);
+                                                                }
+
+                                                                /*
+                                                                if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                                    ArrayList<String> aux = simboloTipo.getListaQuienMeDebe();
+                                                                    for(String x : aux){
+                                                                        TablaDeSimbolos.obtenerSimbolo(x).agregarAQuienLeDebo(s + "#"+ambitoActual);
+                                                                    }
+                                                                }
+                                                                */
+
+                                                                if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                                    simboloTipo.agregarAQuienLeDebo(simbolo.getLexema());
+                                                                    simbolo.agregarQuienMeDebe(simboloTipo.getLexema());
+                                                                }
+
+                                                            }else{
+                                                                //doy error por re declaracion del identificador
+                                                                String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
+                                                                erroresSemanticos.add(err);
                                                             }
-                                                        }else{
-                                                            //doy error por re declaracion del identificador
-                                                            String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
-                                                            erroresSemanticos.add(err);
                                                         }
+                                                    }else{
+                                                        String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: clase no declarada";
+                                                        erroresSemanticos.add(err);    
                                                     }
                                                     lista_identificadores.clear();   
                                                 }
@@ -346,7 +521,9 @@ sentencias_ejecutables: sentencia_asignacion ',' {$$ = $1; }
                       | sentencias_IF ',' {$$ = $1;}
                       | sentencias_salida ',' {$$ = $1;}
                       | sentencias_control ',' { $$ = $1;}
-                      | sentencias_ejecucion_funcion ','{$$ = $1;}
+                      | sentencias_ejecucion_funcion ','{ $$ = $1;
+                                                           System.out.println("mando el subArbol para arribla: sentencias_ejecucion_funcion");
+                                                        } 
                       | sentencias_retorno ',' {$$ = $1;}
                       | sentencia_asignacion error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la ASIGNACION");
                                                 $$ = (ArbolSintactico) nodoError;
@@ -365,353 +542,106 @@ sentencias_ejecutables: sentencia_asignacion ',' {$$ = $1; }
                                                 } 
                       ;
 
-sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION CON PARAMETRO");
-                                    String lexemaIdentificador = "";
-                                    String idAnterior = "";
-                                    String nombreObjtClase = "";
-                                    if(lista_identificadores.size() == 1){
-                                        // es una funcion
-                                        lexemaIdentificador = lista_identificadores.get(0)+"#"+ambitoActual;
-                                    }else if(lista_identificadores.size() == 2){
-                                        // es un metodo de la misma clase
-                                        // El nombre del objto de la clase esta en la posicion 0 de la lista 
-                                        nombreObjtClase = lista_identificadores.get(0);
-                                        // Armo el lexema de la funcion
-                                        for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                            if(lexemaIdentificador.equals("")){
-                                                lexemaIdentificador = lista_identificadores.get(i) + "#"+ambitoActual;
-                                            }else{
-                                                String tipoObjtClase = TablaDeSimbolos.obtenerSimbolo(nombreObjtClase+"#"+ambitoActual).getTipo();
-                                                lexemaIdentificador = lexemaIdentificador +"#"+tipoObjtClase;
-                                            }
-                                        }
-                                    }else{
-                                        // es un metodo de una clase que hereda
-                                        for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                            System.out.println("EL LEXEMA DE LA FUNCION HASTA AHORA ES: " + lista_identificadores.get(i));    
-                                            if(lexemaIdentificador.equals("")){
-                                                lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                            }else{
-                                                if(i == (lista_identificadores.size()-2)){
-                                                    lexemaIdentificador = lexemaIdentificador+"#"+lista_identificadores.get(i); // agrego el ambito final
-                                                    idAnterior = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                }else{
-                                                    String aux ="";
-                                                    if(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getUso().equals("clase")){
-                                                        // es una clase
-                                                        aux  = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                    }else{
-                                                        // es el nombre de un objeto de clase
-                                                        nombreObjtClase = lista_identificadores.get(i);
-                                                        aux = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()+"#"+ambitoActual;
-                                                    }
-                                                    if(TablaDeSimbolos.obtenerSimbolo(aux).getHereda().equals(idAnterior)){
-                                                        idAnterior = aux;
-                                                    }else{
-                                                        String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + aux + " no hereda de " + idAnterior;
-                                                        erroresSemanticos.add(err);
-                                                        lexemaIdentificador = "";
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
-                                    if(lista_identificadores.size() > 1){
-                                        Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                        NodoControl arbolFuncion = null;
-                                        // obtengo el arbol de la funcion
-                                        for(NodoControl a : lista_func){
-                                            if(a.getLex().equals(lexemaIdentificador)){
-                                                arbolFuncion = a;
-                                            }
-                                        }
-
-                                        /*
-                                        if(arbolFuncion != null){
-                                            System.out.println("EL ARBOL DE LA FUNCION: " + arbolFuncion.getLex());
-                                        } */
-
-                                    
-                                        NodoControl nuevoArbol= (NodoControl) crearMetodoDeClase(nombreObjtClase, arbolFuncion);
-                                        // System.out.println("El arbol de la funcion que copie es: " + nuevoArbol.getLex()); 
-                                        // nuevoArbol.recorrerArbol("-");
-                                        agregarMetodoLista(nuevoArbol);
-                                        
-                                        if(simbol != null && simbol.getParametro() != null){
-                                            simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                            
-                                            ArbolSintactico param = (ArbolSintactico) $3;
-                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
-                                            boolean tieneTof = false;
-                                            if(param.getLex().equals("TOF")){
-                                                tieneTofd = true;
-                                                if(param.getIzq().getLex().contains("--")){
-                                                    //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
-                                                }
-                                            }else{
-                                                if(param.getLex().contains("--")){
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
-                                                }
-                                            }
-                                            
-                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneTof){
-                                                NodoHoja id_func = new NodoHoja(nuevoArbol.getLex());
-                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
-                                            }else{
-                                                String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
-                                                erroresSemanticos.add(err);
-                                                $$ = (ArbolSintactico) nodoError;
-                                            }
-                                        }else{
-                                            String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + nuevoArbol.getLex() +" no fue declarada";
-                                            erroresSemanticos.add(err);
-                                            $$ = (ArbolSintactico) nodoError;
-                                        }
-                                    }else{
-                                        Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                        if(simbol != null && simbol.getParametro() != null){
-                                            simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                            
-                                            ArbolSintactico param = (ArbolSintactico) $3;
-                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
-                                            boolean tieneToF = false;
-                                            if(param.getLex().equals("TOF")){
-                                                tieneToF = true;
-                                                if(param.getIzq().getLex().contains("--")){
-                                                    //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
-                                                }
-                                            }else{
-                                                if(param.getLex().contains("--")){
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
-                                                }
-                                            }
-                                            
-                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneToF){
-                                                NodoHoja id_func = new NodoHoja(lexemaIdentificador);
-                                                $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
-                                            }else{
-                                                String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
-                                                erroresSemanticos.add(err);
-                                                $$ = (ArbolSintactico) nodoError;
-                                            }
-                                        }else{
-                                            String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lexemaIdentificador+" no fue declarada";
-                                            erroresSemanticos.add(err);
-                                            $$ = (ArbolSintactico) nodoError;
-                                        }
-                                    }
-                                    auxTipoAsig ="";
-                                    // System.out.println("el objeto de clase es: " + nombreObjtClase);
-                                    // System.out.println("la funcion que encontre es: "+TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador).ToString());
-                                    lista_identificadores.clear();
-                            }
-                            
-                            | id_asig '(' ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION SIN PARAMETRO");
-                                                String lexemaIdentificador = "";
-                                                String idAnterior = "";
-                                                String nombreObjtClase = "";
-                                                if(lista_identificadores.size() == 1){
-                                                    // es una funcion
-                                                    lexemaIdentificador = lista_identificadores.get(0)+"#"+ambitoActual;
-                                                }else if(lista_identificadores.size() == 2){
-                                                    // es un metodo de la misma clase
-                                                    // El nombre del objto de la clase esta en la posicion 0 de la lista 
-                                                    nombreObjtClase = lista_identificadores.get(0);
-                                                    // Armo el lexema de la funcion
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i) + "#"+ambitoActual;
-                                                        }else{
-                                                            String tipoObjtClase = TablaDeSimbolos.obtenerSimbolo(nombreObjtClase+"#"+ambitoActual).getTipo();
-                                                            lexemaIdentificador = lexemaIdentificador +"#"+tipoObjtClase;
-                                                        }
-                                                    }
-                                                }else{
-                                                    // es un metodo de una clase que hereda
-                                                    /*
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        System.out.println("EL LEXEMA DE LA FUNCION HASTA AHORA ES: " + lista_identificadores.get(i));    
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                        }else{
-                                                            if(i == (lista_identificadores.size()-2)){
-                                                                lexemaIdentificador = lexemaIdentificador+"#"+lista_identificadores.get(i); // agrego el ambito final
-                                                                idAnterior = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                            }else{
-                                                                String aux ="";
-                                                                if(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getUso().equals("clase")){
-                                                                    // es una clase
-                                                                    aux  = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                                }else{
-                                                                    // es el nombre de un objeto de clase
-                                                                    nombreObjtClase = lista_identificadores.get(i);
-                                                                    aux = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()+"#"+ambitoActual;
-                                                                }
-                                                                if(TablaDeSimbolos.obtenerSimbolo(aux).getHereda().equals(idAnterior)){
-                                                                    idAnterior = aux;
-                                                                }else{
-                                                                    String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + aux + " no hereda de " + idAnterior;
-                                                                    erroresSemanticos.add(err);
-                                                                    lexemaIdentificador = "";
-                                                                    break;
-                                                                }
-                                                            }
-                                                        }
-                                                    } */
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                            idAnterior = lista_identificadores.get(i);
-                                                        }else{
-                                                            Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual);
-                                                            // System.out.println("EL SIMBOLO DE LA CLASE "+lista_identificadores.get(i)+"#"+ambitoActual +"ES: " + simbol.getLexema());
-                                                            System.out.println("El simbolo anterior es: " + idAnterior + " el simbolo nuevo es: " + simbol.getLexema());
-                                                            if(simbol.getId() != -1){
-                                                                if(TablaDeSimbolos.obtenerSimbolo(idAnterior+"#"+ambitoActual+"#"+lista_identificadores.get(i)).getUso().equals("funcion")){
-                                                                    if(TablaDeSimbolos.obtenerSimbolo(simbol.getTipo()+"#"+ambitoActual).getUso().equals("clase")){
-                                                                        //quiere decir que el simbolo es el primer ident, es decir el objeto de clase. Por eso uso el tipo de ese objeto
-                                                                        lexemaIdentificador = lexemaIdentificador + "#" + simbol.getTipo();
-                                                                        idAnterior = simbol.getTipo();
-                                                                    }else{
-                                                                        //quiere decir que tengo mas clases en el identificador
-                                                                        lexemaIdentificador = lexemaIdentificador +"#"+ lista_identificadores.get(i);
-                                                                        idAnterior = lista_identificadores.get(i);
-                                                                    }
-
-                                                                }else{
-                                                                    if(TablaDeSimbolos.obtenerSimbolo(simbol.getLexema()).getHereda().equals(idAnterior+"#"+ambitoActual) || TablaDeSimbolos.obtenerSimbolo(simbol.getTipo()+"#"+ambitoActual).getHereda().equals(idAnterior+"#"+ambitoActual)){
-                                                                        // quiere decir que la clase hereda de la otra y que ambos lex son el lexema
-                                                                        // o que el lexema actual es el nombre de un objeto clase y tengo que usar su tipo para comprobar si hereda
-
-                                                                        idAnterior = lista_identificadores.get(i);
-                                                                    }else{
-                                                                        // AGREGADO PERO PARA HACE MAS KILOMBO
-                                                                        System.out.println("IDANTERIOR: " + idAnterior + " busco: " +TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo());
-                                                                        if(idAnterior.equals(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()) || TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador+"#"+TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()).getId() != -1 ){
-                                                                            // QUIERE DECIR QUE EL IdAnterior ES IGUAL AL TIPO DEL ID ACTUAL caso: clase1.objt_c3.c2.c1.fun1(var1)
-                                                                            lexemaIdentificador = lexemaIdentificador+"#"+TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo();
-                                                                            idAnterior = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo();
-                                                                        }else if(idAnterior.equals(lista_identificadores.get(i))){
-                                                                            // QUIERE DECIR QUE EL ID ANTERIOR ES IGUAL AL ID NUEVO. CASO clase1.c5.c4.objt_c3.c2.c1.fun1(var1)
-                                                                            idAnterior = lista_identificadores.get(i);
+sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {
+                                                                System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION CON PARAMETRO");
+                                                                String lexemaIdentificadorFun = "";
+                                                                String idAnterior = "";
+                                                                String nombreObjtClase = "";
+                                                                
+                                                                if(lista_identificadores.size() == 1){
+                                                                    System.out.println("ES UNA FUNCION CON UN PARAMETRO");
+                                                                    lexemaIdentificadorFun = lista_identificadores.get(0)+"#"+ambitoActual;
+                                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() != null){
+                                                                       
+                                                                        if(simboloFun.getParametro().getTipo().equals(auxTipoAsig)){
+                                                                            simboloFun.setUsada(true);
+                                                                            NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
+                                                                            System.out.println("creo el arbol y lo retorno");
+                                                                            $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico) $3);
                                                                         }else{
-                                                                            lexemaIdentificador = "";
-                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + idAnterior + " no hereda de "+ lista_identificadores.get(i);
+                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
                                                                             erroresSemanticos.add(err);
-                                                                            $$ = nodoError;
-                                                                            break;
-                                                                        } 
-                                                                        /*
-                                                                        lexema = "";
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + idAnterior + " no hereda de "+ lista_identificadores.get(i);
+                                                                            $$ = (ArbolSintactico) nodoError;
+                                                                        }
+                                                                    }else{
+                                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                                         erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                        break;
-                                                                        */
+                                                                        $$ = (ArbolSintactico) nodoError;
                                                                     }
-                                                                }
-
-
-                                                            }else{
-                                                                // Hago el intento de ver si el identificador actual es un objeto de clase dentro de una clase
-                                                                // pruebo agregandole al ambito el tipo o nombre del siguiente identificador del for
-                                                                if(idAnterior.equals(lista_identificadores.get(i)+"#"+ambitoActual)){
-                                                                    // caso que el id anterior sea igual al id actual mas ambito
-                                                                    idAnterior = lista_identificadores.get(i);
                                                                 }else{
-                                                                    simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+lista_identificadores.get(i-1));
-                                                                    if(simbol.getId() != -1){
-                                                                        // porque es un objteto de tipo clase declarado dentro de una clase
-                                                                        idAnterior = lista_identificadores.get(i-1);
-                                                                    }else{
-                                                                        // pregunto si el tipo del siguiente id es una clase
-                                                                        simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+ TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i-1)+"#"+ambitoActual).getTipo());
-                                                                        if(simbol.getId() != -1){
-                                                                            // NO TENGO NI IDEA DE SI ESTO FUNCIONA. YA ESTOY PROGRAMANDO EN MODO AUTOMATICO
-                                                                            idAnterior = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i-1)+"#"+ambitoActual).getTipo();
+                                                                    for(String s : lista_identificadores){
+                                                                        if( lexemaIdentificadorFun.equals("")){
+                                                                                lexemaIdentificadorFun = s;
                                                                         }else{
-                                                                            lexemaIdentificador = "";
-                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase no existe";
-                                                                            erroresSemanticos.add(err);
-                                                                            $$ = nodoError;
-                                                                            break;
+                                                                            lexemaIdentificadorFun = lexemaIdentificadorFun + "."+s;
                                                                         }
                                                                     }
+                                                                    lexemaIdentificadorFun = lexemaIdentificadorFun+"#"+ambitoActual;
+                                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() != null){
+                                                                       
+                                                                        if(simboloFun.getParametro().getTipo().equals(auxTipoAsig)){
+                                                                            simboloFun.setUsada(true);
+                                                                            NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
+                                                                            System.out.println("creo el arbol y lo retorno");
+                                                                            $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico) $3);
+                                                                        }else{
+                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
+                                                                            erroresSemanticos.add(err);
+                                                                            $$ = (ArbolSintactico) nodoError;
+                                                                        }
+                                                                    }else{
+                                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
+                                                                        erroresSemanticos.add(err);
+                                                                        $$ = (ArbolSintactico) nodoError;
+                                                                    }
+
                                                                 }
+                                                                lista_identificadores.clear();
+                                                                
                                                             }
-                                                        }
-                                                    }
-                                                }
+                            | id_asig '(' ')' {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION SIN PARAMETRO");
+                                                String lexemaIdentificadorFun = "";
+                                                String idAnterior = "";
+                                                String nombreObjtClase = "";
                                                 
-                                                if(lista_identificadores.size() > 1){
-                                                    Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                                    NodoControl arbolFuncion = null;
-                                                    // obtengo el arbol de la funcion
-                                                    for(NodoControl a : lista_func){
-                                                        if(a.getLex().equals(lexemaIdentificador)){
-                                                            arbolFuncion = a;
-                                                        }
-                                                    }
-
-                                                    /*
-                                                    if(arbolFuncion != null){
-                                                        System.out.println("EL ARBOL DE LA FUNCION: " + arbolFuncion.getLex());
-                                                    } */
-
-                                                
-                                                    NodoControl nuevoArbol= (NodoControl) crearMetodoDeClase(nombreObjtClase, arbolFuncion);
-                                                    // System.out.println("El arbol de la funcion que copie es: " + nuevoArbol.getLex()); 
-                                                    // nuevoArbol.recorrerArbol("-");
-                                                    agregarMetodoLista(nuevoArbol);
-                                                    
-                                                    if(simbol != null && simbol.getParametro() == null){
-                                                        simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                                        
-                                                        NodoHoja id_func = new NodoHoja(nuevoArbol.getLex());
+                                                if(lista_identificadores.size() == 1){
+                                                    lexemaIdentificadorFun = lista_identificadores.get(0)+"#"+ambitoActual;
+                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() == null){
+                                                        simboloFun.setUsada(true);
+                                                        NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
                                                         $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,null);
-                                                        
                                                     }else{
-                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + nuevoArbol.getLex() +" no fue declarada";
+                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                         erroresSemanticos.add(err);
                                                         $$ = (ArbolSintactico) nodoError;
                                                     }
                                                 }else{
-                                                    Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                                    
-                                                    if(simbol != null && simbol.getParametro() == null){
-                                                        simbol.setUsada(true); //SETEO en USADA LA VARIABLE 
-                                                       
-                                                        NodoHoja id_func = new NodoHoja(lexemaIdentificador);
+                                                    for(String s : lista_identificadores){
+                                                        if( lexemaIdentificadorFun.equals("")){
+                                                                lexemaIdentificadorFun = s;
+                                                        }else{
+                                                            lexemaIdentificadorFun = lexemaIdentificadorFun + "."+s;
+                                                        }
+                                                    }
+                                                    lexemaIdentificadorFun = lexemaIdentificadorFun+"#"+ambitoActual;
+                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() == null){
+                                                        simboloFun.setUsada(true);
+                                                        NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
                                                         $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,null);
-                                                        
                                                     }else{
-                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lexemaIdentificador+" no fue declarada";
+                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                         erroresSemanticos.add(err);
                                                         $$ = (ArbolSintactico) nodoError;
                                                     }
                                                 }
-                                                auxTipoAsig ="";
-                                                // System.out.println("el objeto de clase es: " + nombreObjtClase);
-                                                // System.out.println("la funcion que encontre es: "+TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador).ToString());
-                                                lista_identificadores.clear();        
-                                                               
-                                    
-                                        
-                                        
-                        }
-                        ;
+                                                lista_identificadores.clear();
+                                                
+                                                }
+                            ;
 
                                    
                                                
@@ -723,6 +653,7 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                         String ambitoAnt = "";
                                                         String ambitoVariable = ambitoActual;
                                                         System.out.println("AMBITO: " + ambitoActual);
+                                                        /*
                                                         for(int i = 0; i < lista_identificadores.size();i++){
                                                             System.out.println("IDENTIFICADOR: " + lista_identificadores.get(i));
                                                         }
@@ -806,8 +737,17 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                                 
                                                                 lexema = lista_identificadores.get(0)+"#"+ambitoActual;
                                                             }
-                                                        }
-                                                        
+                                                        }*/
+                                                for(String s : lista_identificadores){
+                                                    if(lexema.equals("")){
+                                                        lexema = s;
+                                                    }else{
+                                                        lexema = lexema + "."+s;
+                                                    }
+                                                }
+
+                                                lexema = lexema +"#"+ambitoActual;
+
                                                 //SI EL LEXEMA QUE FORME EXISTE EN LA TABLA DE SIMBOLOS
                                                 if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() != -1){
                                                     Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexema); //Obtengo el simbolo del lado izquierdo que acabo de crear o que ya existia
@@ -2589,7 +2529,33 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
        ;
 
 factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un Identificador con MENOS_MENOS");
-                        String lexema = "";
+                        String auxIdentificador = "";
+                        for(String s: auxDerAsig){
+                            if( auxIdentificador.equals("")){
+                                auxIdentificador = s;
+                            }else{
+                                auxIdentificador = auxIdentificador +"."+s;
+                            }
+                        }
+                        auxIdentificador = auxIdentificador+"#"+ambitoActual;
+                        Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(auxIdentificador);
+                        if(simbolo.getId() != -1){
+                            simbolo.setUsada(true);
+                            simbolo.setValorAsignado(true);
+                            NodoHoja hoja = new NodoHoja(simbolo.getLexema()+"--");
+                            $$ = (ArbolSintactico) hoja;
+                        }else{
+                            String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+auxIdentificador+ " no declarada";
+                            erroresSemanticos.add(err);
+                            $$ = (ArbolSintactico) nodoError;
+                        }
+                        auxDerAsig.clear();
+                        if(auxTipoAsig.equals("")){
+                            //Esto me sirve para resolver la comparacion del parametro de una funcion
+                            auxTipoAsig = simbolo.getTipo();
+                        }
+                        
+                        /*
                         for(String s : auxDerAsig){
                             if(lexema.equals("")){
                                 lexema = s;
@@ -2614,7 +2580,7 @@ factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.
                         }
                         if(auxTipoAsig.equals("")){
                             auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-                        }
+                        }*/
 
                         } 
       | id_asig_der {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IDENTIFICADOR ");
@@ -2624,7 +2590,33 @@ factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.
               String auxAmbito = "";
               String auxIdentificador = "";
               String restoAmbito = "";
-                if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("clase")){
+              for(String s: auxDerAsig){
+                if( auxIdentificador.equals("")){
+                    auxIdentificador = s;
+                }else{
+                    auxIdentificador = auxIdentificador +"."+s;
+                }
+              }
+              auxIdentificador = auxIdentificador+"#"+ambitoActual;
+              Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(auxIdentificador);
+              if(simbolo.getId() != -1){
+                simbolo.setUsada(true);
+                simbolo.setValorAsignado(true);
+                NodoHoja hoja = new NodoHoja(simbolo.getLexema());
+                $$ = (ArbolSintactico) hoja;
+              }else{
+                String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+auxIdentificador+ " no declarada";
+                erroresSemanticos.add(err);
+                $$ = (ArbolSintactico) nodoError;
+              }
+              auxDerAsig.clear();
+              if(auxTipoAsig.equals("")){
+                //Esto me sirve para resolver la comparacion del parametro de una funcion
+                auxTipoAsig = simbolo.getTipo();
+              }
+
+              
+                /* if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("clase")){
                     //QUIERE DECIR QUE ES UN ATRIBUTO DE UNA CLASE QUE HEREDA Y NO UN OBJETO DE CLASE
                     for(int i = auxDerAsig.size()-1;i>=0;i--){
                         System.out.println("VALOR EN i= " + i + " es: "+ auxDerAsig.get(i));
@@ -2697,7 +2689,7 @@ factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.
             if(auxTipoAsig.equals("")){
                 //Esto me sirve para resolver la comparacion del parametro de una funcion
                 auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-            }
+            }*/
         }
       | const { $$ = $1;}
       ;
@@ -2769,10 +2761,70 @@ public static boolean tieneReturn = false; //variable utilizada para saber si la
 public static String auxConversion = "";
 public static Simbolo simboloAuxConversion = null;
 
+public static Stack<NodoComun> pilaAuxArbol = new Stack<>();
+public static String nombre_clase = "";
+
+public static String auxiliar_clase = "";
+public static ArrayList<String> auxiliar_lista_clase = new ArrayList<String>();
+public static int auxiliar_profundidad = 0;
+public static Stack<ContenedorClase> pilaAuxiliarClases = new Stack<>();
+
+public static void CreacionVariablesPosteriori (String lexema, ArrayList<String> listaVarACrear){
+    System.out.println("CLASE u OBJETO: " + lexema + " LISTA VAR CREAR: " + listaVarACrear);
+    // lexema: nombre de mi clase u objeto a posteriori
+    // listaVarACrear: son las variables que le voy a generar a las clases y objetos que les debo variables
+    Simbolo simboloLexema = TablaDeSimbolos.obtenerSimbolo(lexema);
+    String principioLexema = lexema.substring(0, lexema.indexOf('#'));
+    for (String lexemaLeDebo : simboloLexema.getListaAQuienLeDebo()){
+        Simbolo simboloLeDebo = TablaDeSimbolos.obtenerSimbolo(lexemaLeDebo);
+        String ambito = lexemaLeDebo.substring(lexemaLeDebo.indexOf('#')+1, lexemaLeDebo.length());
+        ArrayList<String> listaVarClase = new ArrayList<String>();
+        for (String var : listaVarACrear) {
+            if (simboloLeDebo.getUso().equals("clase")) {
+                System.out.println("CLASE ----> MEDIO: " + var + " PRINCIPIO: " + principioLexema +  " ambito: "+ ambito+"#"+lexemaLeDebo.substring(0, lexemaLeDebo.indexOf('#')));
+                String aux = CrearCopiaVariable(var, principioLexema, ambito+"#"+lexemaLeDebo.substring(0, lexemaLeDebo.indexOf('#')));
+                System.out.println("CREE CLASE------------------------------------------------------------------------------> " + aux);
+                listaVarClase.add(aux);
+            } else {
+                // simboloLeDebo.getLexema().substring(0, simboloLeDebo.getLexema().indexOf('#'))
+                System.out.println("OBJTEO----> MEDIO: " + var + " PRINCIPIO: " +lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#"))+"."+principioLexema +  " ambito: "+ambito);
+                if(simboloLexema.getUso().equals("clase")){
+                    String aux = CrearCopiaVariable(var, lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#")), ambito);
+                    System.out.println("CREE  OBJT CLASE------------------------------------------------------------------------------> " + aux);
+                    listaVarClase.add(aux);
+                }else{
+                    String aux = CrearCopiaVariable(var, lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#"))+"."+principioLexema, ambito);
+                    System.out.println("CREE OBJT - OBJT ------------------------------------------------------------------------------> " + aux);
+                    listaVarClase.add(aux);
+                }
+            }
+        }
+        simboloLeDebo.agregarAtributosTotalesClase(listaVarClase);
+        if (!simboloLeDebo.getListaAQuienLeDebo().isEmpty()) {
+            CreacionVariablesPosteriori(lexemaLeDebo, listaVarClase);
+        }
+        listaVarClase.clear();
+    }
+}
+
+
+public static String CrearCopiaVariable (String lexema, String principioLexema, String ambito) {
+    //System.out.println("MEDIO: "+lexema + " PRINCIPIO: "+ principioLexema + " AMBITO: " + ambito + " GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg");
+    String lexemaCopia = principioLexema +"."+lexema.substring(0, lexema.indexOf('#'))+"#"+ambito;
+    Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexema);
+    Simbolo nuevoSimbolo = new Simbolo(lexemaCopia, simbolo.getId());
+    nuevoSimbolo.setTipo(simbolo.getTipo());
+    nuevoSimbolo.setUso(simbolo.getUso());
+    nuevoSimbolo.setParametro(simbolo.getParametro());
+    nuevoSimbolo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    TablaDeSimbolos.agregarSimbolo(lexemaCopia, nuevoSimbolo); // agregue una nueva funcion a la tabla
+    return lexemaCopia;
+}
+
 
 public static ArbolSintactico crearMetodoDeClase(String objtClase, ArbolSintactico arbolFun){
-   
-    
+   return null;
+    /*
     Simbolo simboloNodo = Constantes.SIMBOLO_NO_ENCONTRADO;
     String nuevoNombreNodo ="";
     if(arbolFun != null){
@@ -2818,7 +2870,7 @@ public static ArbolSintactico crearMetodoDeClase(String objtClase, ArbolSintacti
             }
         }
         return null;
-    
+    */
 }
 
 public static ArrayList<String> obtenerSimbolosFuncion(ArbolSintactico arbol){
@@ -2839,18 +2891,80 @@ public static ArrayList<String> obtenerSimbolosFuncion(ArbolSintactico arbol){
     return aux;
 }
 
+void crearAtributosDeObjetoClase(String nombreObjeto,String nombreObjetoNuevo, String tipoClase){
+    Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
+    Hashtable<Simbolo, String> simbolosACrear = new Hashtable<Simbolo,String>();
+    for (String key : tabla.keySet()) {
+        Simbolo simbolo = tabla.get(key);
+        //System.out.println("claseHeredada: " + claseHeredada + " nombreClaseAct: " + nombreClaseAct);
+        if(simbolo.getLexema().contains(nombreObjeto+".") && !simbolo.getLexema().contains("."+nombreObjeto)){
+            // con este if estoy diciendo que simbolo tiene que tener por ejemplo #c6 al final y no en el medio
+            System.out.println("Adelante agrego: " + nombreObjetoNuevo +" en el medio: "+simbolo.getLexema() + " al final: #"+tipoClase);
+            String nuevoLexema = nombreObjetoNuevo+"."+simbolo.getLexema();
+            simbolosACrear.put(simbolo,nuevoLexema);
+        }
+    }
+
+    //Una vez que consigo todos los simbolos los agergo a la tabla
+    for (Simbolo simbolo : simbolosACrear.keySet()) {
+        Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(simbolosACrear.get(simbolo), simbolo.getId());
+        simboloNuevo.setTipo(simbolo.getTipo());
+        simboloNuevo.setUso(simbolo.getUso());
+        simboloNuevo.setUsada(simbolo.getUsada());
+        simboloNuevo.setValor(simbolo.getValor());
+        //simboloNuevo.setParametro(Simbolo.getParametro());
+        simboloNuevo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    }
+}
+public static void crearAtributoClaseHeredada(String claseHeredada, String nombreClaseAct){
+    Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
+    Hashtable<Simbolo, String> simbolosACrear = new Hashtable<Simbolo,String>();
+    for (String key : tabla.keySet()) {
+        Simbolo simbolo = tabla.get(key);
+        System.out.println("claseHeredada: " + claseHeredada + " nombreClaseAct: " + nombreClaseAct);
+        if(simbolo.getLexema().contains("#"+claseHeredada) && !simbolo.getLexema().contains(claseHeredada+"#")){
+            // con este if estoy diciendo que simbolo tiene que tener por ejemplo #c6 al final y no en el medio
+            String nuevoLexema = simbolo.getLexema().substring(0, simbolo.getLexema().lastIndexOf("#")); //Quita el ultimo ambito, ej, #c6
+            nuevoLexema = claseHeredada+"."+nuevoLexema; // agrego c6. al principio
+            nuevoLexema = nuevoLexema +"#"+nombreClaseAct; // agrego #c7 al final
+            simbolosACrear.put(simbolo,nuevoLexema);
+        }
+    }
+
+    //Una vez que consigo todos los simbolos los agergo a la tabla
+    for (Simbolo simbolo : simbolosACrear.keySet()) {
+        Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(simbolosACrear.get(simbolo), simbolo.getId());
+        simboloNuevo.setTipo(simbolo.getTipo());
+        simboloNuevo.setUso(simbolo.getUso());
+        simboloNuevo.setUsada(simbolo.getUsada());
+        simboloNuevo.setValor(simbolo.getValor());
+        //simboloNuevo.setParametro(Simbolo.getParametro());
+        simboloNuevo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    }
+
+}
+
 public static Hashtable<Simbolo, String> crearAtributosClase(String nombreClase, String nombreObjtClase){
+    
+    //nombre clase = c3
+    //nombreObjtClase = objt3
+
     Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
     Hashtable<Simbolo, String> simbolosDeClase = new Hashtable<Simbolo,String>();
     Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(nombreClase+"#"+ambitoActual);
     String claseHereda = simboloClase.getHereda();
     String[] partes = simboloClase.getHereda().split("#");
     claseHereda = partes[0];
+    // System.out.println("Clase Hereda es: " + claseHereda +  " nombreClase: " + nombreClase + " nombreObjtClase: " + nombreObjtClase);
     for (String key : tabla.keySet()) {
 	    Simbolo simbol = tabla.get(key);
+        
         if(simbol.getLexema().contains("#"+nombreClase) && !simbol.getLexema().contains(nombreClase+"#")){
-            int ultimoIndice = simbol.getLexema().lastIndexOf("#");
-            simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice));
+            int ultimoIndice = simbol.getLexema().indexOf("#");
+            System.out.println("EL LEXEMA ES: " +simbol.getLexema() +" LO QUE YO LE SACO ES: " +simbol.getLexema().substring(0,ultimoIndice));
+            simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice)+"#"+ambitoActual);
+            //System.out.println("#####################################: " +nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice));
+            //simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema());
         }
     }
     if(!claseHereda.equals("") && !claseHereda.equals("nadie")){

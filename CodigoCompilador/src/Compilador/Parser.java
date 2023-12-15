@@ -28,8 +28,9 @@ import GeneracionCodigoIntermedio.NodoComun;
 import GeneracionCodigoIntermedio.NodoHoja;
 import GeneracionCodigoIntermedio.NodoControl;
 import java.util.Hashtable;
+import java.util.Stack;
 
-//#line 30 "Parser.java"
+//#line 31 "Parser.java"
 
 
 
@@ -701,7 +702,7 @@ final static String yyrule[] = {
 "const : '-' CTE",
 };
 
-//#line 2736 "gramatica.y"
+//#line 2728 "gramatica.y"
 
 //funciones
 
@@ -738,10 +739,70 @@ public static boolean tieneReturn = false; //variable utilizada para saber si la
 public static String auxConversion = "";
 public static Simbolo simboloAuxConversion = null;
 
+public static Stack<NodoComun> pilaAuxArbol = new Stack<>();
+public static String nombre_clase = "";
+
+public static String auxiliar_clase = "";
+public static ArrayList<String> auxiliar_lista_clase = new ArrayList<String>();
+public static int auxiliar_profundidad = 0;
+public static Stack<ContenedorClase> pilaAuxiliarClases = new Stack<>();
+
+public static void CreacionVariablesPosteriori (String lexema, ArrayList<String> listaVarACrear){
+    System.out.println("CLASE u OBJETO: " + lexema + " LISTA VAR CREAR: " + listaVarACrear);
+    // lexema: nombre de mi clase u objeto a posteriori
+    // listaVarACrear: son las variables que le voy a generar a las clases y objetos que les debo variables
+    Simbolo simboloLexema = TablaDeSimbolos.obtenerSimbolo(lexema);
+    String principioLexema = lexema.substring(0, lexema.indexOf('#'));
+    for (String lexemaLeDebo : simboloLexema.getListaAQuienLeDebo()){
+        Simbolo simboloLeDebo = TablaDeSimbolos.obtenerSimbolo(lexemaLeDebo);
+        String ambito = lexemaLeDebo.substring(lexemaLeDebo.indexOf('#')+1, lexemaLeDebo.length());
+        ArrayList<String> listaVarClase = new ArrayList<String>();
+        for (String var : listaVarACrear) {
+            if (simboloLeDebo.getUso().equals("clase")) {
+                System.out.println("CLASE ----> MEDIO: " + var + " PRINCIPIO: " + principioLexema +  " ambito: "+ ambito+"#"+lexemaLeDebo.substring(0, lexemaLeDebo.indexOf('#')));
+                String aux = CrearCopiaVariable(var, principioLexema, ambito+"#"+lexemaLeDebo.substring(0, lexemaLeDebo.indexOf('#')));
+                System.out.println("CREE CLASE------------------------------------------------------------------------------> " + aux);
+                listaVarClase.add(aux);
+            } else {
+                // simboloLeDebo.getLexema().substring(0, simboloLeDebo.getLexema().indexOf('#'))
+                System.out.println("OBJTEO----> MEDIO: " + var + " PRINCIPIO: " +lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#"))+"."+principioLexema +  " ambito: "+ambito);
+                if(simboloLexema.getUso().equals("clase")){
+                    String aux = CrearCopiaVariable(var, lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#")), ambito);
+                    System.out.println("CREE  OBJT CLASE------------------------------------------------------------------------------> " + aux);
+                    listaVarClase.add(aux);
+                }else{
+                    String aux = CrearCopiaVariable(var, lexemaLeDebo.substring(0,lexemaLeDebo.indexOf("#"))+"."+principioLexema, ambito);
+                    System.out.println("CREE OBJT - OBJT ------------------------------------------------------------------------------> " + aux);
+                    listaVarClase.add(aux);
+                }
+            }
+        }
+        simboloLeDebo.agregarAtributosTotalesClase(listaVarClase);
+        if (!simboloLeDebo.getListaAQuienLeDebo().isEmpty()) {
+            CreacionVariablesPosteriori(lexemaLeDebo, listaVarClase);
+        }
+        listaVarClase.clear();
+    }
+}
+
+
+public static String CrearCopiaVariable (String lexema, String principioLexema, String ambito) {
+    //System.out.println("MEDIO: "+lexema + " PRINCIPIO: "+ principioLexema + " AMBITO: " + ambito + " GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGg");
+    String lexemaCopia = principioLexema +"."+lexema.substring(0, lexema.indexOf('#'))+"#"+ambito;
+    Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(lexema);
+    Simbolo nuevoSimbolo = new Simbolo(lexemaCopia, simbolo.getId());
+    nuevoSimbolo.setTipo(simbolo.getTipo());
+    nuevoSimbolo.setUso(simbolo.getUso());
+    nuevoSimbolo.setParametro(simbolo.getParametro());
+    nuevoSimbolo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    TablaDeSimbolos.agregarSimbolo(lexemaCopia, nuevoSimbolo); // agregue una nueva funcion a la tabla
+    return lexemaCopia;
+}
+
 
 public static ArbolSintactico crearMetodoDeClase(String objtClase, ArbolSintactico arbolFun){
-   
-    
+   return null;
+    /*
     Simbolo simboloNodo = Constantes.SIMBOLO_NO_ENCONTRADO;
     String nuevoNombreNodo ="";
     if(arbolFun != null){
@@ -787,7 +848,7 @@ public static ArbolSintactico crearMetodoDeClase(String objtClase, ArbolSintacti
             }
         }
         return null;
-    
+    */
 }
 
 public static ArrayList<String> obtenerSimbolosFuncion(ArbolSintactico arbol){
@@ -808,18 +869,80 @@ public static ArrayList<String> obtenerSimbolosFuncion(ArbolSintactico arbol){
     return aux;
 }
 
+void crearAtributosDeObjetoClase(String nombreObjeto,String nombreObjetoNuevo, String tipoClase){
+    Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
+    Hashtable<Simbolo, String> simbolosACrear = new Hashtable<Simbolo,String>();
+    for (String key : tabla.keySet()) {
+        Simbolo simbolo = tabla.get(key);
+        //System.out.println("claseHeredada: " + claseHeredada + " nombreClaseAct: " + nombreClaseAct);
+        if(simbolo.getLexema().contains(nombreObjeto+".") && !simbolo.getLexema().contains("."+nombreObjeto)){
+            // con este if estoy diciendo que simbolo tiene que tener por ejemplo #c6 al final y no en el medio
+            System.out.println("Adelante agrego: " + nombreObjetoNuevo +" en el medio: "+simbolo.getLexema() + " al final: #"+tipoClase);
+            String nuevoLexema = nombreObjetoNuevo+"."+simbolo.getLexema();
+            simbolosACrear.put(simbolo,nuevoLexema);
+        }
+    }
+
+    //Una vez que consigo todos los simbolos los agergo a la tabla
+    for (Simbolo simbolo : simbolosACrear.keySet()) {
+        Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(simbolosACrear.get(simbolo), simbolo.getId());
+        simboloNuevo.setTipo(simbolo.getTipo());
+        simboloNuevo.setUso(simbolo.getUso());
+        simboloNuevo.setUsada(simbolo.getUsada());
+        simboloNuevo.setValor(simbolo.getValor());
+        //simboloNuevo.setParametro(Simbolo.getParametro());
+        simboloNuevo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    }
+}
+public static void crearAtributoClaseHeredada(String claseHeredada, String nombreClaseAct){
+    Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
+    Hashtable<Simbolo, String> simbolosACrear = new Hashtable<Simbolo,String>();
+    for (String key : tabla.keySet()) {
+        Simbolo simbolo = tabla.get(key);
+        System.out.println("claseHeredada: " + claseHeredada + " nombreClaseAct: " + nombreClaseAct);
+        if(simbolo.getLexema().contains("#"+claseHeredada) && !simbolo.getLexema().contains(claseHeredada+"#")){
+            // con este if estoy diciendo que simbolo tiene que tener por ejemplo #c6 al final y no en el medio
+            String nuevoLexema = simbolo.getLexema().substring(0, simbolo.getLexema().lastIndexOf("#")); //Quita el ultimo ambito, ej, #c6
+            nuevoLexema = claseHeredada+"."+nuevoLexema; // agrego c6. al principio
+            nuevoLexema = nuevoLexema +"#"+nombreClaseAct; // agrego #c7 al final
+            simbolosACrear.put(simbolo,nuevoLexema);
+        }
+    }
+
+    //Una vez que consigo todos los simbolos los agergo a la tabla
+    for (Simbolo simbolo : simbolosACrear.keySet()) {
+        Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(simbolosACrear.get(simbolo), simbolo.getId());
+        simboloNuevo.setTipo(simbolo.getTipo());
+        simboloNuevo.setUso(simbolo.getUso());
+        simboloNuevo.setUsada(simbolo.getUsada());
+        simboloNuevo.setValor(simbolo.getValor());
+        //simboloNuevo.setParametro(Simbolo.getParametro());
+        simboloNuevo.setDireccionMetodo(simbolo.getDireccionMetodo());
+    }
+
+}
+
 public static Hashtable<Simbolo, String> crearAtributosClase(String nombreClase, String nombreObjtClase){
+    
+    //nombre clase = c3
+    //nombreObjtClase = objt3
+
     Hashtable<String, Simbolo> tabla = TablaDeSimbolos.obtenerTablaDeSimbolos();
     Hashtable<Simbolo, String> simbolosDeClase = new Hashtable<Simbolo,String>();
     Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(nombreClase+"#"+ambitoActual);
     String claseHereda = simboloClase.getHereda();
     String[] partes = simboloClase.getHereda().split("#");
     claseHereda = partes[0];
+    // System.out.println("Clase Hereda es: " + claseHereda +  " nombreClase: " + nombreClase + " nombreObjtClase: " + nombreObjtClase);
     for (String key : tabla.keySet()) {
 	    Simbolo simbol = tabla.get(key);
+        
         if(simbol.getLexema().contains("#"+nombreClase) && !simbol.getLexema().contains(nombreClase+"#")){
-            int ultimoIndice = simbol.getLexema().lastIndexOf("#");
-            simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice));
+            int ultimoIndice = simbol.getLexema().indexOf("#");
+            System.out.println("EL LEXEMA ES: " +simbol.getLexema() +" LO QUE YO LE SACO ES: " +simbol.getLexema().substring(0,ultimoIndice));
+            simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice)+"#"+ambitoActual);
+            //System.out.println("#####################################: " +nombreObjtClase+"."+simbol.getLexema().substring(0,ultimoIndice));
+            //simbolosDeClase.put(simbol,nombreObjtClase+"."+simbol.getLexema());
         }
     }
     if(!claseHereda.equals("") && !claseHereda.equals("nadie")){
@@ -1039,7 +1162,7 @@ int yylex() throws IOException {
 void yyerror(String error) {
     //System.out.println("Yacc reporto error: " + error);
 }
-//#line 971 "Parser.java"
+//#line 1094 "Parser.java"
 //###############################################################
 // method: yylexdebug : check lexer state
 //###############################################################
@@ -1194,31 +1317,31 @@ boolean doaction;
       {
 //########## USER-SUPPLIED ACTIONS ##########
 case 1:
-//#line 28 "gramatica.y"
+//#line 29 "gramatica.y"
 {System.out.println("ARRANCO EL PROGRAMA");}
 break;
 case 2:
-//#line 31 "gramatica.y"
+//#line 32 "gramatica.y"
 {System.out.println("Linea "+ AnalizadorLexico.getLineaActual() + ", Se reconocio el programa ");}
 break;
 case 3:
-//#line 32 "gramatica.y"
+//#line 33 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta } al Final");}
 break;
 case 4:
-//#line 33 "gramatica.y"
+//#line 34 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta { al Inicio");}
 break;
 case 5:
-//#line 34 "gramatica.y"
+//#line 35 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico al compilar no permite terminar de leer el programa de forma correcta. Falta bloque de sentencias");}
 break;
 case 8:
-//#line 41 "gramatica.y"
+//#line 42 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia DECLARATIVA");}
 break;
 case 9:
-//#line 42 "gramatica.y"
+//#line 43 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio sentencia EJECUTABLE");
                                              ArbolSintactico arbAux = (ArbolSintactico) val_peek(0);
                                              buscarErroresEnNodo(arbAux);  
@@ -1226,23 +1349,23 @@ case 9:
                                             }
 break;
 case 14:
-//#line 55 "gramatica.y"
+//#line 56 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la declaracion de variable");}
 break;
 case 15:
-//#line 56 "gramatica.y"
+//#line 57 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la declaracion de funcion");}
 break;
 case 16:
-//#line 57 "gramatica.y"
+//#line 58 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la declaracion de la clase");}
 break;
 case 17:
-//#line 58 "gramatica.y"
+//#line 59 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la declaracion del objeto de clase");}
 break;
 case 18:
-//#line 61 "gramatica.y"
+//#line 62 "gramatica.y"
 {
                                                     for(String s : lista_identificadores){
                                                         System.out.println("LEXEMA: " + s);
@@ -1251,6 +1374,14 @@ case 18:
                                                             TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
                                                             simbolo.setUso("identificador");
+                                                            simbolo.setValorAsignado(true);
+                                                            simbolo.setUsada(true);
+                                                            System.out.println("Estoy agergando una variable: " + simbolo.getLexema() + " auxiliar_clase vale: "+auxiliar_clase + " la profundidad es: " + auxiliar_profundidad);
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                System.out.println("cumpli las condiciones entonces entre al if y me agregue a la lista");
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                                
+                                                            }
                                                         }else{
                                                            String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
                                                             erroresSemanticos.add(err);
@@ -1260,15 +1391,15 @@ case 18:
                                                 }
 break;
 case 19:
-//#line 76 "gramatica.y"
+//#line 85 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta el TIPO en la DECLARACION de la variable");}
 break;
 case 20:
-//#line 77 "gramatica.y"
+//#line 86 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta el identificador en la DECLARACION de la variable");}
 break;
 case 21:
-//#line 80 "gramatica.y"
+//#line 89 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DELCARACION de FUNCION CON PARAMETRO");
                                                     int indice = ambitoActual.lastIndexOf('#');
                                                     String ambitoParametro = ambitoActual;
@@ -1280,11 +1411,18 @@ case 21:
                                                     if(!TablaDeSimbolos.existeSimboloAmbitoActual(val_peek(6).sval+"#"+ambitoActual, simbolParametro.getLexema())){
                                                         if(tieneReturn){
                                                             TablaDeSimbolos.modificarLexema(val_peek(6).sval, val_peek(6).sval +"#"+ambitoActual);
-                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(val_peek(6).sval + "#"+ambitoActual);
+                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(val_peek(6).sval+"#"+ambitoActual);
                                                             simbolo.setUso("funcion");
                                                             simbolo.setParametro(simbolParametro);
+                                                            simbolo.setDireccionMetodo(val_peek(6).sval+"#"+ambitoActual);
                                                             agregarArbol(val_peek(6).sval+"#"+ambitoActual);
                                                             tieneReturn = false; 
+
+                                                            auxiliar_profundidad--;
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                simbolo.agergarListaVariablesMetodo(auxiliar_lista_clase);
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                            }
                                                         }else{
                                                             String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Falta la sentencia return en la declaracion de funcion";
                                                             erroresSemanticos.add(err);    
@@ -1293,11 +1431,15 @@ case 21:
                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
                                                     }
-                                                     
+                                                    
+                                                    if(!pilaAuxArbol.empty()){
+                                                        ptrRaizFuncion = pilaAuxArbol.pop();
+                                                        aux_raiz_func = pilaAuxArbol.pop();
+                                                    }
                                                 }
 break;
 case 22:
-//#line 106 "gramatica.y"
+//#line 126 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DELCARACION de FUNCION SIN PARAMETRO");
                                                     int indice = ambitoActual.lastIndexOf('#');
                                                     ambitoActual = ambitoActual.substring(0, indice);
@@ -1307,8 +1449,16 @@ case 22:
                                                             TablaDeSimbolos.modificarLexema(val_peek(5).sval, val_peek(5).sval +"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(val_peek(5).sval + "#"+ambitoActual);
                                                             simbolo.setUso("funcion");
+                                                            simbolo.setDireccionMetodo(val_peek(5).sval+"#"+ambitoActual);
                                                             agregarArbol(val_peek(5).sval+"#"+ambitoActual); 
                                                             tieneReturn = false; 
+
+                                                            auxiliar_profundidad--;
+                                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                simbolo.agergarListaVariablesMetodo(auxiliar_lista_clase);
+                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                            }   
+
                                                         }else{
                                                             String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Falta la sentencia return en la declaracion de funcion";
                                                             erroresSemanticos.add(err);    
@@ -1316,43 +1466,49 @@ case 22:
                                                     }else{
                                                         String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Funcion re declarada en el mismo ambito";
                                                         erroresSemanticos.add(err);
-                                                    }   
+                                                    }
+                                                    if(!pilaAuxArbol.empty()){
+                                                        ptrRaizFuncion = pilaAuxArbol.pop();
+                                                        aux_raiz_func = pilaAuxArbol.pop();
+                                                    }
+
+                                                    
                                         }
 break;
 case 23:
-//#line 126 "gramatica.y"
+//#line 160 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' al final de la funcion");}
 break;
 case 24:
-//#line 127 "gramatica.y"
+//#line 161 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '{' en la declaracion de la funcion");}
 break;
 case 25:
-//#line 128 "gramatica.y"
+//#line 162 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ')' en la declaracion de la funcion");}
 break;
 case 26:
-//#line 129 "gramatica.y"
+//#line 163 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '(' en la declaracion de la funcion");}
 break;
 case 27:
-//#line 131 "gramatica.y"
+//#line 164 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' en la declaracion de la funcion");}
 break;
 case 28:
-//#line 132 "gramatica.y"
+//#line 165 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '{' en la declaracion de la funcion");}
 break;
 case 29:
-//#line 133 "gramatica.y"
+//#line 166 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ')' en la declaracion de la funcion");}
 break;
 case 30:
-//#line 134 "gramatica.y"
+//#line 167 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '(' en la declaracion de la funcion");}
 break;
 case 31:
-//#line 137 "gramatica.y"
+//#line 170 "gramatica.y"
 {
                         
                         Simbolo simbolParametro = TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval);
@@ -1364,79 +1520,133 @@ case 31:
                         }
 break;
 case 32:
-//#line 148 "gramatica.y"
+//#line 181 "gramatica.y"
 { 
+                                if(aux_raiz_func != null){
+                                    NodoComun auxRaiz = aux_raiz_func;
+                                    NodoComun auxPtrFunc = ptrRaizFuncion;
+                                    pilaAuxArbol.push(auxRaiz); /* guardo primero la raiz*/
+                                    pilaAuxArbol.push(auxPtrFunc); /* guardo segundo el ptro*/
+                                }
+                                NodoComun arbolFun = new NodoComun("Sentencia", null, null);
+                                aux_raiz_func = arbolFun;
+                                ptrRaizFuncion = arbolFun;
+
+                                if(!auxiliar_clase.equals("")){
+                                    auxiliar_profundidad++;
+                                }
+
                                 ambitoActual = ambitoActual+"#"+val_peek(0).sval;
                                 yyval = val_peek(0);
                             }
 break;
 case 33:
-//#line 153 "gramatica.y"
+//#line 200 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta nombre en la declaracion de la funcion");}
 break;
 case 34:
-//#line 155 "gramatica.y"
+//#line 202 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta nombre en la declaracion de la funcion");}
 break;
 case 35:
-//#line 159 "gramatica.y"
+//#line 206 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo LONG");
             yyval = val_peek(0);
             }
 break;
 case 36:
-//#line 162 "gramatica.y"
+//#line 209 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo UINT");
             yyval = val_peek(0);
             }
 break;
 case 37:
-//#line 165 "gramatica.y"
+//#line 212 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un tipo FLOAT");
             yyval = val_peek(0);
             }
 break;
 case 38:
-//#line 170 "gramatica.y"
-{ 
-                                                lista_identificadores.add(val_peek(0).sval); 
-                                              }
+//#line 217 "gramatica.y"
+{lista_identificadores.add(val_peek(0).sval);}
 break;
 case 39:
-//#line 173 "gramatica.y"
-{ 
-                         lista_identificadores.add(val_peek(0).sval);
-                        }
+//#line 218 "gramatica.y"
+{lista_identificadores.add(val_peek(0).sval);}
 break;
 case 43:
-//#line 183 "gramatica.y"
-{ generarArbolFunc((ArbolSintactico) val_peek(0));}
+//#line 226 "gramatica.y"
+{ generarArbolFunc((ArbolSintactico) val_peek(0));
+                                                System.out.println("El subArbol que estoy creando es: ");
+                                                ArbolSintactico arb = (ArbolSintactico) val_peek(0);
+                                                arb.recorrerArbol("-");
+                                              }
 break;
 case 49:
-//#line 191 "gramatica.y"
+//#line 238 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la DECLARACION de varaible");}
 break;
 case 50:
-//#line 192 "gramatica.y"
+//#line 239 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la DECLARACION de funcion");}
 break;
 case 51:
-//#line 193 "gramatica.y"
+//#line 240 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la DECLARACION de objeto");}
 break;
 case 52:
-//#line 196 "gramatica.y"
+//#line 243 "gramatica.y"
 {  if(auxVarClases.equals("")){
 
-                                        int indice = ambitoActual.lastIndexOf('#');
-                                        String lexema = val_peek(0).sval+"#"+ambitoActual.substring(0, indice);
-                                        if(TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval).getId() != -1){
-                                            auxVarClases = lexema;
+                                    int indice = ambitoActual.lastIndexOf('#');
+                                    String lexema = val_peek(0).sval+"#"+ambitoActual.substring(0, indice);
+                                    if(TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval).getId() != -1){
+                                        auxVarClases = lexema;
+                                        /* primero creo los atributos con el objt adelante*/
+                                        
+                                        Simbolo simboloTipo = TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval+"#"+ambitoActual);
+                                        if(!simboloTipo.getClaseAPosterior()){
+                                            ArrayList<String> atributosClase = simboloTipo.getAtributosTotalesClase();
+                                            ArrayList<String> lexemasListaObjt = new ArrayList<>();
+                                            for(String lexemaAtributo : atributosClase){
+                                                lexemasListaObjt.add(CrearCopiaVariable(lexemaAtributo,val_peek(0).sval, ambitoActual)); /* s es el principio del lexema, el nombre del objeto*/
+                                                
+                                            }
+                                            
+                                            /* Todos los atributos*/
+                                            simboloTipo.agregarAtributosTotalesClase(lexemasListaObjt);
+                                            
+
+                                           
+                                            
+
+                                            
+                                            
+                                            lexemasListaObjt.add(simboloTipo.getLexema());
+
+
+
+
+                                            if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                auxiliar_lista_clase.addAll(lexemasListaObjt);
+                                            }
+                                            if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                simboloTipo.agregarAQuienLeDebo(auxiliar_clase);
+                                                TablaDeSimbolos.obtenerSimbolo(auxiliar_clase).agregarQuienMeDebe(simboloTipo.getLexema());
+                                            }
+
                                         }else{
-                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se declaro la clase " + lexema;
-                                            erroresSemanticos.add(err);    
-                                            auxVarClases = "";
+                                            System.out.println("HERENCIA: " + simboloTipo.getLexema() + " posterior: " + simboloTipo.getClaseAPosterior() + " auxiliar_clase: " + auxiliar_clase);
+                                            simboloTipo.agregarAQuienLeDebo(auxiliar_clase);
+                                            TablaDeSimbolos.obtenerSimbolo(auxiliar_clase).agregarQuienMeDebe(simboloTipo.getLexema());
+                                            System.out.println("LISTA HASTA AHORA: " + simboloTipo.getListaAQuienLeDebo());
                                         }
+
+                                    }else{
+                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se declaro la clase " + lexema;
+                                        erroresSemanticos.add(err);    
+                                        auxVarClases = "";
+                                    }
                                 }else{
                                         auxVarClases = auxVarClases+"#"+val_peek(0).sval; /* concateno las dos clases para demostrar que hay un error*/
                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se permite heredar de mas de una clase.";
@@ -1445,7 +1655,7 @@ case 52:
                             }
 break;
 case 53:
-//#line 214 "gramatica.y"
+//#line 301 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio RETURN"); 
                             if(!ambitoActual.equals("global")){
                                 yyval = (ArbolSintactico) new NodoHoja(val_peek(0).sval);
@@ -1458,10 +1668,11 @@ case 53:
                             }
 break;
 case 54:
-//#line 228 "gramatica.y"
+//#line 315 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de CLASE");
-                                                            
                                                             int indiceLexClase = ambitoActual.lastIndexOf('#');
+                                                            System.out.println("SIMBOLO: " + TablaDeSimbolos.obtenerSimbolo(val_peek(3).sval +"#"+ ambitoActual.substring(0, indiceLexClase)).ToString() + " LISTA DEBO: " +TablaDeSimbolos.obtenerSimbolo(val_peek(3).sval +"#"+ ambitoActual.substring(0, indiceLexClase)).getListaAQuienLeDebo());
+                                                            
                                                             String identClase = val_peek(3).sval +"#"+ ambitoActual.substring(0, indiceLexClase);
                                                             
                                                             if((TablaDeSimbolos.obtenerSimbolo(identClase).getUso().equals("")) || (TablaDeSimbolos.obtenerSimbolo(identClase).getClaseAPosterior())){
@@ -1470,7 +1681,14 @@ case 54:
                                                                     if(claseHereda.equals("")){
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setHereda(auxVarClases);
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
-                                                                        TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+                                                                        /* TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);*/
+
+                                                                        /*creo todos los identificadores o metodos de la clase que heredo en esta clase*/
+                                                                        /* String[] claseHeredada = auxVarClases.split("#");*/
+                                                                        /* crearAtributoClaseHeredada(claseHeredada[0], $1.sval); //paso solo el nombre de la clase que heredo, no el ambito*/
+
+                                                                        
+                                                                        
                                                                     }else{
                                                                         TablaDeSimbolos.obtenerSimbolo(identClase).setHereda(auxVarClases); /*agrego igual de la clase que hereda por si luego hay mas clases*/
                                                                         String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: El nivel de herencia es superior a 3 por: " + claseHereda;
@@ -1479,7 +1697,38 @@ case 54:
                                                                 }else{
                                                                     TablaDeSimbolos.obtenerSimbolo(identClase).setHereda("nadie");
                                                                     TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
-                                                                    TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
+                                                                    /*TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);*/
+                                                                }
+
+                                                                
+
+                                                                Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                                                simboloClase.agregarAtributosTotalesClase(auxiliar_lista_clase);
+                                                                
+                                                              
+                                                                
+
+                                                                if(!pilaAuxiliarClases.isEmpty()){
+                                                                    System.out.println("TERMINE LA DECLARACION DE LA CLASE QUE ESTABA ADENTRO DE OTRA. AHORA PUEDO SEGUIR CON LA CLASE PADRE: " + pilaAuxiliarClases);
+                                                                    ContenedorClase cont = pilaAuxiliarClases.pop();
+                                                                    auxiliar_clase = cont.getLexema();
+                                                                    auxiliar_lista_clase.clear();
+                                                                    auxiliar_lista_clase.addAll(cont.getListaAtributos());
+                                                                    auxiliar_profundidad = cont.getContador();
+                                                                }else{
+                                                                    System.out.println("TERMINE CON LA DECLARACION DE CLASES Y LA PILA DE AUXILIARES ESTABA VACIA");
+                                                                    auxiliar_clase ="";
+                                                                    auxiliar_lista_clase.clear();
+                                                                    auxiliar_profundidad = 0;
+                                                                }
+
+                                                                Simbolo simbolClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                                                System.out.println("LA CLASE: " + simboloClase.getLexema() + " POSTERIOR: " +simboloClase.getClaseAPosterior()+" LE DEBO: " + simboloClase.getListaAQuienLeDebo() +" ME DEBE: " + simboloClase.getListaQuienMeDebe());
+
+                                                                if(simboloClase.getClaseAPosterior()){
+                                                                    if(!simboloClase.getListaAQuienLeDebo().isEmpty()){
+                                                                        CreacionVariablesPosteriori(simboloClase.getLexema(), simboloClase.getAtributosTotalesClase());
+                                                                    }
                                                                 }
 
                                                                 TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(false);
@@ -1488,565 +1737,371 @@ case 54:
                                                                 erroresSemanticos.add(err);
                                                             }
 
-                                                            
+                                                            nombre_clase = "";
                                                             auxVarClases = "";
                                                             int indice = ambitoActual.lastIndexOf('#');
                                                             ambitoActual = ambitoActual.substring(0, indice);
                                                         }
 break;
 case 55:
-//#line 262 "gramatica.y"
+//#line 388 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de CLASE A POSTERIOR");
                                         int indiceLexClase = ambitoActual.lastIndexOf('#');
+                                        
+                                                          
                                         String identClase = val_peek(0).sval +"#"+ ambitoActual.substring(0, indiceLexClase);
                                         if((TablaDeSimbolos.obtenerSimbolo(identClase).getUso().equals(""))){                    
                                             TablaDeSimbolos.obtenerSimbolo(identClase).setClasePosterior(true);
                                             TablaDeSimbolos.obtenerSimbolo(identClase).setUso("clase");
+                                                                 
+                                            Simbolo simboloClase = TablaDeSimbolos.obtenerSimbolo(identClase);
+                                            simboloClase.agregarAtributosTotalesClase(auxiliar_lista_clase);
+                                            if(!pilaAuxiliarClases.isEmpty()){
+                                                ContenedorClase cont = pilaAuxiliarClases.pop();
+                                                auxiliar_clase = cont.getLexema();
+                                                auxiliar_lista_clase.clear();
+                                                auxiliar_lista_clase.addAll(cont.getListaAtributos());
+                                                auxiliar_profundidad = cont.getContador();
+                                            }else{
+                                                auxiliar_clase = "";
+                                                auxiliar_lista_clase.clear();
+                                                auxiliar_profundidad = 0; 
+                                            }
                                         }
                                         auxVarClases = "";
+                                        nombre_clase = "";
                                         int indice = ambitoActual.lastIndexOf('#');
                                         ambitoActual = ambitoActual.substring(0, indice);
                                         /*TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setClasePosterior(true);*/
                                         /*TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setUso("clase");*/
+                                         System.out.println("SIMBOLO FINAL DEC POSTERIOR: " + TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval +"#"+ ambitoActual.substring(0, indiceLexClase)).ToString() + " LISTA DEBO: " +TablaDeSimbolos.obtenerSimbolo(val_peek(0).sval +"#"+ ambitoActual.substring(0, indiceLexClase)).getListaAQuienLeDebo() );
+                                         
                                     }
 break;
 case 56:
-//#line 275 "gramatica.y"
+//#line 420 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() + ". Error sintactico.Falta } al final de la clase");}
 break;
 case 57:
-//#line 276 "gramatica.y"
+//#line 421 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico.Falta '{' al inicio de la clase");}
 break;
 case 58:
-//#line 277 "gramatica.y"
+//#line 422 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico.Falta cuerpo de la clase");}
 break;
 case 59:
-//#line 280 "gramatica.y"
+//#line 425 "gramatica.y"
 {
                         yyval = val_peek(0);
-
+                        nombre_clase = val_peek(0).sval;
                         String lexema = val_peek(0).sval +"#"+ ambitoActual;
-                       
-                        TablaDeSimbolos.modificarLexema(val_peek(0).sval, lexema);
+                        
+                        if(!auxiliar_clase.equals("")){
+                            System.out.println("####################### ESTOY AL PRINCIPIO DE LA DECLARACION DE UNA CLASE, LA LISTA DE AUXILIAR_CLASE HASTA AHORA ES: " + auxiliar_lista_clase);
+                            ContenedorClase nuevoCont = new ContenedorClase(auxiliar_clase, auxiliar_lista_clase, auxiliar_profundidad);
+                            pilaAuxiliarClases.push(nuevoCont);    
+                            auxiliar_clase = "";
+                            auxiliar_lista_clase.clear();
+                            auxiliar_profundidad = 0;   
+                        } 
+
+                        auxiliar_clase = lexema; /* auxiliar_clase = c2#global*/
+                        if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() == -1)
+                            TablaDeSimbolos.modificarLexema(val_peek(0).sval, lexema);
+                        
                         ambitoActual = ambitoActual + "#" + val_peek(0).sval;
                 }
 break;
 case 60:
-//#line 288 "gramatica.y"
+//#line 445 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico.Falta el identificador de la clase");}
 break;
 case 63:
-//#line 294 "gramatica.y"
+//#line 451 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +"Error sintactico al compilar no permite declarar sentencia ejecutables dentro de una funcion");}
 break;
 case 64:
-//#line 297 "gramatica.y"
+//#line 454 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una DECLARACION de OBJETO DE CLASE");
-                                                    for(String s : lista_identificadores){
-                                                        if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
-                                                            TablaDeSimbolos.setTipo(val_peek(1).sval, s);
-                                                            TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
-                                                            Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
-                                                            simbolo.setUso("identificador");
-                                                            TablaDeSimbolos.borrarSimbolo(s);
-                                                            System.out.println("LOS OBJETOS QUE VOY A CREAR SON: ");
-                                                            Hashtable<Simbolo, String> atributos = crearAtributosClase(val_peek(1).sval, s);
-                                                            for (Simbolo simbol : atributos.keySet()){
-                                                                /*int ultimoIndice = simbol.getLexema().lastIndexOf("#");*/
-                                                                String nombreObjt = atributos.get(simbol);
-                                                                TablaDeSimbolos.agregarSimbolo(nombreObjt, simbol.getId()); /* Creo le nuevo simbolo en la tabla*/
-                                                                Simbolo simboloNuevo = TablaDeSimbolos.obtenerSimbolo(nombreObjt); /* Obtengo el simbolo que acabo de crear*/
-                                                                
-                                                                /*seteo los atributos igual que el simbolo original*/
-                                                                simboloNuevo.setTipo(simbol.getTipo());
-                                                                simboloNuevo.setValor(simbol.getValor());
-                                                                simboloNuevo.setHereda(simbol.getHereda());
-                                                                simboloNuevo.setUso(simbol.getUso());
-                                                                simboloNuevo.setUsada(true);
-                                                                simboloNuevo.setValorAsignado(true);
-                                                                if(simbol.getUso().equals("funcion")){
-                                                                    simboloNuevo.setParametro(simbol.getParametro());
+                                                    if(!val_peek(1).sval.equals("")){
+                                                        for(String s : lista_identificadores){
+                                                            if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
+                                                                TablaDeSimbolos.setTipo(val_peek(1).sval, s);
+                                                                TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
+                                                                Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
+                                                                simbolo.setUso("identificador");
+                                                                TablaDeSimbolos.borrarSimbolo(s);
+                                                                simbolo.setEsObjetoClase(true);
+
+                                                                /* primero creo los atributos con el objt adelante*/
+                                                                Simbolo simboloTipo = TablaDeSimbolos.obtenerSimbolo(val_peek(1).sval+"#"+ambitoActual);
+                                                                ArrayList<String> atributosClase = simboloTipo.getAtributosTotalesClase();
+                                                                ArrayList<String> lexemasListaObjt = new ArrayList<>();
+                                                                for(String lexemaAtributo : atributosClase){
+                                                                   lexemasListaObjt.add(CrearCopiaVariable(lexemaAtributo, s, ambitoActual)); /* s es el principio del lexema, el nombre del objeto*/
                                                                 }
-                                                                /*System.out.println(simboloNuevo.ToString());*/
                                                                 
-                                                                /*Le agrego al simbolo original el nombre que va a tener el atributode la clase*/
-                                                                System.out.println("El simbolo viejo es: "+ simbol.getLexema() + " le voy a agregar: " + simboloNuevo.getLexema());
-                                                                simbol.agregarNombreMetodo(simboloNuevo.getLexema());
+                                                                
+                                                                for(String s1 : lexemasListaObjt){
+                                                                    TablaDeSimbolos.obtenerSimbolo(s1).agregarAtributosTotalesClase(lexemasListaObjt);
+
+                                                                }
+                                                                System.out.println("LEXEMA LISTA OBJTEOS: " + lexemasListaObjt);
+                                                                simbolo.agregarAtributosTotalesClase(lexemasListaObjt);
+                                                                lexemasListaObjt.add(simbolo.getLexema());
+
+                                                                if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
+                                                                    auxiliar_lista_clase.addAll(lexemasListaObjt);
+                                                                }
+
+                                                                /*
+                                                                if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                                    ArrayList<String> aux = simboloTipo.getListaQuienMeDebe();
+                                                                    for(String x : aux){
+                                                                        TablaDeSimbolos.obtenerSimbolo(x).agregarAQuienLeDebo(s + "#"+ambitoActual);
+                                                                    }
+                                                                }
+                                                                */
+
+                                                                if(!simboloTipo.getListaQuienMeDebe().isEmpty()){
+                                                                    simboloTipo.agregarAQuienLeDebo(simbolo.getLexema());
+                                                                    simbolo.agregarQuienMeDebe(simboloTipo.getLexema());
+                                                                }
+
+                                                            }else{
+                                                                /*doy error por re declaracion del identificador*/
+                                                                String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
+                                                                erroresSemanticos.add(err);
                                                             }
-                                                        }else{
-                                                            /*doy error por re declaracion del identificador*/
-                                                            String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable re declarada en el mismo ambito";
-                                                            erroresSemanticos.add(err);
                                                         }
+                                                    }else{
+                                                        String err = "Linea " + AnalizadorLexico.getLineaActual() + ". Error Semantico: clase no declarada";
+                                                        erroresSemanticos.add(err);    
                                                     }
                                                     lista_identificadores.clear();   
                                                 }
 break;
 case 65:
-//#line 339 "gramatica.y"
+//#line 514 "gramatica.y"
 {lista_identificadores.add(val_peek(0).sval);}
 break;
 case 66:
-//#line 340 "gramatica.y"
+//#line 515 "gramatica.y"
 {lista_identificadores.add(val_peek(0).sval); System.out.println("objts");}
 break;
 case 67:
-//#line 341 "gramatica.y"
+//#line 516 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +"Error sintactico. Al compilar no permite objetos de clase separados por ,");}
 break;
 case 68:
-//#line 345 "gramatica.y"
+//#line 520 "gramatica.y"
 {yyval = val_peek(1); }
 break;
 case 69:
-//#line 346 "gramatica.y"
+//#line 521 "gramatica.y"
 {yyval = val_peek(1);}
 break;
 case 70:
-//#line 347 "gramatica.y"
+//#line 522 "gramatica.y"
 {yyval = val_peek(1);}
 break;
 case 71:
-//#line 348 "gramatica.y"
+//#line 523 "gramatica.y"
 { yyval = val_peek(1);}
 break;
 case 72:
-//#line 349 "gramatica.y"
-{yyval = val_peek(1);}
+//#line 524 "gramatica.y"
+{ yyval = val_peek(1);
+                                                           System.out.println("mando el subArbol para arribla: sentencias_ejecucion_funcion");
+                                                        }
 break;
 case 73:
-//#line 350 "gramatica.y"
+//#line 527 "gramatica.y"
 {yyval = val_peek(1);}
 break;
 case 74:
-//#line 351 "gramatica.y"
+//#line 528 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la ASIGNACION");
                                                 yyval = (ArbolSintactico) nodoError;
                                                 }
 break;
 case 75:
-//#line 354 "gramatica.y"
+//#line 531 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la sentencia IF");
                                                 yyval = (ArbolSintactico) nodoError;
                                                 }
 break;
 case 76:
-//#line 357 "gramatica.y"
+//#line 534 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la sentencia de SALIDA"); 
                                                 yyval = (ArbolSintactico) nodoError;
                                                 }
 break;
 case 77:
-//#line 360 "gramatica.y"
+//#line 537 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la sentencia de CONTROL");
                                                 yyval = (ArbolSintactico) nodoError;
                                                 }
 break;
 case 78:
-//#line 363 "gramatica.y"
+//#line 540 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta ',' al final de la ejecucion de FUNCION");
                                                 yyval = (ArbolSintactico) nodoError;
                                                 }
 break;
 case 79:
-//#line 368 "gramatica.y"
-{System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION CON PARAMETRO");
-                                    String lexemaIdentificador = "";
-                                    String idAnterior = "";
-                                    String nombreObjtClase = "";
-                                    if(lista_identificadores.size() == 1){
-                                        /* es una funcion*/
-                                        lexemaIdentificador = lista_identificadores.get(0)+"#"+ambitoActual;
-                                    }else if(lista_identificadores.size() == 2){
-                                        /* es un metodo de la misma clase*/
-                                        /* El nombre del objto de la clase esta en la posicion 0 de la lista */
-                                        nombreObjtClase = lista_identificadores.get(0);
-                                        /* Armo el lexema de la funcion*/
-                                        for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                            if(lexemaIdentificador.equals("")){
-                                                lexemaIdentificador = lista_identificadores.get(i) + "#"+ambitoActual;
-                                            }else{
-                                                String tipoObjtClase = TablaDeSimbolos.obtenerSimbolo(nombreObjtClase+"#"+ambitoActual).getTipo();
-                                                lexemaIdentificador = lexemaIdentificador +"#"+tipoObjtClase;
-                                            }
-                                        }
-                                    }else{
-                                        /* es un metodo de una clase que hereda*/
-                                        for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                            System.out.println("EL LEXEMA DE LA FUNCION HASTA AHORA ES: " + lista_identificadores.get(i));    
-                                            if(lexemaIdentificador.equals("")){
-                                                lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                            }else{
-                                                if(i == (lista_identificadores.size()-2)){
-                                                    lexemaIdentificador = lexemaIdentificador+"#"+lista_identificadores.get(i); /* agrego el ambito final*/
-                                                    idAnterior = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                }else{
-                                                    String aux ="";
-                                                    if(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getUso().equals("clase")){
-                                                        /* es una clase*/
-                                                        aux  = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                    }else{
-                                                        /* es el nombre de un objeto de clase*/
-                                                        nombreObjtClase = lista_identificadores.get(i);
-                                                        aux = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()+"#"+ambitoActual;
-                                                    }
-                                                    if(TablaDeSimbolos.obtenerSimbolo(aux).getHereda().equals(idAnterior)){
-                                                        idAnterior = aux;
-                                                    }else{
-                                                        String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + aux + " no hereda de " + idAnterior;
-                                                        erroresSemanticos.add(err);
-                                                        lexemaIdentificador = "";
-                                                        break;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
-                                    if(lista_identificadores.size() > 1){
-                                        Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                        NodoControl arbolFuncion = null;
-                                        /* obtengo el arbol de la funcion*/
-                                        for(NodoControl a : lista_func){
-                                            if(a.getLex().equals(lexemaIdentificador)){
-                                                arbolFuncion = a;
-                                            }
-                                        }
-
-                                        /*
-                                        if(arbolFuncion != null){
-                                            System.out.println("EL ARBOL DE LA FUNCION: " + arbolFuncion.getLex());
-                                        } */
-
-                                    
-                                        NodoControl nuevoArbol= (NodoControl) crearMetodoDeClase(nombreObjtClase, arbolFuncion);
-                                        /* System.out.println("El arbol de la funcion que copie es: " + nuevoArbol.getLex()); */
-                                        /* nuevoArbol.recorrerArbol("-");*/
-                                        agregarMetodoLista(nuevoArbol);
-                                        
-                                        if(simbol != null && simbol.getParametro() != null){
-                                            simbol.setUsada(true); /*SETEO en USADA LA VARIABLE */
-                                            
-                                            ArbolSintactico param = (ArbolSintactico) val_peek(1);
-                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
-                                            boolean tieneTof = false;
-                                            if(param.getLex().equals("TOF")){
-                                                tieneTof = true;
-                                                if(param.getIzq().getLex().contains("--")){
-                                                    /*el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve*/
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
-                                                }
-                                            }else{
-                                                if(param.getLex().contains("--")){
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
-                                                }
-                                            }
-                                            
-                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneTof){
-                                                NodoHoja id_func = new NodoHoja(nuevoArbol.getLex());
-                                                yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
-                                            }else{
-                                                String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
-                                                erroresSemanticos.add(err);
-                                                yyval = (ArbolSintactico) nodoError;
-                                            }
-                                        }else{
-                                            String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + nuevoArbol.getLex() +" no fue declarada";
-                                            erroresSemanticos.add(err);
-                                            yyval = (ArbolSintactico) nodoError;
-                                        }
-                                    }else{
-                                        Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                        if(simbol != null && simbol.getParametro() != null){
-                                            simbol.setUsada(true); /*SETEO en USADA LA VARIABLE */
-                                            
-                                            ArbolSintactico param = (ArbolSintactico) val_peek(1);
-                                            Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
-                                            boolean tieneToF = false;
-                                            if(param.getLex().equals("TOF")){
-                                                tieneToF = true;
-                                                if(param.getIzq().getLex().contains("--")){
-                                                    /*el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve*/
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex().substring(0,param.getIzq().getLex().length()-2));    
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getIzq().getLex());
-                                                }
-                                            }else{
-                                                if(param.getLex().contains("--")){
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex().substring(0,param.getLex().length()-2));
-                                                }else{
-                                                    sI = TablaDeSimbolos.obtenerSimbolo(param.getLex());
-                                                }
-                                            }
-                                            
-                                            if(simbol.getParametro().getTipo().equals(sI.getTipo()) || tieneToF){
-                                                NodoHoja id_func = new NodoHoja(lexemaIdentificador);
-                                                yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,param);
-                                            }else{
-                                                String err = "Linea: "+AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
-                                                erroresSemanticos.add(err);
-                                                yyval = (ArbolSintactico) nodoError;
-                                            }
-                                        }else{
-                                            String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lexemaIdentificador+" no fue declarada";
-                                            erroresSemanticos.add(err);
-                                            yyval = (ArbolSintactico) nodoError;
-                                        }
-                                    }
-                                    auxTipoAsig ="";
-                                    /* System.out.println("el objeto de clase es: " + nombreObjtClase);*/
-                                    /* System.out.println("la funcion que encontre es: "+TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador).ToString());*/
-                                    lista_identificadores.clear();
-                            }
-break;
-case 80:
-//#line 521 "gramatica.y"
-{System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION SIN PARAMETRO");
-                                                String lexemaIdentificador = "";
-                                                String idAnterior = "";
-                                                String nombreObjtClase = "";
-                                                if(lista_identificadores.size() == 1){
-                                                    /* es una funcion*/
-                                                    lexemaIdentificador = lista_identificadores.get(0)+"#"+ambitoActual;
-                                                }else if(lista_identificadores.size() == 2){
-                                                    /* es un metodo de la misma clase*/
-                                                    /* El nombre del objto de la clase esta en la posicion 0 de la lista */
-                                                    nombreObjtClase = lista_identificadores.get(0);
-                                                    /* Armo el lexema de la funcion*/
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i) + "#"+ambitoActual;
-                                                        }else{
-                                                            String tipoObjtClase = TablaDeSimbolos.obtenerSimbolo(nombreObjtClase+"#"+ambitoActual).getTipo();
-                                                            lexemaIdentificador = lexemaIdentificador +"#"+tipoObjtClase;
-                                                        }
-                                                    }
-                                                }else{
-                                                    /* es un metodo de una clase que hereda*/
-                                                    /*
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        System.out.println("EL LEXEMA DE LA FUNCION HASTA AHORA ES: " + lista_identificadores.get(i));    
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                        }else{
-                                                            if(i == (lista_identificadores.size()-2)){
-                                                                lexemaIdentificador = lexemaIdentificador+"#"+lista_identificadores.get(i); // agrego el ambito final
-                                                                idAnterior = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                            }else{
-                                                                String aux ="";
-                                                                if(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getUso().equals("clase")){
-                                                                    // es una clase
-                                                                    aux  = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                                }else{
-                                                                    // es el nombre de un objeto de clase
-                                                                    nombreObjtClase = lista_identificadores.get(i);
-                                                                    aux = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()+"#"+ambitoActual;
-                                                                }
-                                                                if(TablaDeSimbolos.obtenerSimbolo(aux).getHereda().equals(idAnterior)){
-                                                                    idAnterior = aux;
-                                                                }else{
-                                                                    String err = "Linea: "+AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + aux + " no hereda de " + idAnterior;
-                                                                    erroresSemanticos.add(err);
-                                                                    lexemaIdentificador = "";
-                                                                    break;
-                                                                }
-                                                            }
-                                                        }
-                                                    } */
-                                                    for(int i = lista_identificadores.size()-1; i >= 0;i--){
-                                                        if(lexemaIdentificador.equals("")){
-                                                            lexemaIdentificador = lista_identificadores.get(i)+"#"+ambitoActual;
-                                                            idAnterior = lista_identificadores.get(i);
-                                                        }else{
-                                                            Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual);
-                                                            /* System.out.println("EL SIMBOLO DE LA CLASE "+lista_identificadores.get(i)+"#"+ambitoActual +"ES: " + simbol.getLexema());*/
-                                                            System.out.println("El simbolo anterior es: " + idAnterior + " el simbolo nuevo es: " + simbol.getLexema());
-                                                            if(simbol.getId() != -1){
-                                                                if(TablaDeSimbolos.obtenerSimbolo(idAnterior+"#"+ambitoActual+"#"+lista_identificadores.get(i)).getUso().equals("funcion")){
-                                                                    if(TablaDeSimbolos.obtenerSimbolo(simbol.getTipo()+"#"+ambitoActual).getUso().equals("clase")){
-                                                                        /*quiere decir que el simbolo es el primer ident, es decir el objeto de clase. Por eso uso el tipo de ese objeto*/
-                                                                        lexemaIdentificador = lexemaIdentificador + "#" + simbol.getTipo();
-                                                                        idAnterior = simbol.getTipo();
-                                                                    }else{
-                                                                        /*quiere decir que tengo mas clases en el identificador*/
-                                                                        lexemaIdentificador = lexemaIdentificador +"#"+ lista_identificadores.get(i);
-                                                                        idAnterior = lista_identificadores.get(i);
-                                                                    }
-
-                                                                }else{
-                                                                    if(TablaDeSimbolos.obtenerSimbolo(simbol.getLexema()).getHereda().equals(idAnterior+"#"+ambitoActual) || TablaDeSimbolos.obtenerSimbolo(simbol.getTipo()+"#"+ambitoActual).getHereda().equals(idAnterior+"#"+ambitoActual)){
-                                                                        /* quiere decir que la clase hereda de la otra y que ambos lex son el lexema*/
-                                                                        /* o que el lexema actual es el nombre de un objeto clase y tengo que usar su tipo para comprobar si hereda*/
-
-                                                                        idAnterior = lista_identificadores.get(i);
-                                                                    }else{
-                                                                        /* AGREGADO PERO PARA HACE MAS KILOMBO*/
-                                                                        System.out.println("IDANTERIOR: " + idAnterior + " busco: " +TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo());
-                                                                        if(idAnterior.equals(TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()) || TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador+"#"+TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo()).getId() != -1 ){
-                                                                            /* QUIERE DECIR QUE EL IdAnterior ES IGUAL AL TIPO DEL ID ACTUAL caso: clase1.objt_c3.c2.c1.fun1(var1)*/
-                                                                            lexemaIdentificador = lexemaIdentificador+"#"+TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo();
-                                                                            idAnterior = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual).getTipo();
-                                                                        }else if(idAnterior.equals(lista_identificadores.get(i))){
-                                                                            /* QUIERE DECIR QUE EL ID ANTERIOR ES IGUAL AL ID NUEVO. CASO clase1.c5.c4.objt_c3.c2.c1.fun1(var1)*/
-                                                                            idAnterior = lista_identificadores.get(i);
+//#line 545 "gramatica.y"
+{
+                                                                System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION CON PARAMETRO");
+                                                                String lexemaIdentificadorFun = "";
+                                                                String idAnterior = "";
+                                                                String nombreObjtClase = "";
+                                                                
+                                                                if(lista_identificadores.size() == 1){
+                                                                    System.out.println("ES UNA FUNCION CON UN PARAMETRO");
+                                                                    lexemaIdentificadorFun = lista_identificadores.get(0)+"#"+ambitoActual;
+                                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() != null){
+                                                                       
+                                                                        if(simboloFun.getParametro().getTipo().equals(auxTipoAsig)){
+                                                                            simboloFun.setUsada(true);
+                                                                            NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
+                                                                            System.out.println("creo el arbol y lo retorno");
+                                                                            yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico) val_peek(1));
                                                                         }else{
-                                                                            lexemaIdentificador = "";
-                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + idAnterior + " no hereda de "+ lista_identificadores.get(i);
+                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
                                                                             erroresSemanticos.add(err);
-                                                                            yyval = nodoError;
-                                                                            break;
-                                                                        } 
-                                                                        /*
-                                                                        lexema = "";
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase " + idAnterior + " no hereda de "+ lista_identificadores.get(i);
+                                                                            yyval = (ArbolSintactico) nodoError;
+                                                                        }
+                                                                    }else{
+                                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                                         erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                        break;
-                                                                        */
+                                                                        yyval = (ArbolSintactico) nodoError;
                                                                     }
-                                                                }
-
-
-                                                            }else{
-                                                                /* Hago el intento de ver si el identificador actual es un objeto de clase dentro de una clase*/
-                                                                /* pruebo agregandole al ambito el tipo o nombre del siguiente identificador del for*/
-                                                                if(idAnterior.equals(lista_identificadores.get(i)+"#"+ambitoActual)){
-                                                                    /* caso que el id anterior sea igual al id actual mas ambito*/
-                                                                    idAnterior = lista_identificadores.get(i);
                                                                 }else{
-                                                                    simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+lista_identificadores.get(i-1));
-                                                                    if(simbol.getId() != -1){
-                                                                        /* porque es un objteto de tipo clase declarado dentro de una clase*/
-                                                                        idAnterior = lista_identificadores.get(i-1);
-                                                                    }else{
-                                                                        /* pregunto si el tipo del siguiente id es una clase*/
-                                                                        simbol = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+ TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i-1)+"#"+ambitoActual).getTipo());
-                                                                        if(simbol.getId() != -1){
-                                                                            /* NO TENGO NI IDEA DE SI ESTO FUNCIONA. YA ESTOY PROGRAMANDO EN MODO AUTOMATICO*/
-                                                                            idAnterior = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i-1)+"#"+ambitoActual).getTipo();
+                                                                    for(String s : lista_identificadores){
+                                                                        if( lexemaIdentificadorFun.equals("")){
+                                                                                lexemaIdentificadorFun = s;
                                                                         }else{
-                                                                            lexemaIdentificador = "";
-                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase no existe";
-                                                                            erroresSemanticos.add(err);
-                                                                            yyval = nodoError;
-                                                                            break;
+                                                                            lexemaIdentificadorFun = lexemaIdentificadorFun + "."+s;
                                                                         }
                                                                     }
+                                                                    lexemaIdentificadorFun = lexemaIdentificadorFun+"#"+ambitoActual;
+                                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() != null){
+                                                                       
+                                                                        if(simboloFun.getParametro().getTipo().equals(auxTipoAsig)){
+                                                                            simboloFun.setUsada(true);
+                                                                            NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
+                                                                            System.out.println("creo el arbol y lo retorno");
+                                                                            yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico) val_peek(1));
+                                                                        }else{
+                                                                            String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
+                                                                            erroresSemanticos.add(err);
+                                                                            yyval = (ArbolSintactico) nodoError;
+                                                                        }
+                                                                    }else{
+                                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
+                                                                        erroresSemanticos.add(err);
+                                                                        yyval = (ArbolSintactico) nodoError;
+                                                                    }
+
                                                                 }
+                                                                lista_identificadores.clear();
+                                                                
                                                             }
-                                                        }
-                                                    }
-                                                }
+break;
+case 80:
+//#line 604 "gramatica.y"
+{System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una INVOCACION A FUNCION SIN PARAMETRO");
+                                                String lexemaIdentificadorFun = "";
+                                                String idAnterior = "";
+                                                String nombreObjtClase = "";
                                                 
-                                                if(lista_identificadores.size() > 1){
-                                                    Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                                    NodoControl arbolFuncion = null;
-                                                    /* obtengo el arbol de la funcion*/
-                                                    for(NodoControl a : lista_func){
-                                                        if(a.getLex().equals(lexemaIdentificador)){
-                                                            arbolFuncion = a;
-                                                        }
-                                                    }
-
-                                                    /*
-                                                    if(arbolFuncion != null){
-                                                        System.out.println("EL ARBOL DE LA FUNCION: " + arbolFuncion.getLex());
-                                                    } */
-
-                                                
-                                                    NodoControl nuevoArbol= (NodoControl) crearMetodoDeClase(nombreObjtClase, arbolFuncion);
-                                                    /* System.out.println("El arbol de la funcion que copie es: " + nuevoArbol.getLex()); */
-                                                    /* nuevoArbol.recorrerArbol("-");*/
-                                                    agregarMetodoLista(nuevoArbol);
-                                                    
-                                                    if(simbol != null && simbol.getParametro() == null){
-                                                        simbol.setUsada(true); /*SETEO en USADA LA VARIABLE */
-                                                        
-                                                        NodoHoja id_func = new NodoHoja(nuevoArbol.getLex());
+                                                if(lista_identificadores.size() == 1){
+                                                    lexemaIdentificadorFun = lista_identificadores.get(0)+"#"+ambitoActual;
+                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() == null){
+                                                        simboloFun.setUsada(true);
+                                                        NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
                                                         yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,null);
-                                                        
                                                     }else{
-                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + nuevoArbol.getLex() +" no fue declarada";
+                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                         erroresSemanticos.add(err);
                                                         yyval = (ArbolSintactico) nodoError;
                                                     }
                                                 }else{
-                                                    Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador);
-                                                    
-                                                    if(simbol != null && simbol.getParametro() == null){
-                                                        simbol.setUsada(true); /*SETEO en USADA LA VARIABLE */
-                                                       
-                                                        NodoHoja id_func = new NodoHoja(lexemaIdentificador);
+                                                    for(String s : lista_identificadores){
+                                                        if( lexemaIdentificadorFun.equals("")){
+                                                                lexemaIdentificadorFun = s;
+                                                        }else{
+                                                            lexemaIdentificadorFun = lexemaIdentificadorFun + "."+s;
+                                                        }
+                                                    }
+                                                    lexemaIdentificadorFun = lexemaIdentificadorFun+"#"+ambitoActual;
+                                                    Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
+                                                    if(simboloFun.getId() != -1 & simboloFun.getParametro() == null){
+                                                        simboloFun.setUsada(true);
+                                                        NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
                                                         yyval = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,null);
-                                                        
                                                     }else{
-                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lexemaIdentificador+" no fue declarada";
+                                                        String err = "Linea "+AnalizadorLexico.getLineaActual()+". Error Semantico: La funcion " + lista_identificadores.get(0) +" no fue declarada";
                                                         erroresSemanticos.add(err);
                                                         yyval = (ArbolSintactico) nodoError;
                                                     }
                                                 }
-                                                auxTipoAsig ="";
-                                                /* System.out.println("el objeto de clase es: " + nombreObjtClase);*/
-                                                /* System.out.println("la funcion que encontre es: "+TablaDeSimbolos.obtenerSimbolo(lexemaIdentificador).ToString());*/
-                                                lista_identificadores.clear();        
-                                                               
-                                    
-                                        
-                                        
-                        }
+                                                lista_identificadores.clear();
+                                                
+                                                }
 break;
 case 81:
-//#line 720 "gramatica.y"
+//#line 650 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una ASIGNACION");
                                                         String lexema = "";
                                                         String primer = "";
                                                         String ambitoAnt = "";
                                                         String ambitoVariable = ambitoActual;
                                                         System.out.println("AMBITO: " + ambitoActual);
+                                                        /*
                                                         for(int i = 0; i < lista_identificadores.size();i++){
                                                             System.out.println("IDENTIFICADOR: " + lista_identificadores.get(i));
                                                         }
-                                                        /*VERIFICO SI LA LISTA ES DISTINTO DE 0. SI ES DISTINTO DE 0 QUIERE DECIR QUE DEL LADO IZQUIERDO ESTA EL ID*/
+                                                        //VERIFICO SI LA LISTA ES DISTINTO DE 0. SI ES DISTINTO DE 0 QUIERE DECIR QUE DEL LADO IZQUIERDO ESTA EL ID
                                                         if(lista_identificadores.size() > 0){
-                                                            /*VERIFICO SI LA LISTA ES MAYOR A 1. SI ES MAYOR A 1 QUIERE DECIR QUE ES UN IDENTIFICADOR COMPUESTO, POR EJ, CLASE1.VAR1*/
+                                                            //VERIFICO SI LA LISTA ES MAYOR A 1. SI ES MAYOR A 1 QUIERE DECIR QUE ES UN IDENTIFICADOR COMPUESTO, POR EJ, CLASE1.VAR1
                                                             if(lista_identificadores.size() > 1){
-                                                                String lexemaAuxFinAmbito =""; /*aux usado para el ambito*/
-                                                                Simbolo simboloAnt = null; /*este simbolo es el anterior, por ejemplo en clase1.a.num1 puede ser simboloAnt: clase1*/
-                                                                /*RECORRO LA LISTA DE IDENTIFICADORES*/
+                                                                String lexemaAuxFinAmbito =""; //aux usado para el ambito
+                                                                Simbolo simboloAnt = null; //este simbolo es el anterior, por ejemplo en clase1.a.num1 puede ser simboloAnt: clase1
+                                                                //RECORRO LA LISTA DE IDENTIFICADORES
                                                                 for(int i = 0; i< lista_identificadores.size();i++){
                                                                     System.out.println("LISTA ID TIENE: " + lista_identificadores.get(i));
                                                                     if(lexema.equals("")){
-                                                                        /*ES EL PRIMER ELEMENTO DEL LEXEMA*/
+                                                                        //ES EL PRIMER ELEMENTO DEL LEXEMA
                                                                         lexema = lista_identificadores.get(i); 
                                                                         simboloAnt = TablaDeSimbolos.obtenerSimbolo(lexema+"#"+ambitoActual);
                                                                         lexemaAuxFinAmbito = TablaDeSimbolos.obtenerSimbolo(lexema+"#"+ambitoActual).getTipo();
                                                                     }else{
-                                                                        /*LEXEMA YA TIENE ALGUN VALOR*/
+                                                                        //LEXEMA YA TIENE ALGUN VALOR
                                                                         Simbolo simboloNuevo = null;
                                                                         System.out.println("ESTO BUSCO COMO NUEVOSIMBOLO EN ASIG: " + lista_identificadores.get(i)+"#"+ambitoActual+"#"+lexemaAuxFinAmbito);
-                                                                        simboloNuevo = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+lexemaAuxFinAmbito);   /*lexemaAuxFinAmbito es a*/
-                                                                        /*SI EL SIMBOLO EXISTE EN LA TABLA DE SIMBOLOS*/
+                                                                        simboloNuevo = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+lexemaAuxFinAmbito);   //lexemaAuxFinAmbito es a
+                                                                        //SI EL SIMBOLO EXISTE EN LA TABLA DE SIMBOLOS
                                                                         if(simboloNuevo.getId() != -1){   
-                                                                            /*SI EL SIMBOLO ES UNA CLASE*/
-                                                                            if(simboloNuevo.getUso().equals("clase")){ /*si es una clase*/
-                                                                                /*simboloTipoAnt SE REFIERE AL TIPO DEL SIMBOLO ANTERIOR, POR EJ, EL SIMBOLO ANT ES CLASE1 Y SU TIPO ES C1, ENTONCES OBTENGO EL SIMBOLO DE C1*/
+                                                                            //SI EL SIMBOLO ES UNA CLASE
+                                                                            if(simboloNuevo.getUso().equals("clase")){ //si es una clase
+                                                                                //simboloTipoAnt SE REFIERE AL TIPO DEL SIMBOLO ANTERIOR, POR EJ, EL SIMBOLO ANT ES CLASE1 Y SU TIPO ES C1, ENTONCES OBTENGO EL SIMBOLO DE C1
                                                                                 Simbolo simboloTipoAnt = null;
-                                                                                /*SI EL SIMBOLO ANTERIOR ES UN OBJETO DE UNA CLASE, POR EJEMPLO, CLASE1*/
+                                                                                //SI EL SIMBOLO ANTERIOR ES UN OBJETO DE UNA CLASE, POR EJEMPLO, CLASE1
                                                                                 if(simboloAnt.getUso().equals("identificador")){
-                                                                                    simboloTipoAnt = TablaDeSimbolos.obtenerSimbolo(simboloAnt.getTipo()+"#"+ambitoActual); /*aca lo que hago es obtener el identificador de la tabla de la clase que es el identificador anterior*/
+                                                                                    simboloTipoAnt = TablaDeSimbolos.obtenerSimbolo(simboloAnt.getTipo()+"#"+ambitoActual); //aca lo que hago es obtener el identificador de la tabla de la clase que es el identificador anterior
                                                                                 }else{
-                                                                                    /*SINO QUIERE DECIR QUE ES C1*/
+                                                                                    //SINO QUIERE DECIR QUE ES C1
                                                                                     simboloTipoAnt = simboloAnt;
                                                                                 }
-                                                                                /*SI EL SIMBOLO ANTERIOR HEREDA DEL NUEVO SIMBOLO*/
+                                                                                //SI EL SIMBOLO ANTERIOR HEREDA DEL NUEVO SIMBOLO
                                                                                 if(simboloTipoAnt.getHereda().equals(simboloNuevo.getLexema()) && !simboloNuevo.getClaseAPosterior()){
-                                                                                    /*AGREGO EL NOMBRE AL LEXEMA Y SIGO PROCESANDO*/
+                                                                                    //AGREGO EL NOMBRE AL LEXEMA Y SIGO PROCESANDO
                                                                                      lexema = lexema+"."+lista_identificadores.get(i);
                                                                                      lexemaAuxFinAmbito = lista_identificadores.get(i);
                                                                                      simboloAnt = simboloNuevo;
@@ -2054,22 +2109,22 @@ case 81:
                                                                                     if(!simboloNuevo.getClaseAPosterior()){
                                                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase no hereda de "+simboloNuevo.getLexema();
                                                                                         erroresSemanticos.add(err);
-                                                                                        yyval = nodoError;
+                                                                                        $$ = nodoError;
                                                                                         break;
                                                                                     }else{
                                                                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Error de Forward declaration en la clase "+simboloNuevo.getLexema();
                                                                                         erroresSemanticos.add(err);
-                                                                                        yyval = nodoError;
+                                                                                        $$ = nodoError;
                                                                                         break;
                                                                                     }
                                                                                 }
 
                                                                             }else{ 
-                                                                                /*SI EL SIMBOLO NO ES UNA CLASE, ENTONCES QUIERE DECIR QUE ES EL ULTIMO IDENTIFICADOR, POR EJEMPLO, SI EL IDENTIFICADOR*/
-                                                                                /*ORIGINAL ERA CLASE1.CLASE1.VARIABLE1, EN ESTE ESLE LO QUE HAGO ES AGREGAR VARIABLE1 AL LEXEMA                                                                     */
-                                                                                lexema = lexema+"."+lista_identificadores.get(i)+"#"+ambitoActual; /*Aca hago clase1.num1#global. Asi la voy a guardar en la Tabla de simbolos*/
+                                                                                //SI EL SIMBOLO NO ES UNA CLASE, ENTONCES QUIERE DECIR QUE ES EL ULTIMO IDENTIFICADOR, POR EJEMPLO, SI EL IDENTIFICADOR
+                                                                                //ORIGINAL ERA CLASE1.CLASE1.VARIABLE1, EN ESTE ESLE LO QUE HAGO ES AGREGAR VARIABLE1 AL LEXEMA                                                                     
+                                                                                lexema = lexema+"."+lista_identificadores.get(i)+"#"+ambitoActual; //Aca hago clase1.num1#global. Asi la voy a guardar en la Tabla de simbolos
                                                                                 TablaDeSimbolos.agregarSimbolo(lexema,Constantes.ID);
-                                                                                /*CREO EL NUEVO SIMBOLO Y SETEO SUS ATRIBUTOS*/
+                                                                                //CREO EL NUEVO SIMBOLO Y SETEO SUS ATRIBUTOS
                                                                                 Simbolo nuevo = TablaDeSimbolos.obtenerSimbolo(lexema);
                                                                                 nuevo.setTipo(simboloNuevo.getTipo());
                                                                                 nuevo.setUso(simboloNuevo.getUso());
@@ -2079,7 +2134,7 @@ case 81:
                                                                         }else{
                                                                             String err = "Linea: "  + AnalizadorLexico.getLineaActual()+". Error Semantico: variable no declarada";
                                                                             erroresSemanticos.add(err);
-                                                                            yyval = nodoError;
+                                                                            $$ = nodoError;
                                                                             break;
                                                                         }
                                                                     } 
@@ -2092,8 +2147,17 @@ case 81:
                                                                 
                                                                 lexema = lista_identificadores.get(0)+"#"+ambitoActual;
                                                             }
-                                                        }
-                                                        
+                                                        }*/
+                                                for(String s : lista_identificadores){
+                                                    if(lexema.equals("")){
+                                                        lexema = s;
+                                                    }else{
+                                                        lexema = lexema + "."+s;
+                                                    }
+                                                }
+
+                                                lexema = lexema +"#"+ambitoActual;
+
                                                 /*SI EL LEXEMA QUE FORME EXISTE EN LA TABLA DE SIMBOLOS*/
                                                 if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() != -1){
                                                     Simbolo simbol = TablaDeSimbolos.obtenerSimbolo(lexema); /*Obtengo el simbolo del lado izquierdo que acabo de crear o que ya existia*/
@@ -2164,27 +2228,27 @@ case 81:
                                             }
 break;
 case 82:
-//#line 879 "gramatica.y"
+//#line 819 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta la expresion despues del '='");
                                     yyval = (ArbolSintactico) nodoError;
                                     }
 break;
 case 83:
-//#line 884 "gramatica.y"
+//#line 824 "gramatica.y"
 {lista_identificadores.add(val_peek(0).sval);}
 break;
 case 84:
-//#line 885 "gramatica.y"
+//#line 825 "gramatica.y"
 {lista_identificadores.add(val_peek(0).sval);}
 break;
 case 85:
-//#line 888 "gramatica.y"
+//#line 828 "gramatica.y"
 {yyval = val_peek(0);
                                    
                                     }
 break;
 case 86:
-//#line 893 "gramatica.y"
+//#line 833 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IF_ELSE");
                         if((ArbolSintactico)val_peek(9) != nodoError){
                             NodoControl then = new NodoControl("then",(ArbolSintactico) val_peek(6));
@@ -2201,7 +2265,7 @@ case 86:
                     }
 break;
 case 87:
-//#line 908 "gramatica.y"
+//#line 848 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IF");
                         if((ArbolSintactico)val_peek(5) != nodoError){                                                                     
                             NodoControl then = new NodoControl("then",(ArbolSintactico) val_peek(2));
@@ -2213,110 +2277,110 @@ case 87:
                     }
 break;
 case 88:
-//#line 920 "gramatica.y"
+//#line 860 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta END_IF para finalizar la sentencia IF");
                     System.out.println("ENTRE EN EL ERROR DE QUE FALTA ELSE_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 89:
-//#line 924 "gramatica.y"
+//#line 864 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra ELSE");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 90:
-//#line 927 "gramatica.y"
+//#line 867 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 91:
-//#line 930 "gramatica.y"
+//#line 870 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabras IF y ELSE");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 92:
-//#line 933 "gramatica.y"
+//#line 873 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabras IF Y END_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 93:
-//#line 936 "gramatica.y"
+//#line 876 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabras ELSE Y END_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 94:
-//#line 939 "gramatica.y"
+//#line 879 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabras IF, ELSE Y END_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 95:
-//#line 942 "gramatica.y"
+//#line 882 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta bloque sentencias ejecutables");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 96:
-//#line 945 "gramatica.y"
+//#line 885 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta bloque sentencias ejecutables");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 97:
-//#line 948 "gramatica.y"
+//#line 888 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta bloques sentencias ejecutables");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 98:
-//#line 951 "gramatica.y"
+//#line 891 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta condicion");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 99:
-//#line 954 "gramatica.y"
+//#line 894 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra END_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 100:
-//#line 957 "gramatica.y"
+//#line 897 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 101:
-//#line 960 "gramatica.y"
+//#line 900 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabras IF y END_IF");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 102:
-//#line 963 "gramatica.y"
+//#line 903 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta bloque sentencias ejecutables");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 103:
-//#line 966 "gramatica.y"
+//#line 906 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta condicion");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 104:
-//#line 969 "gramatica.y"
+//#line 909 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta '}' antes del ELSE");
                     yyval = (ArbolSintactico) nodoError;
                     }
 break;
 case 105:
-//#line 976 "gramatica.y"
+//#line 916 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MAYOR");
                                                       ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -2463,7 +2527,7 @@ case 105:
                                                         }
 break;
 case 106:
-//#line 1120 "gramatica.y"
+//#line 1060 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MENOR");
                                                  ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -2608,7 +2672,7 @@ case 106:
                                                 }
 break;
 case 107:
-//#line 1262 "gramatica.y"
+//#line 1202 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MAYOR O IGUAL");
                                                         ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -2754,7 +2818,7 @@ case 107:
                                                         }
 break;
 case 108:
-//#line 1405 "gramatica.y"
+//#line 1345 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MENOR O IGUAL");
                                                         ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -2900,7 +2964,7 @@ case 108:
                                                         }
 break;
 case 109:
-//#line 1548 "gramatica.y"
+//#line 1488 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR IGUAL");
                                                             ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -3046,7 +3110,7 @@ case 109:
                                                         }
 break;
 case 110:
-//#line 1691 "gramatica.y"
+//#line 1631 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR DISTINTO");
                                                                      ArbolSintactico arb1 = (ArbolSintactico) val_peek(2);
                                                         ArbolSintactico arb2 = (ArbolSintactico) val_peek(0);
@@ -3192,16 +3256,16 @@ case 110:
                             }
 break;
 case 111:
-//#line 1836 "gramatica.y"
+//#line 1776 "gramatica.y"
 {
                                                                         yyval=new NodoComun("Sentencia_Dentro_IF", (ArbolSintactico) val_peek(1), (ArbolSintactico) val_peek(0));}
 break;
 case 112:
-//#line 1838 "gramatica.y"
+//#line 1778 "gramatica.y"
 {yyval=val_peek(0);}
 break;
 case 113:
-//#line 1841 "gramatica.y"
+//#line 1781 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una sentencia SALIDA con CADENA");
                                  NodoHoja cadena = new NodoHoja(val_peek(0).sval);
                                  NodoControl nodo = new NodoControl(val_peek(1).sval, (ArbolSintactico) cadena);
@@ -3209,13 +3273,13 @@ case 113:
                                 }
 break;
 case 114:
-//#line 1848 "gramatica.y"
+//#line 1788 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una SENTENCIA WHILE");
                                         yyval = val_peek(0);
                                        }
 break;
 case 115:
-//#line 1853 "gramatica.y"
+//#line 1793 "gramatica.y"
 {
                                                             if((ArbolSintactico) val_peek(5) != nodoError){
                                                                 NodoControl condicion = new NodoControl("condicion_while", (ArbolSintactico) val_peek(5));
@@ -3227,7 +3291,7 @@ case 115:
                                                             }
 break;
 case 116:
-//#line 1862 "gramatica.y"
+//#line 1802 "gramatica.y"
 {
                                                                 NodoControl condicion = new NodoControl("condicion_while", (ArbolSintactico) val_peek(4));
                                                                 NodoControl cuerpo_while = new NodoControl("cuerpo_while", null);
@@ -3235,25 +3299,25 @@ case 116:
                                                                 }
 break;
 case 117:
-//#line 1868 "gramatica.y"
+//#line 1808 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra DO");
                                                             yyval = (ArbolSintactico) nodoError;
                                                             }
 break;
 case 118:
-//#line 1871 "gramatica.y"
+//#line 1811 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta palabra WHILE");
                                                             yyval = (ArbolSintactico) nodoError;
                                                             }
 break;
 case 119:
-//#line 1874 "gramatica.y"
+//#line 1814 "gramatica.y"
 {agregarError("Linea: " + AnalizadorLexico.getLineaActual() +". Error sintactico. Falta condicion");
                                                             yyval = (ArbolSintactico) nodoError;
                                                             }
 break;
 case 120:
-//#line 1880 "gramatica.y"
+//#line 1820 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una SUMA");
                                             
                                              ArbolSintactico arbIzq = (ArbolSintactico) val_peek(2);
@@ -3382,7 +3446,7 @@ case 120:
                                             }
 break;
 case 121:
-//#line 2006 "gramatica.y"
+//#line 1946 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una RESTA");
 
                                              ArbolSintactico arbIzq = (ArbolSintactico) val_peek(2);
@@ -3523,13 +3587,13 @@ case 121:
                                             }
 break;
 case 122:
-//#line 2144 "gramatica.y"
+//#line 2084 "gramatica.y"
 {yyval = val_peek(0); 
 
                         }
 break;
 case 123:
-//#line 2149 "gramatica.y"
+//#line 2089 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una MULTIPLICACION");
                              
 
@@ -3674,7 +3738,7 @@ case 123:
                             }
 break;
 case 124:
-//#line 2291 "gramatica.y"
+//#line 2231 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una MULTIPLICACION");
                              
                                             NodoHoja factor = (NodoHoja) val_peek(1);
@@ -3756,7 +3820,7 @@ case 124:
                             }
 break;
 case 125:
-//#line 2371 "gramatica.y"
+//#line 2311 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una DIVISION");
                             ArbolSintactico arbIzq = (ArbolSintactico) val_peek(2);
                             ArbolSintactico arbDer = (ArbolSintactico) val_peek(0);
@@ -3878,7 +3942,7 @@ case 125:
                     }
 break;
 case 126:
-//#line 2490 "gramatica.y"
+//#line 2430 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se detecto una MULTIPLICACION");
                              
                                             NodoHoja factor = (NodoHoja) val_peek(1);
@@ -3960,11 +4024,11 @@ case 126:
             }
 break;
 case 127:
-//#line 2569 "gramatica.y"
+//#line 2509 "gramatica.y"
 { yyval = val_peek(0); }
 break;
 case 128:
-//#line 2570 "gramatica.y"
+//#line 2510 "gramatica.y"
 {    System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio un FACTOR con CONVERSION DE TIPO");
                                     
                                 NodoHoja factor = (NodoHoja) val_peek(1);
@@ -3986,9 +4050,35 @@ case 128:
                             }
 break;
 case 129:
-//#line 2591 "gramatica.y"
+//#line 2531 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un Identificador con MENOS_MENOS");
-                        String lexema = "";
+                        String auxIdentificador = "";
+                        for(String s: auxDerAsig){
+                            if( auxIdentificador.equals("")){
+                                auxIdentificador = s;
+                            }else{
+                                auxIdentificador = auxIdentificador +"."+s;
+                            }
+                        }
+                        auxIdentificador = auxIdentificador+"#"+ambitoActual;
+                        Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(auxIdentificador);
+                        if(simbolo.getId() != -1){
+                            simbolo.setUsada(true);
+                            simbolo.setValorAsignado(true);
+                            NodoHoja hoja = new NodoHoja(simbolo.getLexema()+"--");
+                            yyval = (ArbolSintactico) hoja;
+                        }else{
+                            String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+auxIdentificador+ " no declarada";
+                            erroresSemanticos.add(err);
+                            yyval = (ArbolSintactico) nodoError;
+                        }
+                        auxDerAsig.clear();
+                        if(auxTipoAsig.equals("")){
+                            /*Esto me sirve para resolver la comparacion del parametro de una funcion*/
+                            auxTipoAsig = simbolo.getTipo();
+                        }
+                        
+                        /*
                         for(String s : auxDerAsig){
                             if(lexema.equals("")){
                                 lexema = s;
@@ -4004,21 +4094,21 @@ case 129:
 
                             System.out.println("ANTES DEL MENOS MENOS: " + TablaDeSimbolos.obtenerSimbolo(lexema).getLexema() + " vale: " + TablaDeSimbolos.obtenerSimbolo(lexema).getValor());
                             NodoHoja hoja = new NodoHoja(lexema+"--");
-                            yyval = hoja;
+                            $$ = hoja;
                            
                         }else{
                             String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+lexema+ " no declarada";
                             erroresSemanticos.add(err);
-                            yyval = (ArbolSintactico) nodoError;
+                            $$ = (ArbolSintactico) nodoError;
                         }
                         if(auxTipoAsig.equals("")){
                             auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-                        }
+                        }*/
 
                         }
 break;
 case 130:
-//#line 2620 "gramatica.y"
+//#line 2586 "gramatica.y"
 {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IDENTIFICADOR ");
             String lexema = "";
             /* for(String s : auxDerAsig){*/
@@ -4026,13 +4116,39 @@ case 130:
               String auxAmbito = "";
               String auxIdentificador = "";
               String restoAmbito = "";
-                if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("clase")){
-                    /*QUIERE DECIR QUE ES UN ATRIBUTO DE UNA CLASE QUE HEREDA Y NO UN OBJETO DE CLASE*/
+              for(String s: auxDerAsig){
+                if( auxIdentificador.equals("")){
+                    auxIdentificador = s;
+                }else{
+                    auxIdentificador = auxIdentificador +"."+s;
+                }
+              }
+              auxIdentificador = auxIdentificador+"#"+ambitoActual;
+              Simbolo simbolo = TablaDeSimbolos.obtenerSimbolo(auxIdentificador);
+              if(simbolo.getId() != -1){
+                simbolo.setUsada(true);
+                simbolo.setValorAsignado(true);
+                NodoHoja hoja = new NodoHoja(simbolo.getLexema());
+                yyval = (ArbolSintactico) hoja;
+              }else{
+                String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+auxIdentificador+ " no declarada";
+                erroresSemanticos.add(err);
+                yyval = (ArbolSintactico) nodoError;
+              }
+              auxDerAsig.clear();
+              if(auxTipoAsig.equals("")){
+                /*Esto me sirve para resolver la comparacion del parametro de una funcion*/
+                auxTipoAsig = simbolo.getTipo();
+              }
+
+              
+                /* if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("clase")){
+                    //QUIERE DECIR QUE ES UN ATRIBUTO DE UNA CLASE QUE HEREDA Y NO UN OBJETO DE CLASE
                     for(int i = auxDerAsig.size()-1;i>=0;i--){
                         System.out.println("VALOR EN i= " + i + " es: "+ auxDerAsig.get(i));
-                        /*System.out.println("EL LEXEMA DEL DERECHO DE LA ASIGNACION HASTA AHORA ES: " + lexema + " El identificador que puedo agregar es (s+'#'+ambitoActual): " + auxDerAsig.get(i)+"#"+ambitoActual);*/
+                        //System.out.println("EL LEXEMA DEL DERECHO DE LA ASIGNACION HASTA AHORA ES: " + lexema + " El identificador que puedo agregar es (s+'#'+ambitoActual): " + auxDerAsig.get(i)+"#"+ambitoActual);
                         if(lexema.equals("")){
-                            /*lexema = auxDerAsig.get(i);*/
+                            //lexema = auxDerAsig.get(i);
                             lexema = "nada";
                             auxIdentificador = auxDerAsig.get(i);
                         }else{
@@ -4065,7 +4181,7 @@ case 130:
                     lexema = simboloAux.getLexema();
                 }else{
                     if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("identificador")){
-                        /* QUIERE DECIR QUE EL PRIMER OBJETO ES EL NOMBRE DE UN OBJETO DE CLASE, POR EJEMPLO, c1 objt1,*/
+                        // QUIERE DECIR QUE EL PRIMER OBJETO ES EL NOMBRE DE UN OBJETO DE CLASE, POR EJEMPLO, c1 objt1,
                         for(String s : auxDerAsig){
                             if(lexema.equals("")){
                                 lexema = s;
@@ -4076,52 +4192,52 @@ case 130:
                         lexema = lexema +"#"+ambitoActual;
                     }
                 } 
-            /* auxIdentificador: primer id*/
-            /* auxAmbito: final del ambito del identificador*/
-            /* ambitoMedio: El ambito actual*/
-            /* restoAmbito: resto de identificadores*/
+            // auxIdentificador: primer id
+            // auxAmbito: final del ambito del identificador
+            // ambitoMedio: El ambito actual
+            // restoAmbito: resto de identificadores
             
 
             auxDerAsig.clear();
-            /*lexema = lexema + "#"+ambitoActual;*/
+            //lexema = lexema + "#"+ambitoActual;
            
             System.out.println("El lexema final es: " + lexema);
             Simbolo aux = TablaDeSimbolos.obtenerSimbolo(lexema);
             if(aux.getId() != -1){
                 aux.setUsada(true);
                 NodoHoja hoja = new NodoHoja(aux.getLexema());
-                yyval = (ArbolSintactico) hoja;
+                $$ = (ArbolSintactico) hoja;
             }else{
-                String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+val_peek(0).sval+ " no declarada";
+                String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+$1.sval+ " no declarada";
                 erroresSemanticos.add(err);
-                yyval = (ArbolSintactico) nodoError;
+                $$ = (ArbolSintactico) nodoError;
             }
             if(auxTipoAsig.equals("")){
-                /*Esto me sirve para resolver la comparacion del parametro de una funcion*/
+                //Esto me sirve para resolver la comparacion del parametro de una funcion
                 auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-            }
+            }*/
         }
 break;
 case 131:
-//#line 2702 "gramatica.y"
+//#line 2694 "gramatica.y"
 { yyval = val_peek(0);}
 break;
 case 132:
-//#line 2705 "gramatica.y"
+//#line 2697 "gramatica.y"
 { 
                                     auxDerAsig.add(val_peek(0).sval);
                                     yyval = val_peek(0);
                                 }
 break;
 case 133:
-//#line 2709 "gramatica.y"
+//#line 2701 "gramatica.y"
 { 
                 auxDerAsig.add(val_peek(0).sval);
                 yyval = val_peek(0);
                 }
 break;
 case 134:
-//#line 2716 "gramatica.y"
+//#line 2708 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una CONSTANTE POSITIVA");
             if (!val_peek(0).sval.contains(String.valueOf(".")))
                 constantePositiva(val_peek(0).sval);
@@ -4133,7 +4249,7 @@ case 134:
             }
 break;
 case 135:
-//#line 2725 "gramatica.y"
+//#line 2717 "gramatica.y"
 {System.out.println("Linea: " + AnalizadorLexico.getLineaActual() + ". Se reconocio una CONSTANTE NEGATIVA");
                constanteNegativa(val_peek(0).sval);
                yyval = (ArbolSintactico) new NodoHoja("-" + val_peek(0).sval); /* padre ------- $1*/
@@ -4142,7 +4258,7 @@ case 135:
                 }
              }
 break;
-//#line 4069 "Parser.java"
+//#line 4185 "Parser.java"
 //########## END OF USER-SUPPLIED ACTIONS ##########
     }//switch
     //#### Now let's reduce... ####

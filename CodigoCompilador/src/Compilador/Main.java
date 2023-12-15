@@ -27,9 +27,9 @@ public class Main {
 		
 		
 
-		String datoIngresado = "menosmenos_float_REVISAR.txt";
+		String datoIngresado = "prueba.txt";
 		
-		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\Aritmetica\\"+ datoIngresado);	
+		AnalizadorLexico.setLector(Paths.get("").normalize().toAbsolutePath()+"\\src\\Testeos\\"+ datoIngresado);	
 		
 		
 		parser.run();		
@@ -43,6 +43,8 @@ public class Main {
       	
       	System.out.println("");
       	System.out.println("");
+      	
+      	
       	
       	ArrayList<NodoControl> clases_funcs = Parser.get_arboles();
 		

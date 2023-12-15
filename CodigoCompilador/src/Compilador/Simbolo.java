@@ -1,5 +1,6 @@
 package Compilador;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class Simbolo {
@@ -12,19 +13,107 @@ public class Simbolo {
 	private String valor = "";
 	private boolean valorAsignado = false;
 	private boolean usada = false;
+	private String direccionMetodo = "";
+	private boolean esObjetoClase = false;
+	private ArrayList<String> listaAQuienLeDebo = new ArrayList<>();  // A
+	private ArrayList<String> listaQuienMeDebe = new ArrayList<>(); // B
 	
 	private boolean claseAPosterior = false;
 	private Simbolo parametro = null;
 	
-	private ArrayList<String> nombreMetodo = new ArrayList<String>(); 
+	private ArrayList<String> variablesMetodo = new ArrayList<String>();  //atributos que estan dentro del metodo
 	
-	public void agregarNombreMetodo(String nombre) {
-		nombreMetodo.add(nombre);
+	private ArrayList<String> atributosTotalesClase = new ArrayList<String>(); //lista con todos los atributos de la clase
+	
+
+	
+	
+	
+	
+	public void mostrarListaAtributos() {
+		System.out.println("Lista De Simbolo "+lexema+": ");
+		System.out.println(atributosTotalesClase);
 	}
 	
-	public ArrayList<String> getNombreMetodo() {
-		return nombreMetodo;
+	
+	
+	
+	public ArrayList<String> getListaAQuienLeDebo() {
+		return listaAQuienLeDebo;
 	}
+
+
+	public void agregarAQuienLeDebo(ArrayList<String> lis ) {
+		
+		this.listaAQuienLeDebo.addAll(lis);
+	}
+
+	public void agregarAQuienLeDebo(String clas) {
+		System.out.println("------------------------------------------------- A SIMBOLO " + lexema + " LE VOY A AGREGAR: " + clas);
+		this.listaAQuienLeDebo.add(clas);
+	}
+
+
+
+
+	public ArrayList<String> getListaQuienMeDebe() {
+		return listaQuienMeDebe;
+	}
+
+
+
+
+	public void agregarQuienMeDebe(String clas) {
+		this.listaQuienMeDebe.add(clas);
+	}
+
+	public void agregarQuienMeDebe(ArrayList<String> lis) {
+		this.listaQuienMeDebe.addAll(lis);
+	}
+
+
+	public ArrayList<String> getVariablesMetodo() {
+		return variablesMetodo;
+	}
+
+	public void setVariablesMetodo(ArrayList<String> variablesMetodo) {
+		this.variablesMetodo = variablesMetodo;
+	}
+	
+	public void agergarListaVariablesMetodo(ArrayList<String> variablesMetodo) {
+		this.variablesMetodo.addAll(variablesMetodo);
+	}
+
+	public ArrayList<String> getAtributosTotalesClase() {
+		return atributosTotalesClase;
+	}
+
+	public void setAtributosTotalesClase(ArrayList<String> atributosTotalesClase) {
+		this.atributosTotalesClase = atributosTotalesClase;
+	}
+	
+	public void agregarAtributosTotalesClase(ArrayList<String> atributosTotalesClase) {
+		this.atributosTotalesClase.addAll(atributosTotalesClase);
+	}
+
+	public boolean getEsObjetoClase() {
+		return esObjetoClase;
+	}
+
+	public void setEsObjetoClase(boolean esObjetoClase) {
+		this.esObjetoClase = esObjetoClase;
+	}
+
+	
+	
+	public String getDireccionMetodo() {
+		return direccionMetodo;
+	}
+	
+	public void setDireccionMetodo(String dir) {
+		direccionMetodo = dir;
+	}
+	
 	
 	public Simbolo(String lexema, int id) {
 		super();
@@ -120,10 +209,10 @@ public class Simbolo {
 
 	public String ToString() {
 		if(parametro != null) {
-			String simbolo = " SIMBOLO: Lexema: [" + lexema + "] ID: [" + id + "] TIPO: [" + tipo + "] USO: [" + uso +"] HEREDA: ["+ hereda +"] PARAMETRO: [" + parametro.ToString() +"] VALOR: ["+valor+"]";
+			String simbolo = " SIMBOLO: Lexema: [" + lexema + "] ID: [" + id + "] TIPO: [" + tipo + "] USO: [" + uso +"] HEREDA: ["+ hereda +"] PARAMETRO: [" + parametro.ToString() +"] VALOR: ["+valor+"] DIRECCIONMETODO: ["+direccionMetodo+"]";
 			return simbolo;
 		}else {
-			String simbolo = " SIMBOLO: Lexema: [" + lexema + "] ID: [" + id + "] TIPO: [" + tipo + "] USO: [" + uso +"] HEREDA: ["+ hereda +"] VALOR: ["+valor+"]";
+			String simbolo = " SIMBOLO: Lexema: [" + lexema + "] ID: [" + id + "] TIPO: [" + tipo + "] USO: [" + uso +"] HEREDA: ["+ hereda +"] VALOR: ["+valor+"] DIRECCIONMETODO: ["+direccionMetodo +"]";
 			return simbolo;
 		}
 	}
