@@ -11,15 +11,7 @@
 	var7 = var4--,
 	var8 = var1---2_l,
 	
-	WHILE(var1 !! 20_l)DO{
-		PRINT %es distinto%,
-	},
 	
-	IF(var2 < var1){
-		var4  = 1_l,
-	}ELSE{
-		var4 = 2_l,
-	}END_IF,
 	
 	
 	VOID funcion1(LONG var10){

@@ -1,5 +1,5 @@
 {
-	LONG _var1; _var2; var3,
+LONG _var1; _var2; var3,
 	FLOAT _var4,
 	UINT _var5,
 	
@@ -55,16 +55,4 @@
 		PRINT %_var1 es igual a 30%,
 	} END_IF,
 	
-	CLASS c1 {
-		LONG long1,
-	},
-	
-	c1 clase1,
-	
-	clase1.long1 = 10_l,
-	
-	WHILE (clase1.long1 > 5_l) DO{
-		_f1(clase1.long1),
-		clase1.long1 = clase1.long1-1_l,
-	},
 }

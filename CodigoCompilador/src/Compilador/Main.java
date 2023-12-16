@@ -22,6 +22,7 @@ public class Main {
 
 	public static void main(String[] args) throws IOException {
 		// TODO Auto-generated method stub	
+		/*
 		Parser parser = new Parser();
 		AnalizadorLexico analizador = new AnalizadorLexico();
 		
@@ -140,9 +141,9 @@ public class Main {
 		}else {
 			System.out.println("EL ASSEMBLER NO SE PUDO GENERAR PORQUE HAY ERRORES");
 		}
+		*/
 		
 		
-		/* MAIN A ENTREGAR
 		Scanner scanner = new Scanner(System.in);
 		
 		
@@ -314,8 +315,7 @@ public class Main {
 
 		 
 		scanner.close();
-        */
-
+      
     }	
 	
 }

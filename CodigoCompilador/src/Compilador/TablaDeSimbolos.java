@@ -73,7 +73,6 @@ public class TablaDeSimbolos {
 	    	if(tabla.containsKey(llaveActual)) {
 	    		Simbolo simbol = tabla.get(llaveActual);
 	    		simbol.setLexema(nuevaLlave);
-	    		System.out.println("DENTRO DE MODIFICAR LEXEMA----------------------------"+ simbol.ToString() + simbol.getClaseAPosterior());
 	    		tabla.remove(llaveActual);
 	    		tabla.put(nuevaLlave, simbol);
 	    	}

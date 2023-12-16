@@ -26,7 +26,13 @@ public class GeneradorAssembler {
 		contenidoTabla += "$errorDivisionPorCero db \" Error Assembler:No se puede realizar la division por cero\" , 0 \n";  
 		contenidoTabla += "$errorOverflowMultEntero db \" Error Assembler: overflow en producto de enteros \", 0 \n";
 		contenidoTabla += "$errorOverflowSumaFlotantes db \" Error Assembler: overflow en la suma de flotantes \", 0 \n";
-		
+		contenidoTabla += "$constMaximoFloat dd 3.40282347E+38 \n";
+		contenidoTabla += "$auxLongCompIzq dd ? \n";
+		contenidoTabla += "$auxLongCompDer dd ? \n";
+		contenidoTabla += "$auxUintCompIzq dw ? \n";
+		contenidoTabla += "$auxUintCompDer dw ? \n";
+		contenidoTabla += "$auxFloatCompIzq dd ? \n";
+		contenidoTabla += "$auxFloatCompDer dd ? \n";
 		
 		for (String llave : TablaDeSimbolos.obtenerTablaDeSimbolos().keySet()) {
             Simbolo simbolo = tabla.get(llave);

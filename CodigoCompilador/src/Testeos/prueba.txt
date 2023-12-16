@@ -1,117 +1,25 @@
 {
-	LONG num1,
+	LONG var1;var2;var3,
 	
-	num1 = 400_l,
+	var1 = 10_l,
+	var2 = var1 *2_l,
+	var3 = var2 + var1,
 	
-	CLASS c1{
-		LONG var1,
-		CLASS c5{
-			LONG var5,
-			VOID met5(){
-				var5 = var5 *10_l,
-				IF(var5 == 500_l){
-					PRINT %var5 es 500%,
-				}ELSE{
-					PRINT %var5 no es 500%,
-				}END_IF,
-				num1 = var5 + num1,
-				RETURN,
-			},
-		},
-		
-		c5 objt5,
-	},
-	
-	CLASS c2{
-		LONG var2,
-		VOID met1(){
-			var2 = var2 + 20_l,
-			RETURN,
-		},
-		c1,
-	},
-	
-	CLASS c3{
-		LONG var3,
-		c2,
-		c2 objt2,
-	},
-	
-	c3 objt3,
-	
-	objt3.var3 = 10_l,
-	objt3.c2.var2 = 0_l,
-	
-	IF(objt3.c2.var2 == 0_l){
-		PRINT % objt3 var2 es igual a 0%,
-	}END_IF,
-	
-	objt3.c2.c1.var1 = 30_l,
-	
-	objt3.c2.met1(),
-	
-	IF(objt3.c2.var2 == 20_l){
-		PRINT % VAR ES 20%,
+	IF(var1 == 10_l){
+		PRINT %var1 es 10%,
 	}ELSE{
-		PRINT %no es%,
+		PRINT %var1 es 10%,
 	}END_IF,
 	
+	IF(var2 == 20_l){
+		PRINT %var1 es 20%,
+	}ELSE{
+		PRINT %var1 es 20%,
+	}END_IF,
 	
-	objt3.objt2.var2 = 0_l,
-	objt3.objt2.met1(),
-
-	IF(objt3.c2.c1.var1 == 30_l){
+	IF(var3 == 30_l){
 		PRINT %var1 es 30%,
-	}END_IF,
-	
-	IF(objt3.objt2.var2 == 20_l){
-		PRINT % VAR OBJETO ES 20%,
 	}ELSE{
-		PRINT %no es%,
-	}END_IF,
-	
-	objt3.c2.met1(),
-	
-	IF(objt3.c2.var2 == 40_l){
-		PRINT % VAR ES 40%,
-	}END_IF,
-	
-	
-	objt3.c2.c1.var1 = 10_l,
-	objt3.c2.c1.objt5.met5(),
-	
-	objt3.c2.c1.objt5.var5 = 50_l,
-	
-	IF(objt3.c2.c1.objt5.var5 == 50_l){
-		PRINT %var5 es 50 al final%,
-	}ELSE{
-		PRINT %var5 no es 50 al final %,
-	}END_IF,
-	
-	LONG var4;var5,
-	var4 = 90_l,
-	var5 = var4 + 10_l,
-	IF(var5 == 100_l){
-		PRINT %var5 main es 100%,
-	}END_IF,
-	
-	IF(num1 == 900_l){
-		PRINT %num1 es 900%,
-	}ELSE{
-		PRINT %num1 no es 900%,
-	}END_IF,
-	
-	FLOAT float1;float2,
-	
-	float1 = 10.0,
-	
-	var4 = 50_l,
-	
-	float2 = float1 + TOF(var4),
-	
-	IF(float2 == 60.0){
-		PRINT %float2 es igual a 60%,
-	}ELSE{
-		PRINT %float2 no es igual a 60%,
+		PRINT %var1 es 30%,
 	}END_IF,
 }

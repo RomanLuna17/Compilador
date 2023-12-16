@@ -52,7 +52,7 @@
 		}END_IF,
 		
 		WHILE (var1 > 50_l)DO{
-			var1 = 60_l - 5_l,
+			var1 = var1 - 5_l,
 			PRINT %le reste  a var1%,
 		},
 		

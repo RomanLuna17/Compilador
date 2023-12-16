@@ -1,24 +1,24 @@
 {
-	LONG long1,
+LONG long1,
 
 	FLOAT float1,
 
-	long1 = -112_l,
+	long1 = 112_l,
 	float1 = 120.0,
 	
 	VOID funcion1(FLOAT float_var){
 		float1 = float_var,
 		PRINT %entro a la funcion1%,
-		IF(float1 == -112.0){
-			PRINT %lo es menos 112%,
+		IF(float1 == 112.0){
+			PRINT %lo es 112%,
 		}END_IF,
 		RETURN,
 	},
 	
-	funcion1(-112.0),
+	funcion1(112.0),
 	
-	IF(float1 == -112.0){
-		PRINT %lo es menos 112%,
+	IF(float1 == 112.0){
+		PRINT %lo es 112%,
 	}END_IF,
 	
 	FLOAT g,
@@ -34,7 +34,4 @@
 	IF(g == 19.0){
 		PRINT %lo es 19%,
 	}END_IF,
-	
-	
-	*{No funciona el TOF para funcion o almenos no le manda el valor correcto y da error de tipos para comparaciones}*
 }

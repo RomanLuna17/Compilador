@@ -61,18 +61,15 @@ sentencias_declarativas: declaracion_variables ','
 
 declaracion_variables: tipo lista_de_variables {
                                                     for(String s : lista_identificadores){
-                                                        System.out.println("LEXEMA: " + s);
-                                                        if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
+                                                       if(!TablaDeSimbolos.existeSimboloAmbitoActual(s+"#"+ambitoActual, "nulo")){
                                                             TablaDeSimbolos.setTipo($1.sval, s);
                                                             TablaDeSimbolos.modificarLexema(s, s+"#"+ambitoActual);
                                                             Simbolo simbolo = TablaDeSimbolos.obtenerSimboloSinAmbito(s + "#"+ambitoActual);
                                                             simbolo.setUso("identificador");
                                                             simbolo.setValorAsignado(true);
                                                             simbolo.setUsada(true);
-                                                            System.out.println("Estoy agergando una variable: " + simbolo.getLexema() + " auxiliar_clase vale: "+auxiliar_clase + " la profundidad es: " + auxiliar_profundidad);
                                                             if(!auxiliar_clase.equals("") && auxiliar_profundidad == 0){
-                                                                System.out.println("cumpli las condiciones entonces entre al if y me agregue a la lista");
-                                                                auxiliar_lista_clase.add(simbolo.getLexema());
+                                                               auxiliar_lista_clase.add(simbolo.getLexema());
                                                                 
                                                             }
                                                         }else{
@@ -224,7 +221,6 @@ cuerpo_de_la_funcion: cuerpo_de_la_funcion sentencias_de_funcion
 
 sentencias_de_funcion: sentencia_declatariva_especificas 
                      | sentencias_ejecutables { generarArbolFunc((ArbolSintactico) $1);
-                                                System.out.println("El subArbol que estoy creando es: ");
                                                 ArbolSintactico arb = (ArbolSintactico) $1;
                                                 arb.recorrerArbol("-");
                                               }
@@ -280,11 +276,9 @@ declaracion_clase_hereda: ID {  if(auxVarClases.equals("")){
                                             }
 
                                         }else{
-                                            System.out.println("HERENCIA: " + simboloTipo.getLexema() + " posterior: " + simboloTipo.getClaseAPosterior() + " auxiliar_clase: " + auxiliar_clase);
                                             simboloTipo.agregarAQuienLeDebo(auxiliar_clase);
                                             TablaDeSimbolos.obtenerSimbolo(auxiliar_clase).agregarQuienMeDebe(simboloTipo.getLexema());
-                                            System.out.println("LISTA HASTA AHORA: " + simboloTipo.getListaAQuienLeDebo());
-                                        }
+                                         }
 
                                     }else{
                                         String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: No se declaro la clase " + lexema;
@@ -352,22 +346,19 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                                                 
 
                                                                 if(!pilaAuxiliarClases.isEmpty()){
-                                                                    System.out.println("TERMINE LA DECLARACION DE LA CLASE QUE ESTABA ADENTRO DE OTRA. AHORA PUEDO SEGUIR CON LA CLASE PADRE: " + pilaAuxiliarClases);
                                                                     ContenedorClase cont = pilaAuxiliarClases.pop();
                                                                     auxiliar_clase = cont.getLexema();
                                                                     auxiliar_lista_clase.clear();
                                                                     auxiliar_lista_clase.addAll(cont.getListaAtributos());
                                                                     auxiliar_profundidad = cont.getContador();
                                                                 }else{
-                                                                    System.out.println("TERMINE CON LA DECLARACION DE CLASES Y LA PILA DE AUXILIARES ESTABA VACIA");
                                                                     auxiliar_clase ="";
                                                                     auxiliar_lista_clase.clear();
                                                                     auxiliar_profundidad = 0;
                                                                 }
 
                                                                 Simbolo simbolClase = TablaDeSimbolos.obtenerSimbolo(identClase);
-                                                                System.out.println("LA CLASE: " + simboloClase.getLexema() + " POSTERIOR: " +simboloClase.getClaseAPosterior()+" LE DEBO: " + simboloClase.getListaAQuienLeDebo() +" ME DEBE: " + simboloClase.getListaQuienMeDebe());
-
+                                                               
                                                                 if(simboloClase.getClaseAPosterior()){
                                                                     if(!simboloClase.getListaAQuienLeDebo().isEmpty()){
                                                                         CreacionVariablesPosteriori(simboloClase.getLexema(), simboloClase.getAtributosTotalesClase());
@@ -414,7 +405,6 @@ declaracion_clases: encabezado_clase '{' cuerpo_clase '}' {System.out.println("L
                                         ambitoActual = ambitoActual.substring(0, indice);
                                         //TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setClasePosterior(true);
                                         //TablaDeSimbolos.obtenerSimboloSinAmbito($1.sval).setUso("clase");
-                                         System.out.println("SIMBOLO FINAL DEC POSTERIOR: " + TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).ToString() + " LISTA DEBO: " +TablaDeSimbolos.obtenerSimbolo($1.sval +"#"+ ambitoActual.substring(0, indiceLexClase)).getListaAQuienLeDebo() );
                                          
                                     }
                   | encabezado_clase '{' cuerpo_clase error {agregarError("Linea: " + AnalizadorLexico.getLineaActual() + ". Error sintactico.Falta } al final de la clase");}
@@ -428,8 +418,7 @@ encabezado_clase: CLASS ID {
                         String lexema = $2.sval +"#"+ ambitoActual;
                         
                         if(!auxiliar_clase.equals("")){
-                            System.out.println("####################### ESTOY AL PRINCIPIO DE LA DECLARACION DE UNA CLASE, LA LISTA DE AUXILIAR_CLASE HASTA AHORA ES: " + auxiliar_lista_clase);
-                            ContenedorClase nuevoCont = new ContenedorClase(auxiliar_clase, auxiliar_lista_clase, auxiliar_profundidad);
+                           ContenedorClase nuevoCont = new ContenedorClase(auxiliar_clase, auxiliar_lista_clase, auxiliar_profundidad);
                             pilaAuxiliarClases.push(nuevoCont);    
                             auxiliar_clase = "";
                             auxiliar_lista_clase.clear();
@@ -475,7 +464,6 @@ declaracion_objetos_clase: ID list_objts_clase  {System.out.println("Linea: " + 
                                                                     TablaDeSimbolos.obtenerSimbolo(s1).agregarAtributosTotalesClase(lexemasListaObjt);
 
                                                                 }
-                                                                System.out.println("LEXEMA LISTA OBJTEOS: " + lexemasListaObjt);
                                                                 simbolo.agregarAtributosTotalesClase(lexemasListaObjt);
                                                                 lexemasListaObjt.add(simbolo.getLexema());
 
@@ -549,7 +537,6 @@ sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {
                                                                 String nombreObjtClase = "";
                                                                 
                                                                 if(lista_identificadores.size() == 1){
-                                                                    System.out.println("ES UNA FUNCION CON UN PARAMETRO");
                                                                     lexemaIdentificadorFun = lista_identificadores.get(0)+"#"+ambitoActual;
                                                                     Simbolo simboloFun = TablaDeSimbolos.obtenerSimbolo(lexemaIdentificadorFun);
                                                                     if(simboloFun.getId() != -1 & simboloFun.getParametro() != null){
@@ -557,7 +544,6 @@ sentencias_ejecucion_funcion: id_asig '(' expr_aritmetic ')' {
                                                                         if(simboloFun.getParametro().getTipo().equals(auxTipoAsig)){
                                                                             simboloFun.setUsada(true);
                                                                             NodoHoja id_func = new NodoHoja(simboloFun.getLexema());
-                                                                            System.out.println("creo el arbol y lo retorno");
                                                                             $$ = (ArbolSintactico) new NodoComun("Ejecucion_func",id_func,(ArbolSintactico) $3);
                                                                         }else{
                                                                             String err = "Linea: " + AnalizadorLexico.getLineaActual() + ". Error Semantico: El tipo del parametro es incorrecto";
@@ -652,92 +638,7 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                         String primer = "";
                                                         String ambitoAnt = "";
                                                         String ambitoVariable = ambitoActual;
-                                                        System.out.println("AMBITO: " + ambitoActual);
-                                                        /*
-                                                        for(int i = 0; i < lista_identificadores.size();i++){
-                                                            System.out.println("IDENTIFICADOR: " + lista_identificadores.get(i));
-                                                        }
-                                                        //VERIFICO SI LA LISTA ES DISTINTO DE 0. SI ES DISTINTO DE 0 QUIERE DECIR QUE DEL LADO IZQUIERDO ESTA EL ID
-                                                        if(lista_identificadores.size() > 0){
-                                                            //VERIFICO SI LA LISTA ES MAYOR A 1. SI ES MAYOR A 1 QUIERE DECIR QUE ES UN IDENTIFICADOR COMPUESTO, POR EJ, CLASE1.VAR1
-                                                            if(lista_identificadores.size() > 1){
-                                                                String lexemaAuxFinAmbito =""; //aux usado para el ambito
-                                                                Simbolo simboloAnt = null; //este simbolo es el anterior, por ejemplo en clase1.a.num1 puede ser simboloAnt: clase1
-                                                                //RECORRO LA LISTA DE IDENTIFICADORES
-                                                                for(int i = 0; i< lista_identificadores.size();i++){
-                                                                    System.out.println("LISTA ID TIENE: " + lista_identificadores.get(i));
-                                                                    if(lexema.equals("")){
-                                                                        //ES EL PRIMER ELEMENTO DEL LEXEMA
-                                                                        lexema = lista_identificadores.get(i); 
-                                                                        simboloAnt = TablaDeSimbolos.obtenerSimbolo(lexema+"#"+ambitoActual);
-                                                                        lexemaAuxFinAmbito = TablaDeSimbolos.obtenerSimbolo(lexema+"#"+ambitoActual).getTipo();
-                                                                    }else{
-                                                                        //LEXEMA YA TIENE ALGUN VALOR
-                                                                        Simbolo simboloNuevo = null;
-                                                                        System.out.println("ESTO BUSCO COMO NUEVOSIMBOLO EN ASIG: " + lista_identificadores.get(i)+"#"+ambitoActual+"#"+lexemaAuxFinAmbito);
-                                                                        simboloNuevo = TablaDeSimbolos.obtenerSimbolo(lista_identificadores.get(i)+"#"+ambitoActual+"#"+lexemaAuxFinAmbito);   //lexemaAuxFinAmbito es a
-                                                                        //SI EL SIMBOLO EXISTE EN LA TABLA DE SIMBOLOS
-                                                                        if(simboloNuevo.getId() != -1){   
-                                                                            //SI EL SIMBOLO ES UNA CLASE
-                                                                            if(simboloNuevo.getUso().equals("clase")){ //si es una clase
-                                                                                //simboloTipoAnt SE REFIERE AL TIPO DEL SIMBOLO ANTERIOR, POR EJ, EL SIMBOLO ANT ES CLASE1 Y SU TIPO ES C1, ENTONCES OBTENGO EL SIMBOLO DE C1
-                                                                                Simbolo simboloTipoAnt = null;
-                                                                                //SI EL SIMBOLO ANTERIOR ES UN OBJETO DE UNA CLASE, POR EJEMPLO, CLASE1
-                                                                                if(simboloAnt.getUso().equals("identificador")){
-                                                                                    simboloTipoAnt = TablaDeSimbolos.obtenerSimbolo(simboloAnt.getTipo()+"#"+ambitoActual); //aca lo que hago es obtener el identificador de la tabla de la clase que es el identificador anterior
-                                                                                }else{
-                                                                                    //SINO QUIERE DECIR QUE ES C1
-                                                                                    simboloTipoAnt = simboloAnt;
-                                                                                }
-                                                                                //SI EL SIMBOLO ANTERIOR HEREDA DEL NUEVO SIMBOLO
-                                                                                if(simboloTipoAnt.getHereda().equals(simboloNuevo.getLexema()) && !simboloNuevo.getClaseAPosterior()){
-                                                                                    //AGREGO EL NOMBRE AL LEXEMA Y SIGO PROCESANDO
-                                                                                     lexema = lexema+"."+lista_identificadores.get(i);
-                                                                                     lexemaAuxFinAmbito = lista_identificadores.get(i);
-                                                                                     simboloAnt = simboloNuevo;
-                                                                                }else{
-                                                                                    if(!simboloNuevo.getClaseAPosterior()){
-                                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: la clase no hereda de "+simboloNuevo.getLexema();
-                                                                                        erroresSemanticos.add(err);
-                                                                                        $$ = nodoError;
-                                                                                        break;
-                                                                                    }else{
-                                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Error de Forward declaration en la clase "+simboloNuevo.getLexema();
-                                                                                        erroresSemanticos.add(err);
-                                                                                        $$ = nodoError;
-                                                                                        break;
-                                                                                    }
-                                                                                }
-
-                                                                            }else{ 
-                                                                                //SI EL SIMBOLO NO ES UNA CLASE, ENTONCES QUIERE DECIR QUE ES EL ULTIMO IDENTIFICADOR, POR EJEMPLO, SI EL IDENTIFICADOR
-                                                                                //ORIGINAL ERA CLASE1.CLASE1.VARIABLE1, EN ESTE ESLE LO QUE HAGO ES AGREGAR VARIABLE1 AL LEXEMA                                                                     
-                                                                                lexema = lexema+"."+lista_identificadores.get(i)+"#"+ambitoActual; //Aca hago clase1.num1#global. Asi la voy a guardar en la Tabla de simbolos
-                                                                                TablaDeSimbolos.agregarSimbolo(lexema,Constantes.ID);
-                                                                                //CREO EL NUEVO SIMBOLO Y SETEO SUS ATRIBUTOS
-                                                                                Simbolo nuevo = TablaDeSimbolos.obtenerSimbolo(lexema);
-                                                                                nuevo.setTipo(simboloNuevo.getTipo());
-                                                                                nuevo.setUso(simboloNuevo.getUso());
-                                                                                nuevo.setValor(simboloNuevo.getValor());
-                                                                                
-                                                                             }
-                                                                        }else{
-                                                                            String err = "Linea: "  + AnalizadorLexico.getLineaActual()+". Error Semantico: variable no declarada";
-                                                                            erroresSemanticos.add(err);
-                                                                            $$ = nodoError;
-                                                                            break;
-                                                                        }
-                                                                    } 
-                                                                }
-                                                                
-                                                              
-
-
-                                                            }else{
-                                                                
-                                                                lexema = lista_identificadores.get(0)+"#"+ambitoActual;
-                                                            }
-                                                        }*/
+                                                        
                                                 for(String s : lista_identificadores){
                                                     if(lexema.equals("")){
                                                         lexema = s;
@@ -784,7 +685,6 @@ sentencia_asignacion: id_asig '=' valor_asignacion {System.out.println("Linea: "
                                                     }
 
                                                     //SI LOS TIPOS DE AMBOS LADOS DE LA ASIGNACION COINCIDEN
-                                                    //System.out.println("simbol: " + simbol.getTipo + " auxTipoAsig "+ auxTipoAsig + " tipoIzq: " + aux);
                                                     if(simbol.getTipo().equals(aux) || auxTipoAsig.equals(aux) || auxTof){ 
                                                         if(TablaDeSimbolos.obtenerSimbolo(arb.getLex()).getId() != -1 && TablaDeSimbolos.obtenerSimbolo(arb.getLex()).getUso().equals("constante")){ 
                                                             //SI EL VALOR DEL LADO DERECHO DE UNA ASIGNACION ES UNA CONSTANTE LA ASIGNO
@@ -914,7 +814,7 @@ sentencias_IF: IF '(' condicion_if_while ')' '{' bloque_sentencias_ejecutables '
 
 
 condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MAYOR");
-                                                      ArbolSintactico arb1 = (ArbolSintactico) $1;
+                                                        ArbolSintactico arb1 = (ArbolSintactico) $1;
                                                         ArbolSintactico arb2 = (ArbolSintactico) $3;
 
                                                         if((ArbolSintactico) $1 != nodoError && (ArbolSintactico) $3 != nodoError){
@@ -923,7 +823,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -939,6 +851,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -955,110 +868,68 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
                                                             
-                                                            
-                                                            
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                            if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            
-                                                            $$ = nodoError;
-                                                        }
-                                                        
                                                         auxTipoAsig = "";
+                                                        }
                                                         }
             | expr_aritmetic '<' expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MENOR");
-                                                 ArbolSintactico arb1 = (ArbolSintactico) $1;
+                                                   ArbolSintactico arb1 = (ArbolSintactico) $1;
                                                         ArbolSintactico arb2 = (ArbolSintactico) $3;
 
                                                         if((ArbolSintactico) $1 != nodoError && (ArbolSintactico) $3 != nodoError){
@@ -1067,7 +938,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -1083,6 +966,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -1099,108 +983,68 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
                                                             
-                                                            
-                                                            
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                                                                                        if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            $$ = nodoError;
-                                                        }
                                                         auxTipoAsig = "";
+                                                        }
                                                 }
             | expr_aritmetic MAYOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MAYOR O IGUAL");
-                                                        ArbolSintactico arb1 = (ArbolSintactico) $1;
+                                                          ArbolSintactico arb1 = (ArbolSintactico) $1;
                                                         ArbolSintactico arb2 = (ArbolSintactico) $3;
 
                                                         if((ArbolSintactico) $1 != nodoError && (ArbolSintactico) $3 != nodoError){
@@ -1209,7 +1053,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -1225,6 +1081,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -1240,110 +1097,70 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
-                                                            
-                                                            
+                                                            System.out.println("SIMBOLO IZQUIERDO EN LA COMPARAACION IGUAL ES: " + sI.getLexema() +" SIMBOLO DERECHO EN LA COMPARACION ES: " + sD.getLexema());
                                                             
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                                                                                        if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            
-                                                            $$ = nodoError;
-                                                        }
                                                         auxTipoAsig = "";
+                                                        }
                                                         }
             | expr_aritmetic MENOR_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR MENOR O IGUAL");
-                                                        ArbolSintactico arb1 = (ArbolSintactico) $1;
+                                                          ArbolSintactico arb1 = (ArbolSintactico) $1;
                                                         ArbolSintactico arb2 = (ArbolSintactico) $3;
 
                                                         if((ArbolSintactico) $1 != nodoError && (ArbolSintactico) $3 != nodoError){
@@ -1352,7 +1169,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -1368,6 +1197,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -1384,106 +1214,65 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
                                                             
-                                                            
-                                                            
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                                                                                        if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            
-                                                            $$ = nodoError;
-                                                        }
                                                         auxTipoAsig = "";
+                                                        }
                                                         }
             | expr_aritmetic IGUAL_IGUAL expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR IGUAL");
                                                             ArbolSintactico arb1 = (ArbolSintactico) $1;
@@ -1495,7 +1284,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -1511,6 +1312,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -1527,109 +1329,68 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
                                                             
-                                                            
-                                                            
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                                                                                        if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            
-                                                            $$ = nodoError;
-                                                        }
                                                         auxTipoAsig = "";
                                                         }
+                                                    }
             | expr_aritmetic EXCLAMACION_EXCLAMACION expr_aritmetic {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio una COMPARACION POR DISTINTO");
-                                                                     ArbolSintactico arb1 = (ArbolSintactico) $1;
+                                                           ArbolSintactico arb1 = (ArbolSintactico) $1;
                                                         ArbolSintactico arb2 = (ArbolSintactico) $3;
 
                                                         if((ArbolSintactico) $1 != nodoError && (ArbolSintactico) $3 != nodoError){
@@ -1638,7 +1399,19 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             Simbolo sI = Constantes.SIMBOLO_NO_ENCONTRADO;
                                                             Simbolo sD = Constantes.SIMBOLO_NO_ENCONTRADO;
 
+
+                                                            if(arblIzqOp.getLex().equals("+") || arblIzqOp.getLex().equals("-") || arblIzqOp.getLex().equals("/") || arblIzqOp.getLex().equals("*")){
+                                                                arblIzqOp = arblIzqOp.getIzq();
+                                                            }
+                                                            if(arblDerOp.getLex().equals("+") || arblDerOp.getLex().equals("-") || arblDerOp.getLex().equals("/") || arblDerOp.getLex().equals("*")){
+                                                                arblDerOp = arblDerOp.getIzq();
+                                                            }
+
+                                                            boolean tieneTofIzq = false;
+                                                            boolean tieneTofDer = false;
+
                                                             if(arblIzqOp.getLex().equals("TOF")){
+                                                                tieneTofIzq = true;
                                                                 if(arblIzqOp.getIzq().getLex().contains("--")){
                                                                     //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
                                                                     sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));    
@@ -1654,6 +1427,7 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             }
                                                             
                                                             if(arblDerOp.getLex().equals("TOF")){
+                                                                tieneTofDer = true;
                                                                 if(arblDerOp.getIzq().getLex().contains("--")){
                                                                     sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0, arblDerOp.getIzq().getLex().length()-2));
                                                                 }else{
@@ -1669,107 +1443,66 @@ condicion_if_while: expr_aritmetic '>' expr_aritmetic {System.out.println("Linea
                                                             
                                                             //Simbolo sI= TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getLex());
                                                             //Simbolo sD= TablaDeSimbolos.obtenerSimbolo(arblDerOp.getLex());
-                                                            
-                                                            
-                                                            
+                                                           
                                                             if(sI.getId() != -1){
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                   if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
+                                                                if(tieneTofIzq){
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                            auxTipoAsig = ""; 
+                                                                        }else{
+                                                                            if(sD.getTipo().equals("FLOAT")){
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                 String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
+                                                                        }
                                                                     }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-                                                                    
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
+                                                                    if(sD.getId() != -1){
+                                                                        if(tieneTofDer){
+                                                                            if(sI.getTipo().equals("FLOAT")){
+                                                                                 $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                 erroresSemanticos.add(err);
+                                                                                 $$ = nodoError;
+                                                                            }
                                                                         }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
+                                                                            if(sI.getTipo().equals("FLOAT") && sD.getTipo().equals("FLOAT") || sI.getTipo().equals("LONG") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("UINT") && sD.getTipo().equals("UINT") || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
+                                                                                $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
+                                                                                auxTipoAsig = "";           
+                                                                            }else{
+                                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                                erroresSemanticos.add(err);
+                                                                                $$ = nodoError;
+                                                                            }
                                                                         }
                                                                     }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-                                                                    
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
+                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado derecho de la comparacion incorrecto";
                                                                         erroresSemanticos.add(err);
                                                                         $$ = nodoError;
                                                                     }
                                                                 }
                                                             }else{
-                                                                //sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());//Si el nodo padre no es un numero enotnces el hijo derecho si
-                                                                
-                                                                if(arblIzqOp.getIzq().getLex().equals("TOF")){
-                                                                    if(arblIzqOp.getIzq().getIzq().getLex().contains("--")){
-                                                                        //el menos menos lo hago para luego usarlo en el assembler y hacer la resta. Pero ahora no me sirve
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex().substring(0,arblIzqOp.getIzq().getIzq().getLex().length()-2));    
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getIzq().getLex());
-                                                                    }
-                                                                }else{
-                                                                    if(arblIzqOp.getIzq().getLex().contains("--")){
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex().substring(0,arblIzqOp.getIzq().getLex().length()-2));
-                                                                    }else{
-                                                                        sI = TablaDeSimbolos.obtenerSimbolo(arblIzqOp.getIzq().getLex());
-                                                                    }
-                                                                }
-                                                                
-                                                                auxTipoAsig = sI.getTipo();
-                                                                if(sD.getId() != -1){
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                    auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }else{
-                                                                    //sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex()); //Si el nodo padre no es un numero, entonces el hijo izq tiene que serlo
-
-                                                                    if(arblDerOp.getIzq().getLex().equals("TOF")){
-                                                                        if(arblDerOp.getIzq().getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex().substring(0, arblDerOp.getIzq().getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getIzq().getLex());
-                                                                        }
-                                                                    }else{
-                                                                        if(arblDerOp.getIzq().getLex().contains("--")){
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex().substring(0,arblDerOp.getIzq().getLex().length()-2));
-                                                                        }else{
-                                                                            sD = TablaDeSimbolos.obtenerSimbolo(arblDerOp.getIzq().getLex());
-                                                                        }
-                                                                    }
-
-                                                                    if(chequearTipos(sD) || sI.getTipo().equals("UINT") && sD.getTipo().equals("LONG") ||sI.getTipo().equals("LONG") && sD.getTipo().equals("UINT")){    
-                                                                        $$ = (ArbolSintactico) new NodoComun($2.sval, (ArbolSintactico) $1 , (ArbolSintactico) $3);                                                                                                                  
-                                                                        auxTipoAsig = "";           
-                                                                    }else{
-                                                                        String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: El tipo de la comparacion es distinto.";
-                                                                        erroresSemanticos.add(err);
-                                                                        $$ = nodoError;
-                                                                    }
-                                                                }
+                                                                String err = "Linea: " + AnalizadorLexico.getLineaActual()+". Error Semantico: Lado izquierdo de la comparacion incorrecto";
+                                                                erroresSemanticos.add(err);
+                                                                $$ = nodoError;
                                                             }
-                                                        }else{
+                                                                                                                        if($$ == null){
+                                                                $$ = nodoError;
+                                                            }
                                                             
-                                                            
-                                                            $$ = nodoError;
-                                                        }
                                                         auxTipoAsig = "";
+                                                        }
                             }
             ;
 
@@ -2094,8 +1827,7 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                                              Simbolo simbolo1;
                                              Simbolo simbolo2;
 
-                                             System.out.println("EL ARBOL IZQ: " + arbIzq.getLex() + " EL ARBOL DER: "+ arbDer.getLex());
-
+                                            
 
                                             if(arbIzq.getLex().equals("TOF")){
                                             	if(arbIzq.getIzq().getLex().contains("--")){
@@ -2243,8 +1975,6 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                                                 ArbolSintactico arbDer = nodoTof;
                                                 Simbolo simbolo1;
                                                 Simbolo simbolo2;
-
-                                                System.out.println("EL ARBOL IZQ: " + arbIzq.getLex() + " EL ARBOL DER: "+ arbDer.getLex());
 
 
                                                 if(arbIzq.getLex().equals("TOF")){
@@ -2443,8 +2173,7 @@ termino: termino '*' factor {System.out.println("Linea: "+ AnalizadorLexico.getL
                                                 Simbolo simbolo1;
                                                 Simbolo simbolo2;
 
-                                                System.out.println("EL ARBOL IZQ: " + arbIzq.getLex() + " EL ARBOL DER: "+ arbDer.getLex());
-
+                                                
 
                                                 if(arbIzq.getLex().equals("TOF")){
                                                     if(arbIzq.getIzq().getLex().contains("--")){
@@ -2555,32 +2284,6 @@ factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.
                             auxTipoAsig = simbolo.getTipo();
                         }
                         
-                        /*
-                        for(String s : auxDerAsig){
-                            if(lexema.equals("")){
-                                lexema = s;
-                            }else{
-                                lexema = lexema+"."+s;
-                            }
-                        } 
-                        auxDerAsig.clear();
-                        lexema = lexema + "#"+ambitoActual;
-                        
-                        if(TablaDeSimbolos.obtenerSimbolo(lexema).getId() != -1){
-                            TablaDeSimbolos.obtenerSimbolo(lexema).setUsada(true);
-
-                            System.out.println("ANTES DEL MENOS MENOS: " + TablaDeSimbolos.obtenerSimbolo(lexema).getLexema() + " vale: " + TablaDeSimbolos.obtenerSimbolo(lexema).getValor());
-                            NodoHoja hoja = new NodoHoja(lexema+"--");
-                            $$ = hoja;
-                           
-                        }else{
-                            String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+lexema+ " no declarada";
-                            erroresSemanticos.add(err);
-                            $$ = (ArbolSintactico) nodoError;
-                        }
-                        if(auxTipoAsig.equals("")){
-                            auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-                        }*/
 
                         } 
       | id_asig_der {System.out.println("Linea: "+ AnalizadorLexico.getLineaActual() + ". Se reconocio un IDENTIFICADOR ");
@@ -2616,80 +2319,6 @@ factor: id_asig_der MENOS_MENOS {System.out.println("Linea: "+ AnalizadorLexico.
               }
 
               
-                /* if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("clase")){
-                    //QUIERE DECIR QUE ES UN ATRIBUTO DE UNA CLASE QUE HEREDA Y NO UN OBJETO DE CLASE
-                    for(int i = auxDerAsig.size()-1;i>=0;i--){
-                        System.out.println("VALOR EN i= " + i + " es: "+ auxDerAsig.get(i));
-                        //System.out.println("EL LEXEMA DEL DERECHO DE LA ASIGNACION HASTA AHORA ES: " + lexema + " El identificador que puedo agregar es (s+'#'+ambitoActual): " + auxDerAsig.get(i)+"#"+ambitoActual);
-                        if(lexema.equals("")){
-                            //lexema = auxDerAsig.get(i);
-                            lexema = "nada";
-                            auxIdentificador = auxDerAsig.get(i);
-                        }else{
-                            if(i == auxDerAsig.size()-2){
-                                auxAmbito = auxDerAsig.get(i);
-                            }else{
-                                if(restoAmbito.equals("")){
-                                    restoAmbito = "";
-                                }else{
-                                    restoAmbito = restoAmbito+"."+auxDerAsig.get(i);
-                                }
-                            }
-                        }
-                    }
-                    String ambitoMedio = ambitoActual;
-                    Simbolo simboloAux = Constantes.SIMBOLO_NO_ENCONTRADO;
-                    if(!auxAmbito.equals("")){
-                        System.out.println("ENTRE EN EL IF. auxId: " + auxIdentificador + " auxAmbito: "+ auxAmbito);
-                        while(simboloAux.getId() == -1 && !ambitoMedio.equals("global") && !simboloAux.getLexema().contains(auxAmbito)){
-                            int lastIndex = ambitoMedio.lastIndexOf("#");
-                            ambitoMedio = ambitoMedio.substring(0,lastIndex);
-                            simboloAux = TablaDeSimbolos.obtenerSimbolo(auxIdentificador+"#"+ambitoMedio+"#"+auxAmbito);
-                        }            
-                    }else{
-                        System.out.println("ENTRE AL ELSE");
-                        simboloAux = TablaDeSimbolos.obtenerSimbolo(auxIdentificador+"#"+ambitoMedio);
-                    }
-                    simboloAux.setUsada(true);
-                    simboloAux.setValorAsignado(true);
-                    lexema = simboloAux.getLexema();
-                }else{
-                    if(TablaDeSimbolos.obtenerSimbolo(auxDerAsig.get(0)+"#"+ambitoActual).getUso().equals("identificador")){
-                        // QUIERE DECIR QUE EL PRIMER OBJETO ES EL NOMBRE DE UN OBJETO DE CLASE, POR EJEMPLO, c1 objt1,
-                        for(String s : auxDerAsig){
-                            if(lexema.equals("")){
-                                lexema = s;
-                            }else{
-                                lexema = lexema+"."+s;
-                            }
-                        }
-                        lexema = lexema +"#"+ambitoActual;
-                    }
-                } 
-            // auxIdentificador: primer id
-            // auxAmbito: final del ambito del identificador
-            // ambitoMedio: El ambito actual
-            // restoAmbito: resto de identificadores
-            
-
-            auxDerAsig.clear();
-            //lexema = lexema + "#"+ambitoActual;
-           
-            System.out.println("El lexema final es: " + lexema);
-            Simbolo aux = TablaDeSimbolos.obtenerSimbolo(lexema);
-            if(aux.getId() != -1){
-                aux.setUsada(true);
-                NodoHoja hoja = new NodoHoja(aux.getLexema());
-                $$ = (ArbolSintactico) hoja;
-            }else{
-                String err = "Linea "+AnalizadorLexico.getLineaActual() + ". Error Semantico: Variable "+$1.sval+ " no declarada";
-                erroresSemanticos.add(err);
-                $$ = (ArbolSintactico) nodoError;
-            }
-            if(auxTipoAsig.equals("")){
-                //Esto me sirve para resolver la comparacion del parametro de una funcion
-                auxTipoAsig = TablaDeSimbolos.obtenerSimboloSinAmbito(lexema).getTipo();
-            }*/
         }
       | const { $$ = $1;}
       ;

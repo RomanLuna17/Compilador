@@ -31,11 +31,6 @@
 		RETURN,
 	},
 	
-	WHILE(_var10 !! _var2)DO{
-		_numero3 = 1_l,
-		_f1(_a ),
-	},
-	
 	
 	CLASS _ca {
 		
@@ -77,6 +72,7 @@
 	_f(,
 	
 	PRINT %llegue%,
+	
 	
 	
 	

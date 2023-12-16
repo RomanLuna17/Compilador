@@ -1,5 +1,4 @@
 {
-	*{problema la funcion no termina si encuentra un return antes de el final de la fun, esto se ve en fun3}*
 	LONG _numero1;_numero2,
 	_numero1 = 15_l,
 	
